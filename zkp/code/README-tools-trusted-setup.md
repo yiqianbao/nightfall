@@ -58,11 +58,11 @@ tools-trusted-setup.js is written to interpret only .pcode syntax.
 
 ## Quick start
 
-Always run from within zkpdemo/zkp/:
+Always run from within nightfall/zkp/:
 
 ```sh
 npm install
-cd path/to/zkpdemo/zkp/
+cd path/to/nightfall/zkp/
 ```
 
 Then run the tool:
@@ -207,4 +207,4 @@ the zokrates console outputs will be streamed to your console.
   - setup
   - compute-witness (if the optional -a argument is given)
   - export-verifier
-- Save any newly created files in path/to/zkpdemo/zkp/code/gm17/parent-dir-of-pcode/
+- Save any newly created files in path/to/nightfall/zkp/code/gm17/parent-dir-of-pcode/

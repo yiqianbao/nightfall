@@ -23,8 +23,8 @@ DIRNAME_PARENTPATH - path to inside the parent directory of a directory. E.g. fo
 FILENAME_PARENTPATH - path to inside the parent directory of a file's containing folder.
 E.g. for .../parentDir/dirName/filename.extension, FILENAME_PARENTPATH is .../parentDir/
 
-REL - relative path (relative from process.env.PWD, which in our repo is from path-to-/zkpdemo/zkp/) (the zkp-demo shell script executes all of this zkp node code from within path-to/zkp/)
-i.e. DIRNAME_DIRPATH_REL: "/dirName/" is a relative path which (on the host machine) points to: path-to-/zkpdemo/zkp/dirName/
+REL - relative path (relative from process.env.PWD, which in our repo is from path-to-/nightfall/zkp/) (the zkp-demo shell script executes all of this zkp node code from within path-to/zkp/)
+i.e. DIRNAME_DIRPATH_REL: "/dirName/" is a relative path which (on the host machine) points to: path-to-/nightfall/zkp/dirName/
 
 ABS - absolute path
 */
@@ -37,7 +37,7 @@ const props = {
     ZKP_SRC_REL: 'src/',
     ZKP_SAFE_DUMP_DIRPATH_REL: 'code/safe-dump/', // safe-dump is a folder for dumping new files which node or zokrates create onto the host machine. Using the safe-dump folder in this way reduces the risk of overwriting data in the 'code' folder.
     //* ****
-    ZOKRATES_HOST_CODE_DIRPATH_REL: 'code/', // path to code files on the host from process.env.PWD (= path-to-/zkpdemo/zkp/)
+    ZOKRATES_HOST_CODE_DIRPATH_REL: 'code/', // path to code files on the host from process.env.PWD (= path-to-/nightfall/zkp/)
     ZOKRATES_HOST_CODE_PARENTPATH_REL: './',
     //* ****
     ZOKRATES_CONTAINER_CODE_CALIBRATION_FILEPATH_ABS: 'home/zokrates/code/code-calibration.txt',

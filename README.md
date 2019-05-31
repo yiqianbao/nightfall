@@ -143,7 +143,7 @@ docker-compose down -v
 
 After following the steps from 'Installing Nightfall' section,
 
-There is a volume conflict sometimes, please run `docker volume rm zkpdemo_zkp-code`
+There is a volume conflict sometimes, please run `docker volume rm nightfall_zkp-code`
 
 Then run
 

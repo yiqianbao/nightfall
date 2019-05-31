@@ -1,7 +1,7 @@
 /**
 @module
 @author iAmMichaelConnor
-@desc Run from within zkpdemo/zkp/code
+@desc Run from within nightfall/zkp/code
 E.g. node src/tools-trusted-setup.js
 */
 
