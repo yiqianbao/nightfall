@@ -1,0 +1,39 @@
+<div class="col-lg-12 col-sm-12 col-12">
+  <h1>Accounts</h1>
+  <div class="container" style="margin-bottom:30px;">
+    <h6 style="color:#1e6bb8;">Default Shield Contract Address</h6>
+    <table class="table" style="border: 1px solid #ddd !important;">
+      <thead>
+        <tr class="head-row">
+          <th>Shield Contract Address</th>
+          <th>Shields ERC20 / ERC721 At Address</th>
+          <th>ERC20 / ERC721 Contract Name</th>
+          <th>Selection</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let defaultData of formatedDefaultData">
+          <td>{{ defaultData.contractAdd.slice(0, 20) }}...</td>
+          <td>{{ defaultData.tokenAddress.slice(0, 20) }}...</td>
+          <td>{{ defaultData.contractName.slice(0, 20) }}</td>
+          <td>
+            <b [style.color]="defaultData.selection ? 'green' : 'black'" class="textCapitalize">{{
+              defaultData.selection
+            }}</b>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <h6 style="color:#1e6bb8;margin-left: 1.5%;">Linked Shield Contract Address</h6>
+    <ng2-smart-table
+      [settings]="settings"
+      [source]="source"
+      (createConfirm)="addAccount($event)"
+      (editConfirm)="editAccount($event)"
+      (deleteConfirm)="deleteAccount($event)"
+    >
+    </ng2-smart-table>
+  </div>
+</div>

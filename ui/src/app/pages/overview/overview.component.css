@@ -1,0 +1,115 @@
+.card-body {
+  padding: 0;
+  color: white;
+  background-color: #172b2f;
+  /* height: 74px; */
+  padding: 12px;
+  min-height: 80px;
+}
+.custm-btn {
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  background-color: #1c6a88 !important;
+  color: #fff !important;
+  padding: 10px 15px;
+  border-radius: 0.125rem;
+  margin-bottom: 15px;
+}
+.list-group-item-action {
+  border-radius: 0;
+}
+.btn-list {
+  margin-bottom: 10px;
+  border: 2px solid #172b2f !important;
+  background-color: transparent !important;
+  color: #172b2f !important;
+  display: block;
+}
+.list-group-item-action:focus,
+.list-group-item-action:hover {
+  background-color: #505556;
+  color: white;
+}
+.list-group-item-action span {
+  cursor: pointer;
+}
+.card {
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  background-color: #fff;
+  border-radius: 0.25rem !important;
+  text-align: center;
+  /* padding: 10px;
+    height: 80px; */
+  /* margin-bottom: 20px; */
+}
+::ng-deep.overview .nav-tabs {
+  border: none !important;
+}
+::ng-deep.overview .nav-link {
+  padding: 0 !important;
+  height: 100%;
+}
+::ng-deep.overview .nav-tabs div {
+  padding: 8px;
+  min-width: 150px;
+  text-align: center;
+  color: black;
+}
+.vertical-align {
+  display: table-cell;
+  vertical-align: middle;
+  height: 80px;
+}
+.btn-array {
+  height: 80px;
+  padding: 30px 0;
+  margin-bottom: 20px;
+}
+.card h3 {
+  margin: 0;
+}
+.custm-header {
+  padding: 10px;
+  background: linear-gradient(40deg, #1c6a88, #172b2f) !important;
+  color: white;
+  border-radius: 5px;
+  position: relative;
+  bottom: 35px;
+  box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.15), 0 3px 12px 0 rgba(0, 0, 0, 0.15);
+}
+.custm-btn :hover {
+  box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
+  outline: 0;
+}
+::ng-deep.nav-link.active {
+  border-top: 4px solid rgb(19, 37, 43) !important;
+}
+
+.table {
+  /* box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12); */
+  border: 1px solid #ddd;
+  background-color: white;
+}
+
+ul li {
+  padding: 0.75rem 1.25rem;
+  margin-bottom: -1px;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-left: none;
+  border-right: none;
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+.zkp-pagination /deep/ .page-item .page-link {
+  color: #000000;
+}
+
+.zkp-pagination /deep/ .page-item.active .page-link {
+  background-color: #172b2f !important;
+  border-color: #172b2f;
+  color: #fff;
+}

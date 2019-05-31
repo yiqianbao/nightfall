@@ -1,0 +1,20 @@
+.btn-list {
+  border: 2px solid #172b2f !important;
+  background-color: transparent !important;
+  color: #172b2f !important;
+  display: block;
+  width: 220px;
+  padding: 5px;
+  height: 32px;
+  font-size: 12px;
+}
+
+.zkp-pagination /deep/ .page-item .page-link {
+  color: #000000;
+}
+
+.zkp-pagination /deep/ .page-item.active .page-link {
+  background-color: #172b2f !important;
+  border-color: #172b2f;
+  color: #fff;
+}

@@ -1,0 +1,118 @@
+/deep/.ng2-smart-action-add-add:after {
+  font-family: 'FontAwesome';
+  content: '\f067';
+  height: 40px; /*height of icon */
+  width: 40px; /*width of icon */
+  top: 0px;
+  left: -40px;
+  font-size: 20px;
+  color: green;
+  text-decoration: none;
+}
+
+/deep/.ng2-smart-action-edit-edit:after {
+  font-family: 'FontAwesome';
+  content: '\f044';
+  height: 40px; /*height of icon */
+  width: 40px; /*width of icon */
+  top: 0px;
+  left: -40px;
+  font-size: 20px;
+  color: green;
+  text-decoration: none;
+}
+
+/deep/.ng2-smart-action-delete-delete:after {
+  font-family: 'FontAwesome';
+  content: '\f068';
+  height: 40px; /*height of icon */
+  width: 40px; /*width of icon */
+  top: 0px;
+  left: -40px;
+  font-size: 20px;
+  color: red;
+  text-decoration: none;
+}
+/deep/.ng2-smart-title {
+  color: #1e6bb8;
+}
+
+/deep/.ng2-smart-action-edit-save:after {
+  font-family: 'FontAwesome';
+  content: '\f14b';
+  height: 40px; /*height of icon */
+  width: 40px; /*width of icon */
+  top: 0px;
+  left: -40px;
+  font-size: 20px;
+  color: green;
+  text-decoration: none;
+}
+
+/deep/.ng2-smart-action-edit-cancel:after {
+  font-family: 'FontAwesome';
+  content: '\f057';
+  height: 40px; /*height of icon */
+  width: 40px; /*width of icon */
+  top: 0px;
+  left: -40px;
+  font-size: 20px;
+  color: red;
+  text-decoration: none;
+}
+
+/deep/.ng2-smart-action-add-create:after {
+  font-family: 'FontAwesome';
+  content: '\f067';
+  height: 40px; /*height of icon */
+  width: 40px; /*width of icon */
+  top: 0px;
+  left: -40px;
+  font-size: 20px;
+  color: green;
+  text-decoration: none;
+}
+
+/deep/.ng2-smart-action-add-cancel:after {
+  font-family: 'FontAwesome';
+  content: '\f057';
+  height: 40px; /*height of icon */
+  width: 40px; /*width of icon */
+  top: 0px;
+  left: -40px;
+  font-size: 20px;
+  color: red;
+  text-decoration: none;
+}
+
+.ellipsis {
+  text-overflow: ellipsis;
+  width: 20px;
+  /* Required for text-overflow to do anything */
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.head-row {
+  color: #1e6bb8;
+}
+.head-row th {
+  font-size: 0.85rem;
+}
+
+/deep/ ng2-smart-table table {
+  border: 1px solid #ddd !important;
+  margin-left: 1%;
+  width: 98% !important;
+}
+
+/deep/ ng2-smart-table table tr {
+  border-color: #ddd !important;
+}
+/deep/ ng2-smart-table table td {
+  border-top: 1px solid #ddd !important;
+}
+
+/deep/ ng2-smart-table table th {
+  border-bottom: 1px solid #ddd !important;
+}

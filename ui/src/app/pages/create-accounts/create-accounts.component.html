@@ -1,0 +1,65 @@
+<app-spinner
+  *ngIf="isRequesting"
+  [delay]="300"
+  [message]="'creating Account'"
+  [isRunning]="isRequesting"
+></app-spinner>
+<div class="row custom-row">
+  <div class="login-container box-shad">
+    <div id="output"></div>
+    <div style="margin-bottom:50px;">
+      <i class="fa fa-5x text-info fa-user-circle" aria-hidden="true"></i>
+      <h3 class="text-info">Create New Account</h3>
+    </div>
+    <div class="form-box">
+      <form [formGroup]="createAccount">
+        <!-- <input [formControl]="accountName" class="input-field"  type="text" placeholder="Account Name">
+                      -->
+        <input
+          type="text"
+          placeholder="Your full name"
+          class="input-field"
+          formControlName="accountName"
+        />
+        <input type="email" placeholder="Enter email" class="input-field" formControlName="email" />
+        <input
+          formControlName="passphrase"
+          class="input-field"
+          type="password"
+          placeholder="Pass Phrase"
+        />
+        <input
+          formControlName="cfmpassphrase"
+          class="input-field"
+          type="password"
+          placeholder="Confirm Pass Phrase"
+        />
+        <!-- <input type="checkbox" formControlName="isAuditor" class="input-field">
+        <span class="btn-cstm">Set as Auditor</span> -->
+        <div *ngIf="createAccount.get('cfmpassphrase').value" class="err-msg">
+          <ng-container
+            *ngIf="
+              !(createAccount.get('cfmpassphrase').value === createAccount.get('passphrase').value)
+            "
+          >
+            Pass Phrase doesn't match
+          </ng-container>
+        </div>
+        <button
+          (click)="createAccounts()"
+          class="btn btn-cstm btn-block login"
+          [disabled]="
+            createAccount.invalid ||
+            !(createAccount.get('cfmpassphrase').value === createAccount.get('passphrase').value)
+          "
+          type="submit"
+        >
+          Create Account
+        </button>
+      </form>
+    </div>
+    <div class="pt-1">
+      <span class="text-center link">Have an account? <a [routerLink]="['/login']">Login</a></span>
+    </div>
+  </div>
+</div>

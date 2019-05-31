@@ -1,0 +1,73 @@
+{
+  "root": [
+    {
+      "ITEM NAME": "Wheelbarrow",
+      "class": "root"
+    },
+    ["Wheelbarrow"]
+  ],
+  "Wheelbarrow": [
+    {
+      "ITEM UNIQUE IDENTIFICATION CODE": "30C",
+      "ITEM NAME": "Wheelbarrow",
+      "DESCRIPTION": "wheelbarrow, heavy duty",
+      "ITEM TYPE (Product, Service etc.)": "Product",
+      "ITEM GROUP (COMMODITY)": "Commodity",
+      "ITEM Unit of Measurement (UOM)": "CM",
+      "Package Type": "Normal",
+      "UNIT PRICE": "20",
+      "CURRENCY CODE": "$",
+      "PRICING UOM": "30$",
+      "class": "Wheelbarrow"
+    },
+    ["hopper", "frame"]
+  ],
+  "frame": [
+    {
+      "ITEM UNIQUE IDENTIFICATION CODE": "30C",
+      "ITEM NAME": "Frame",
+      "DESCRIPTION": "tubular steel frame",
+      "ITEM TYPE (Product, Service etc.)": "Product",
+      "ITEM GROUP (COMMODITY)": "Commodity",
+      "ITEM Unit of Measurement (UOM)": "CM",
+      "Package Type": "Normal",
+      "UNIT PRICE": "20",
+      "CURRENCY CODE": "$",
+      "PRICING UOM": "30$",
+      "class": "Frame"
+    },
+    ["wheel_assembly"]
+  ],
+  "hopper": [
+    {
+      "ITEM UNIQUE IDENTIFICATION CODE": "30C",
+      "ITEM NAME": "Hopper",
+      "DESCRIPTION": "sheet steel hopper",
+      "ITEM TYPE (Product, Service etc.)": "Product",
+      "ITEM GROUP (COMMODITY)": "Commodity",
+      "ITEM Unit of Measurement (UOM)": "CM",
+      "Package Type": "Normal",
+      "UNIT PRICE": "20",
+      "CURRENCY CODE": "$",
+      "PRICING UOM": "30$",
+      "class": "Hopper"
+    },
+    []
+  ],
+  "wheel_assembly": [
+    {
+      "ITEM UNIQUE IDENTIFICATION CODE": "30C",
+      "ITEM NAME": "WheelAssembly",
+      "DESCRIPTION": "wheel, bearings and bearing housing",
+      "ITEM TYPE (Product, Service etc.)": "Product",
+      "ITEM GROUP (COMMODITY)": "Commodity",
+      "ITEM Unit of Measurement (UOM)": "CM",
+      "Package Type": "Normal",
+      "UNIT PRICE": "20",
+      "CURRENCY CODE": "$",
+      "PRICING UOM": "30$",
+      "class": "WheelAssembly"
+    },
+    []
+  ]
+}

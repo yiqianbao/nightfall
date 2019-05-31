@@ -1,0 +1,44 @@
+<app-spinner
+  *ngIf="isRequesting"
+  [delay]="300"
+  [message]="'Logging..'"
+  [isRunning]="isRequesting"
+></app-spinner>
+<div class="row custom-row">
+  <div class="login-container box-shad">
+    <div id="output"></div>
+    <div style="margin-bottom:50px;">
+      <i class="fa fa-5x text-info fa-user-circle" aria-hidden="true"></i>
+      <h3 class="text-info">Login</h3>
+    </div>
+    <div class="form-box">
+      <form [formGroup]="loginAccount">
+        <input
+          type="text"
+          placeholder="Username"
+          class="input-field"
+          formControlName="accountName"
+        />
+        <input
+          formControlName="passphrase"
+          class="input-field"
+          type="password"
+          placeholder="password"
+        />
+        <button
+          (click)="login()"
+          class="btn btn-cstm btn-block login"
+          [disabled]="loginAccount.invalid"
+          type="submit"
+        >
+          Login
+        </button>
+      </form>
+    </div>
+    <div class="pt-1">
+      <span class="text-center"
+        >New User? <a [routerLink]="['/createAccount']">Create Account</a></span
+      >
+    </div>
+  </div>
+</div>

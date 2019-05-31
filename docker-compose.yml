@@ -1,0 +1,156 @@
+version: '3'
+
+services:
+  accounts:
+    build:
+      context: ./accounts
+      dockerfile: Dockerfile
+    restart: on-failure
+    depends_on:
+      - ganache
+    volumes:
+      - ./accounts/src:/app/src
+      - ./accounts/config:/app/config
+      - ./accounts/.babelrc:/app/.babelrc
+    environment:
+      VIRTUAL_HOST: accounts.nightfall.docker
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    restart: on-failure
+    volumes:
+      - ./api-gateway/src:/app/src
+      - ./api-gateway/.babelrc:/app/.babelrc
+    environment:
+      VIRTUAL_HOST: api.nightfall.docker
+
+  offchain:
+    build:
+      context: ./offchain
+      dockerfile: Dockerfile
+    restart: on-failure
+    depends_on:
+      - ganache
+    volumes:
+      - ./offchain/src:/app/src
+      - ./offchain/response:/app/response
+      - ./offchain/build:/app/build
+      - ./offchain/.babelrc:/app/.babelrc
+      - ./offchain/__tests__:/app/__tests__
+      - ./zkp-utils:/app/node_modules/zkp-utils
+      - ./config:/app/config
+    environment:
+      VIRTUAL_HOST: offchain.nightfall.docker
+
+  zkp:
+    build:
+      context: ./zkp
+      dockerfile: Dockerfile
+    restart: on-failure
+    depends_on:
+      - ganache
+    volumes:
+      - ./zkp/src:/app/src
+      - ./zkp/response:/app/response
+      - ./zkp/build:/app/build
+      - ./zkp/code:/app/code
+      - ./zkp/.babelrc:/app/.babelrc
+      - ./zkp-utils:/app/node_modules/zkp-utils
+      - ./zkp/__tests__:/app/__tests__
+      - ./config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      VIRTUAL_HOST: zkp.nightfall.docker
+
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    restart: on-failure
+    volumes:
+      - ./ui/src:/app/src
+      - ./ui/angular.json:/app/angular.json
+      - ./ui/tsconfig.json:/app/tsconfig.json
+    environment:
+      VIRTUAL_HOST: nightfall.docker
+
+  ganache:
+    image: trufflesuite/ganache-cli:latest
+    command: ganache-cli --accounts=10 --defaultBalanceEther=1000
+    ports:
+      - 8545:8545
+
+  database:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    restart: on-failure
+    depends_on:
+      - mongo
+    volumes:
+      - ./database/src:/app/src
+      - ./database/response:/app/response
+      - ./database/.babelrc:/app/.babelrc
+      - ./zkp-utils:/app/node_modules/zkp-utils
+      - ./config:/app/config
+      - ./database/script_to_configure_roles.js:/app/script_to_configure_roles.js
+    environment:
+      VIRTUAL_HOST: database.nightfall.docker
+
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+      - MONGO_INITDB_DATABASE=ZKPDemo
+    volumes:
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - mongo-volume:/data/db
+
+  truffle-offchain:
+    image: ajmay/truffle:5.0.9
+    environment:
+      SOLC_VERSION: 0.5.8
+      ETH_HOST: ganache
+      ETH_GAS: 6000000
+      ETH_GAS_PRICE: 20000000000
+    volumes:
+      - ./offchain/contracts:/truffle/contracts:delegated
+      - ./offchain/migrations/:/truffle/migrations:delegated
+      - ./offchain/build/contracts/:/truffle/build/contracts:cached
+      - ./offchain/test/:/truffle/test:delegated
+    depends_on:
+      - ganache
+    logging:
+      options:
+        max-size: 10m
+
+  truffle-zkp:
+    image: ajmay/truffle:5.0.9
+    environment:
+      SOLC_VERSION: 0.5.8
+      ETH_HOST: ganache
+      ETH_GAS: 6000000
+      ETH_GAS_PRICE: 20000000000
+    volumes:
+      - ./zkp/contracts/:/truffle/contracts:delegated
+      - ./zkp/migrations/:/truffle/migrations:delegated
+      - ./zkp/build/contracts/:/truffle/build/contracts:cached
+      - ./zkp/test/:/truffle/test:delegated
+      - ./zkp/src/:/truffle/src:delegated
+    depends_on:
+      - ganache
+    logging:
+      options:
+        max-size: 10m
+
+volumes:
+  mongo-volume: {}
+  zkp-code:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/zkp/code/
+      o: bind

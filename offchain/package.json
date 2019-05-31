@@ -1,0 +1,41 @@
+{
+  "name": "offchain",
+  "version": "0.0.1",
+  "description": "execution of offchain contracts",
+  "repository": "https://github.com/EYBlockchain/nightfall",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_ENV=LOCAL nodemon --ignore config/* --exec babel-node ./src/index.js",
+    "test": "jest ./__tests__/*.test.js"
+  },
+  "contributors": [
+    "Duncan Westland <duncan.westland@uk.ey.com>",
+    "Liju Jose <Liju.Jose@gds.ey.com>",
+    "Asish A Prema <Asish.Prema@gds.ey.com>",
+    "Michael Connor <Michael.Connor@uk.ey.com>",
+    "A.J. May <aj.may@ey.com>",
+    "Kartheek Solipuram <Kartheek.Solipuram@ey.com>"
+  ],
+  "license": "CC0-1.0",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.16.3",
+    "jsonfile": "^5.0.0",
+    "request": "^2.88.0",
+    "truffle-contract": "4.0.15",
+    "web3": "1.0.0-beta.36"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.4",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.4.4",
+    "jest": "^24.8.0",
+    "jest-expect-message": "^1.0.2",
+    "nodemon": "^1.19.0"
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "jest-expect-message"
+    ]
+  }
+}

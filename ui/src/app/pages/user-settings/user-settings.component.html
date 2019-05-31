@@ -1,0 +1,58 @@
+<app-nav> </app-nav>
+<div class="container">
+  <div>
+    <nav class="mt-4" aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a [routerLink]="['/overview']">Overview</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Settings</li>
+      </ol>
+    </nav>
+    <div class="box">
+      <div class="box-header">
+        <h3>User Settings</h3>
+      </div>
+      <div class="box-body">
+        <div class="row">
+          <div class="col-lg-3 col-sm-3 col-3 main-section text-center">
+            <div class="row">
+              <div class="col-lg-12 col-sm-12 col-12 profile-header"></div>
+            </div>
+            <div class="row user-detail">
+              <div class="col-lg-12 col-sm-12 col-12">
+                <div class="avatar-cointainer">
+                  <img
+                    src="../../../assets/images/avatar-default-icon.png"
+                    class="rounded-circle img-thumbnail"
+                  />
+                  <h5>{{ user?.name }}</h5>
+                  <p>
+                    <i class="fa fa-envelope" aria-hidden="true"></i> <span>{{ user?.email }}</span>
+                  </p>
+                </div>
+                <div class="list-group">
+                  <a
+                    [routerLink]="['./profile']"
+                    class="list-group-item list-group-item-action settings-links"
+                    routerLinkActive="active"
+                    >Profile</a
+                  >
+                  <a
+                    [routerLink]="['./accounts']"
+                    class="list-group-item list-group-item-action settings-links "
+                    routerLinkActive="active"
+                    >Accounts</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-9 col-sm-9 col-9 ">
+            <router-outlet></router-outlet>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

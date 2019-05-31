@@ -1,0 +1,36 @@
+{
+  "name": "accounts",
+  "version": "0.0.1",
+  "description": "Microservice for interacting with Ethereum accounts",
+  "repository": "https://github.com/EYBlockchain/nightfall",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --exec babel-node ./src/index.js"
+  },
+  "contributors": [
+    "Mohammed Shameem <Mohammed.Shameem@uk.ey.com>",
+    "Chaitanya Konda <CKonda@uk.ey.com>",
+    "Duncan Westland <duncan.westland@uk.ey.com>",
+    "Liju Jose <Liju.Jose@gds.ey.com>",
+    "Michael Connor <Michael.Connor@uk.ey.com>",
+    "A.J. May <aj.may@ey.com>",
+    "Kartheek Solipuram <Kartheek.Solipuram@ey.com>"
+  ],
+  "license": "CC0-1.0",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "config": "^3.1.0",
+    "cors": "^2.8.5",
+    "express": "^4.16.2",
+    "express-http-proxy": "^1.1.0",
+    "jsonwebtoken": "^8.1.0",
+    "request": "^2.83.0",
+    "web3": "1.0.0-beta.36"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.4",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.4.4",
+    "nodemon": "^1.18.11"
+  }
+}

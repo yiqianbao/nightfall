@@ -1,0 +1,49 @@
+{
+  "name": "api-gateway",
+  "version": "0.0.1",
+  "description": "Microservice for Authenticating the Blockchain",
+  "repository": "https://github.com/EYBlockchain/nightfall",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_ENV=LOCAL nodemon --exec babel-node ./src/index.js",
+    "test": "./test-run",
+    "test:api": "nyc --reporter=html --reporter=text mocha test/routes",
+    "jsdoc": "jsdoc ./src/routes/",
+    "apidoc": "apidoc -i ./src/routes/ -o out/api/"
+  },
+  "contributors": [
+    "Chaitanya Konda <CKonda@uk.ey.com>",
+    "Liju Jose <Liju.Jose@gds.ey.com>",
+    "Abhinaba Das <Abhinaba.Das@gds.ey.com>",
+    "Mohammed Shameem <Mohammed.Shameem@uk.ey.com>",
+    "Duncan Westland <duncan.westland@uk.ey.com>",
+    "Asish A Prema <Asish.Prema@gds.ey.com>",
+    "Michael Connor <Michael.Connor@uk.ey.com>",
+    "A.J. May <aj.may@ey.com>"
+  ],
+  "license": "CC0-1.0",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.5",
+    "express": "^4.16.2",
+    "express-http-proxy": "^1.1.0",
+    "jsonwebtoken": "^8.4.0",
+    "mocha": "^5.2.0",
+    "nyc": "^14.1.1",
+    "request": "^2.88.0",
+    "safe-buffer": "^5.1.2",
+    "underscore": "^1.9.1",
+    "winston": "^3.1.0",
+    "winston-daily-rotate-file": "^3.5.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.4",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.4.4",
+    "nodemon": "^1.19.0"
+  },
+  "apidoc": {
+    "title": "",
+    "url": ""
+  }
+}

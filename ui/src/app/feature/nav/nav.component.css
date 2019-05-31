@@ -1,0 +1,107 @@
+.nav-custom {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  text-align: center;
+  background-color: #13252b;
+}
+.nav-brndN {
+  font-size: 18px;
+  font-family: sans-serif;
+  font-style: bold;
+  color: white !important;
+  padding-top: 2%;
+}
+.nav-li {
+  font-size: 15px;
+  font-family: sans-serif;
+  font-style: bold;
+  color: white !important;
+}
+.navbar-list {
+  /* margin-right: 8%; */
+  font-size: 12px;
+  font-family: sans-serif;
+}
+.navbar-nav > a,
+.navbar-nav > ul > li,
+.navbar-default .navbar-nav > .open > a:focus,
+.navbar-default .navbar-nav > .open > a:hover {
+  background-color: red;
+  color: #fff;
+}
+
+ul li a:hover {
+  color: #fff;
+  background: #110101;
+}
+a.active {
+  color: #fff;
+  background: #110101;
+}
+ul li ul.dropdown {
+  min-width: 100%;
+  background: #00bc8a;
+  display: none;
+  position: absolute;
+  z-index: 999;
+  left: 0;
+}
+ul li:hover ul.dropdown {
+  display: block;
+}
+ul li ul.dropdown li {
+  display: block;
+  min-width: 150px;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+ul li {
+  display: inline-block;
+  position: relative;
+  line-height: 20px;
+  text-align: left;
+}
+ul li a {
+  display: block;
+  padding: 15px 15px;
+  color: rgb(255, 255, 255);
+  font-family: 'Century Gothic';
+  text-decoration: none;
+}
+
+::ng-deep.navbar {
+  position: absolute;
+  width: 100%;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  z-index: 999;
+}
+.activeRoute {
+  background-color: rgb(2, 27, 21);
+}
+
+.search-container form {
+  margin-top: 8px;
+  margin-right: 10px;
+}
+
+.search-container input {
+  height: 35px;
+}
+
+.search-container button {
+  height: 35px;
+}
+
+.search-container .btn {
+  padding-top: 0px;
+  line-height: 35px;
+  background-color: #13252b !important;
+  border: #ddd solid 1px;
+}
+
+.avatar {
+  cursor: pointer;
+}
