@@ -6,7 +6,7 @@
   (generated)
   "nightfall-v1.bbl"
   "nightfall-v1.blg"
-["pdflatex"] 1559137425 "/Users/em137vl/git/zkp-opensource/ZKPDemo/documentation/whitepaper/nightfall-v1.tex" "/Users/em137vl/git/zkp-opensource/ZKPDemo/documentation/whitepaper/nightfall-v1.pdf" "nightfall-v1" 1559137443
+["pdflatex"] 1559137425 "/Users/em137vl/git/zkp-opensource/nightfall/documentation/whitepaper/nightfall-v1.tex" "/Users/em137vl/git/zkp-opensource/nightfall/documentation/whitepaper/nightfall-v1.pdf" "nightfall-v1" 1559137443
   "/Users/em137vl/Library/Application Support/MiKTeX/texmfs/data/miktex/data/le/pdftex/pdflatex.fmt" 1547379291 755606 55421a267df7dfcac624b7a37d619c36 ""
   "/Users/em137vl/Library/Application Support/MiKTeX/texmfs/data/pdftex/config/pdftex.map" 1558870876 26627 2dad11a5f8f24ab5c51928000b993f7a ""
   "/Users/em137vl/Library/Application Support/MiKTeX/texmfs/install/fonts/tfm/public/amsfonts/cmextra/cmbsy5.tfm" 1233951848 1120 1e8878807317373affa7f7bba4cf2f6a ""
@@ -452,8 +452,8 @@
   "/Users/em137vl/Library/Application Support/MiKTeX/texmfs/install/tex/latex/trimspaces/trimspaces.sty" 1253169183 1380 971a51b00a14503ddf754cab24c3f209 ""
   "/Users/em137vl/Library/Application Support/MiKTeX/texmfs/install/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "/Users/em137vl/Library/Application Support/MiKTeX/texmfs/install/tex/latex/xcolor/xcolor.sty" 1463135581 57049 74963e80d77be39a0b7442967b27c75b ""
-  "/Users/em137vl/git/zkp-opensource/ZKPDemo/documentation/whitepaper/nightfall-v1.aux" 1559137442 26479 47594bc35f0d8de91c600e2b336c20b4 ""
-  "/Users/em137vl/git/zkp-opensource/ZKPDemo/documentation/whitepaper/nightfall-v1.tex" 1559137404 184770 bc701e588a66b6f4e89c74799f03e786 ""
+  "/Users/em137vl/git/zkp-opensource/nightfall/documentation/whitepaper/nightfall-v1.aux" 1559137442 26479 47594bc35f0d8de91c600e2b336c20b4 ""
+  "/Users/em137vl/git/zkp-opensource/nightfall/documentation/whitepaper/nightfall-v1.tex" 1559137404 184770 bc701e588a66b6f4e89c74799f03e786 ""
   "images/files-after-setup.png" 1558969676 53945 a0d7a8df65c257c440e2bcbe973382d8 ""
   "images/files-before-setup.png" 1558969558 28030 f6019a796a75ef9b4fd6b66ce42e47ad ""
   "macros.tex" 1556624441 374 23ff385b7e62aa0cab2c7a0e974fe9ec ""
@@ -476,7 +476,7 @@
   "nightfall-v1.toc" 1559137442 9258 a1d0345dbc867c7eadaa998a2b5bc6ad ""
   (generated)
   "nightfall-v1.aux"
-  "/Users/em137vl/git/zkp-opensource/ZKPDemo/documentation/whitepaper/nightfall-v1.pdf"
+  "/Users/em137vl/git/zkp-opensource/nightfall/documentation/whitepaper/nightfall-v1.pdf"
   "nightfall-v1.stc7"
   "nightfall-v1.stc2"
   "nightfall-v1.stc6"
@@ -494,5 +494,5 @@
   "nightfall-v1.stc3"
   "nightfall-v1.maf"
   "nightfall-v1.ptc1"
-  "/Users/em137vl/git/zkp-opensource/ZKPDemo/documentation/whitepaper/nightfall-v1.log"
+  "/Users/em137vl/git/zkp-opensource/nightfall/documentation/whitepaper/nightfall-v1.log"
   "nightfall-v1.mtc"

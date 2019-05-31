@@ -104,7 +104,7 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin
-      - MONGO_INITDB_DATABASE=ZKPDemo
+      - MONGO_INITDB_DATABASE=nightfall
     volumes:
       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
       - mongo-volume:/data/db

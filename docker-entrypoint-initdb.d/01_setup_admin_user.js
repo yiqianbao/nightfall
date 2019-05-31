@@ -4,8 +4,8 @@ db.createUser({
   user: 'admin',
   pwd: 'admin',
   roles: [
-    { role: 'userAdmin', db: 'ZKPDemo' },
-    { role: 'dbAdmin', db: 'ZKPDemo' },
-    { role: 'readWrite', db: 'ZKPDemo' },
+    { role: 'userAdmin', db: 'nightfall' },
+    { role: 'dbAdmin', db: 'nightfall' },
+    { role: 'readWrite', db: 'nightfall' },
   ],
 });

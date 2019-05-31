@@ -6,13 +6,13 @@ Instructions for manually generating the verification keys and proving keys for 
 Transpile the .pcode
 
 **Note**: To avoid manual setup, you can instead use the automated trusted setup tool from the
-command line: `cd path/to/ZKPDemo/zkp/code/`  
+command line: `cd path/to/nightfall/zkp/code/`  
 `node tools-trusted-setup.js`  
 See the dedicated [README](./README-tools-trusted-setup.md) for detailed instructions.
 
 ##Manual setup From your local machine's command line:
 
-`cd path/to/ZKPDemo/zkp/code/gm17/`  
+`cd path/to/nightfall/zkp/code/gm17/`  
 `ls`
 
 You should see six folders: ft-burn, ft-mint, ft-transfer, nft-burn, nft-mint, nft-transfer. We'll
@@ -32,7 +32,7 @@ two files in the nft-mint folder: `nft-mint.pcode` and `nft-mint.code`.
 
 Now we can run ZoKrates.
 
-`cd path/to/ZKPDemo/zkp/code/`
+`cd path/to/nightfall/zkp/code/`
 
 Mount to a containerized image of zokrates (we use an image called
 '[michaelconnor/zok:2Jan2019](https://hub.docker.com/r/michaelconnor/zok)' in this example):
@@ -73,7 +73,7 @@ From a new terminal window on your local machine:
 
 Navigate to the folder which contains `tools-key-extractor-standalone.js`:
 
-`cd path/to/ZKPDemo/zkp/code/`
+`cd path/to/nightfall/zkp/code/`
 
 Extract the verification key from `verifier.sol` (which in this example is saved in
 `gm17/nft-mint/verifier.sol` (relative to your pwd) on your local machine). We save it to a newly

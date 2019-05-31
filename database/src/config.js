@@ -14,7 +14,7 @@ const props = {
     mongo: {
       host: 'mongo',
       port: "27017",
-      databaseName: "ZKPDemo",
+      databaseName: "nightfall",
       admin: "admin",
       password: "admin"
     },
