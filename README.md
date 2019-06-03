@@ -71,12 +71,7 @@ for security. This step can take a while, depending on your hardware. Before you
 more that you have provisioned enough memory for Docker, as described above:
 
 ```sh
-cd zkp-utils
-npm ci
-cd ../zkp
-npm ci
-npm run setup-all
-cd ../
+npm run prepare
 ```
 
 Note that this is a completely automated run: although questions will be asked by the script they
