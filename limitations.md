@@ -33,7 +33,7 @@ currently search for old blockchain events.
 ## Use of ZoKrates Docker image
 
 We use a ZoKrates Docker image for proof generation. This is stored separately from the main
-ZoKrates github so that changes to ZokRates do not break this code. However this means that future
+ZoKrates github so that changes to ZoKrates do not break this code. However this means that future
 improvements and bugfixes that the ZoKrates team implement will not automatically carry through into
 this code.
 

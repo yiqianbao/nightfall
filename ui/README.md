@@ -1,6 +1,6 @@
 # Nightfall Demo UI
 
-This UI app is for demonstartion of Nightfall. Here user can do the following actions
+This UI app is for demonstration of Nightfall. Here user can do the following actions
 
 - Conventional ERC-721 transactions. This include user can Mint, transfer and burn ERC-721 tokens.
 - Private ERC-721 transactions (Using Nightfall). This include user can Mint (creates a hiding for
