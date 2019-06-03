@@ -85,14 +85,6 @@ You just created all the files needed to generate zk-SNARKs. The proving keys, v
 constraint files will allow you to create hidden tokens, move them under zero knowledge and then
 recover them — both for fungible (ERC-20) and non-fungible (ERC-721) tokens.
 
-Note that there is a bug in web3js that means you can get a string of npm errors if you run `npm ci`
-more than once. If this happens to you, just delete all of the node modules and run npm ci again:
-
-```sh
-rm -rf node_modules
-npm ci
-```
-
 ### Starting Nightfall
 
 If you have pulled new changes from the repo, then first run
