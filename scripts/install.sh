@@ -3,6 +3,6 @@
 # Exit script as soon as a command fails.
 set -o errexit
 
-cd zkp-utils && npm ci && \
-cd ../zkp && npm ci && \
+cd zkp-utils && rm -rf node_modules && npm ci && \
+cd ../zkp && rm -rf node_modules && npm ci && \
 npm run setup-all && cd ../
