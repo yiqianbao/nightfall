@@ -169,7 +169,7 @@ contract FToken is ERC20Interface {
   }
 
   function transfer(address _to, uint256 _value) public returns (bool) {
-    _transfer(_to, _value);
+    return _transfer(_to, _value);
   }
 
   /**
@@ -189,7 +189,7 @@ contract FToken is ERC20Interface {
     return true;
   }
   function approve(address _spender, uint256 _value) public returns (bool) {
-    _approve(_spender, _value);
+    return _approve(_spender, _value);
   }
 
   /**
