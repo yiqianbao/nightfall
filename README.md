@@ -29,8 +29,8 @@ Critical security updates will be listed here. If you had previously installed N
 
 ---
 
-**date** (yyyy-mm-dd): 2019-06-04
-**description**: Updated G2 library
+**date** (yyyy-mm-dd): 2019-06-04  
+**description**: Updated G2 library  
 **tag \#**: n/a  
 **PR \#**: [#23](https://github.com/EYBlockchain/nightfall/pull/23)  
 **issue \#**: [#14](https://github.com/EYBlockchain/nightfall/issues/14)  
@@ -39,9 +39,9 @@ Critical security updates will be listed here. If you had previously installed N
 
 ---  
 
-**date** (yyyy-mm-dd): 2019-06-04
-**description**: Burn payTo bug
-**tag \#**:  v1.0.1
+**date** (yyyy-mm-dd): 2019-06-04  
+**description**: Burn payTo bug  
+**tag \#**:  v1.0.1  
 **PR \#**: [#25](https://github.com/EYBlockchain/nightfall/pull/25)  
 **issue \#**: [#19](https://github.com/EYBlockchain/nightfall/issues/19)  
 **re-installation**:  
