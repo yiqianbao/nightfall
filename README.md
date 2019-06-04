@@ -24,6 +24,38 @@ As well as this file, please be sure to check out:
 - [UI.md](./UI.md) to learn how to drive the demonstration UI and make transactions.
 - [SECURITY.md](./SECURITY.md) to learn about how we handle security issues.
 
+## Security Updates
+Critical security updates will be listed here. If you had previously installed Nightfall prior to one of these security updates, please pull the latest code,  and follow the extra re-installation steps outlined here.  
+
+---
+
+**date** (yyyy-mm-dd): 2019-06-04
+**description**: Updated G2 library
+**tag \#**: n/a  
+**PR \#**: [#23](https://github.com/EYBlockchain/nightfall/pull/23)  
+**issue \#**: [#14](https://github.com/EYBlockchain/nightfall/issues/14)  
+**re-installation**:  
+`docker-compose build zkp`  
+
+---  
+
+**date** (yyyy-mm-dd): 2019-06-04
+**description**: Burn payTo bug
+**tag \#**:  v1.0.1
+**PR \#**: [#25](https://github.com/EYBlockchain/nightfall/pull/25)  
+**issue \#**: [#19](https://github.com/EYBlockchain/nightfall/issues/19)  
+**re-installation**:  
+`cd zkp-utils`  
+`npm ci`  
+`cd zkp`  
+`npm ci`  
+`npm run setup -- -i gm17/nft-burn/`  
+`npm run setup -- -i gm17/ft-burn/`  
+`cd ..`  
+`docker-compose build zkp`  
+
+---  
+
 ## Getting started
 
 These instructions give the most direct path to a working Nightfall setup. The application is
