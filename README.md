@@ -39,10 +39,10 @@ Critical security updates will be listed here. If you had previously installed N
 
 ---  
 
-**date** (yyyy-mm-dd): 2019-06-04  
+**date**: 2019-06-04  
 **description**: Burn payTo bug  
 **tag \#**:  v1.0.1  
-**PR \#**: [#25](https://github.com/EYBlockchain/nightfall/pull/25)  
+**PR \#**: [#26](https://github.com/EYBlockchain/nightfall/pull/26)  
 **issue \#**: [#19](https://github.com/EYBlockchain/nightfall/issues/19)  
 **re-installation**:  
 `cd zkp-utils`  
