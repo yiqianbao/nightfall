@@ -47,7 +47,7 @@ Critical security updates will be listed here. If you had previously installed N
 **re-installation**:  
 `cd zkp-utils`  
 `npm ci`  
-`cd zkp`  
+`cd ../zkp`  
 `npm ci`  
 `npm run setup -- -i gm17/nft-burn/`  
 `npm run setup -- -i gm17/ft-burn/`  
