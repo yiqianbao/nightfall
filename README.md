@@ -240,3 +240,5 @@ they have shared with the community:
 [Libsnark](https://github.com/scipr-lab/libsnark)  
 [Zcash](https://github.com/zcash/zcash)  
 [GM17](https://eprint.iacr.org/2017/540.pdf)
+[0xcert](https://github.com/0xcert/ethereum-erc721/)
+[OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/token/ERC20/ERC20.sol)
