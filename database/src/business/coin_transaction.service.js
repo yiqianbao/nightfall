@@ -31,7 +31,8 @@ module.exports = class CoinTransactionService {
 			public_key,
 			salt,
 			coin_commitment,
-			coin_commitment_index
+			coin_commitment_index,
+			receiver_name
 		}= coinMapper(data);
 
 		let coinTransaction = {
@@ -42,7 +43,8 @@ module.exports = class CoinTransactionService {
 			coin_commitment,
 			coin_commitment_index,
 			type,
-			timestamp: new Date()
+			timestamp: new Date(),
+			[receiver_name ? 'receiver_name' : undefined] : receiver_name,
 		}
 		return coinTransaction;
 	}
