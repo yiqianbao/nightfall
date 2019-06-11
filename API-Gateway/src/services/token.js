@@ -173,7 +173,8 @@ export async function transferToken(req, res, next) {
           S_A: '0xf4c7028d78d140333a36381540e70e6210895a994429fb0483fb91',
           z_A: '0xe0e327cee19c16949a829977a1e3a36b92c2ef22b735b6d7af6c33',
           Sk_A: '0x99ba1bd95aef4bab8c4f8f73ccc804913c58828f6e11ed4760b2cd',
-          z_A_index: 1
+          z_A_index: 1,
+          payTo: 'bob',
       }
      * @param {*} req
      * @param {*} res
@@ -181,6 +182,7 @@ export async function transferToken(req, res, next) {
 export async function burnToken(req, res, next) {
   const response = new Response();
   try {
+    const payToAddress = (await offchain.getAddressFromName(req.body.payTo || req.user.name)).address;
     // Release the public token from escrow:
     // Nullify the burnor's 'token commitment' within the shield contract.
     // Transfer the public token from the shield contract to the owner.
@@ -190,6 +192,7 @@ export async function burnToken(req, res, next) {
       Sk_A: req.body.Sk_A,
       z_A: req.body.z_A,
       z_A_index: req.body.z_A_index,
+      payTo: payToAddress,
     });
 
     await db.updateToken(req.user, {

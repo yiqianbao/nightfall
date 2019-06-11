@@ -156,7 +156,8 @@ export async function transferCoin(req, res, next) {
       S_A: '0xa31adb1074f977413fddd3953e333529a3494e110251368cc823fb',
       pk_A: '0xf38da818df95339871ef7c6dcabc2fb90344bbf553c4e688323305',
       z_A_index: 0,
-      z_A: '0x1ec4a9b406fd3d79a01360ccd14c8530443ea9869f8e9560dafa56' 
+      z_A: '0x1ec4a9b406fd3d79a01360ccd14c8530443ea9869f8e9560dafa56',
+      payTo: 'bob',
      }
      * @param {*} req
      * @param {*} res
@@ -165,11 +166,35 @@ export async function burnCoin(req, res, next) {
   const response = new Response();
 
   try {
-    const { data } = await zkp.burnCoin(req.body, req.user);
+    const payToAddress = (await offchain.getAddressFromName(req.body.payTo || req.user.name)).address;
+
+    const { data } = await zkp.burnCoin({...req.body,  payTo: payToAddress }, req.user);
     data.action_type = 'burned';
 
     const senderAddress = req.user.address;
     await db.updateCoinForBurn(req.user, _.extend(req.body, data, { account: senderAddress }));
+
+    const user = await db.fetchUser(req.user);
+
+    if (req.body.payTo) {
+      await whisperTransaction(req, {
+        amount: Number(req.body.A),
+        shield_contract_address: user.selected_coin_shield_contract,
+        transferee: req.body.payTo,
+        transferor: req.user.name,
+        transferor_address: req.user.address,
+        for: 'FToken',
+      }); // send ft token data to BOB side
+    } else {
+      await db.addFTTransaction(req.user, {
+        amount: Number(req.body.A),
+        shield_contract_address: user.selected_coin_shield_contract,
+        transferee: req.body.payTo,
+        transferor: req.user.name,
+        transferor_address: req.user.address,
+        is_received: true,
+      });
+    }
 
     response.statusCode = 200;
     response.data = data;
