@@ -172,7 +172,12 @@ export async function burnCoin(req, res, next) {
     data.action_type = 'burned';
 
     const senderAddress = req.user.address;
-    await db.updateCoinForBurn(req.user, _.extend(req.body, data, { account: senderAddress }));
+    await db.updateCoinForBurn(req.user, {
+      ...req.body,
+      ...data,
+      account: senderAddress,
+      receiver_name: (req.body.payTo || req.user.name)
+    });
 
     const user = await db.fetchUser(req.user);
 

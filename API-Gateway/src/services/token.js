@@ -201,6 +201,7 @@ export async function burnToken(req, res, next) {
       S_A: req.body.S_A,
       z_A: req.body.z_A,
       z_A_index: req.body.z_A_index,
+      receiver_name: req.body.payTo || req.user.name,
       is_burned: true,
     });
 
