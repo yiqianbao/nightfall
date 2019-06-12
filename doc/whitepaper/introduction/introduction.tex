@@ -177,5 +177,24 @@ Gas measurements have been taken over an entire transaction. I.e. the gas cost s
 Verification of the zk-SNARK (within the Verifier contract) forms only a part of this total gas cost. The gas costs for the verification of a zk-SNARK \textit{alone} (within the Verifier contract) have not been measured, due to the difficulty in attributing the final `storage refund' at the end of a transaction between the Shield contract and the Verifier contract.
 
 
+\subsection{Proof generation}
 
+Nightfall uses \hyperref[sec:zokrates]{ZoKrates} to generate proofs. With that, the time it takes to generate a `proof' depends mainly on:
+\begin{enumerate}
+  \item the complexity of the computation being `proven'
+  \item the computing resources being allocated to generate the proof
+  \item advances in ZoKrates' efficiency for generating proofs
+\end{enumerate}
 
+\textbf{1.}
+With zk-SNARKs, a `computation' is deconstructed into a series of arithmetic constraints. In Nightfall, the most constraints come from doing sha256 hashing from the leaf of a Merkle Tree to its root (see Part~\ref{part:theProtocols}, the Protocols, for details). This repeated sha256 hashing is performed during a `transfer' and a `burn' of both fungible and non-fungible token commitments. Most notably, for a fungible transfer, we need to perform this repeated hashing from leaf-to-root twice; for two leaves.\\
+\\
+At the moment, we have configured Nightfall to have a Merkle Tree of `depth' 33. That is, we have chosen to have a huge Merkle Tree with $2^{32} = 4,294,967,296$ leaves. That's capacity for over 4 billion token commitments before the Shield Contract runs out of space. If your use-case doesn't need to accommodate so many commitments for the rest of time, then you could reduce the depth of the tree in your implementation.\\
+\\
+A different hashing function would also reduce the time to generate a proof. Pedersen commitments were considered, because they have far fewer constraints.  However the repeated hashing from the leaf of a Merkle Tree to its root must also be performed \textit{on chain} (within the Shield Contract) with Nightfall. Given that there are no precompile contracts which reduce the gas costs for Pedersen commitment calculation, it is \textit{significantly} cheaper to use sha256.\\
+\\
+\textbf{2.}
+The proof for a fungible transfer takes the most time to generate. Generally this can take anywhere from `a few minutes' to `around 10 minutes', depending on the power of the computer.\\
+\\
+\textbf{3.}
+ZoKrates is continually updated with efficiency improvements. A newer image of ZoKrates could perhaps improve upon Nightfall's current proving times.
