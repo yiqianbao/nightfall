@@ -1,15 +1,15 @@
 {\reset@font\ptcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {2}ZoKrates}{\reset@font\ptcSfont 5}{section.2}}
 {\reset@font\ptcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {2.1}ZoKrates JavaScript Wrapper}{\reset@font\ptcSSfont 5}{subsection.2.1}}
-{\reset@font\ptcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {3}Trusted Setup}{\reset@font\ptcSfont 7}{section.3}}
-{\reset@font\ptcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {4}Smart Contracts}{\reset@font\ptcSfont 11}{section.4}}
-{\reset@font\ptcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.1}Familiar contracts}{\reset@font\ptcSSfont 11}{subsection.4.1}}
-{\reset@font\ptcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode \numberline {4.1.1}\texttt {ERC-721}}{\reset@font\ptcSSSfont 11}{subsubsection.4.1.1}}
-{\reset@font\ptcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode \numberline {4.1.2}\texttt {ERC-20}}{\reset@font\ptcSSSfont 11}{subsubsection.4.1.2}}
-{\reset@font\ptcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode \numberline {4.1.3}\texttt {ERC-165}}{\reset@font\ptcSSSfont 12}{subsubsection.4.1.3}}
-{\reset@font\ptcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode \numberline {4.1.4}\texttt {Utility contracts}}{\reset@font\ptcSSSfont 12}{subsubsection.4.1.4}}
-{\reset@font\ptcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.2}Shield contracts}{\reset@font\ptcSSfont 12}{subsection.4.2}}
-{\reset@font\ptcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode \numberline {4.2.1}\texttt {FTokenShield.sol}}{\reset@font\ptcSSSfont 12}{subsubsection.4.2.1}}
-{\reset@font\ptcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode \numberline {4.2.2}\texttt {NFTokenShield.sol}}{\reset@font\ptcSSSfont 12}{subsubsection.4.2.2}}
+{\reset@font\ptcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {3}Trusted Setup}{\reset@font\ptcSfont 6}{section.3}}
+{\reset@font\ptcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {4}Smart Contracts}{\reset@font\ptcSfont 9}{section.4}}
+{\reset@font\ptcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.1}Pre-Existing Contracts}{\reset@font\ptcSSfont 9}{subsection.4.1}}
+{\reset@font\ptcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode \numberline {4.1.1}\texttt {ERC-721}}{\reset@font\ptcSSSfont 9}{subsubsection.4.1.1}}
+{\reset@font\ptcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode \numberline {4.1.2}\texttt {ERC-20}}{\reset@font\ptcSSSfont 10}{subsubsection.4.1.2}}
+{\reset@font\ptcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode \numberline {4.1.3}\texttt {ERC-165}}{\reset@font\ptcSSSfont 11}{subsubsection.4.1.3}}
+{\reset@font\ptcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode \numberline {4.1.4}\texttt {Utility contracts}}{\reset@font\ptcSSSfont 11}{subsubsection.4.1.4}}
+{\reset@font\ptcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.2}Shield contracts}{\reset@font\ptcSSfont 11}{subsection.4.2}}
+{\reset@font\ptcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode \numberline {4.2.1}\texttt {NFTokenShield.sol}}{\reset@font\ptcSSSfont 11}{subsubsection.4.2.1}}
+{\reset@font\ptcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode \numberline {4.2.2}\texttt {FTokenShield.sol}}{\reset@font\ptcSSSfont 12}{subsubsection.4.2.2}}
 {\reset@font\ptcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.3}Verifier contracts}{\reset@font\ptcSSfont 12}{subsection.4.3}}
 {\reset@font\ptcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode \numberline {4.3.1}\texttt {GM17.sol}}{\reset@font\ptcSSSfont 12}{subsubsection.4.3.1}}
 {\reset@font\ptcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode \numberline {4.3.2}\texttt {Points.sol}}{\reset@font\ptcSSSfont 12}{subsubsection.4.3.2}}
@@ -36,3 +36,4 @@
 {\reset@font\ptcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {5.3}accounts}{\reset@font\ptcSSfont 16}{subsection.5.3}}
 {\reset@font\ptcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {5.4}database}{\reset@font\ptcSSfont 16}{subsection.5.4}}
 {\reset@font\ptcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {5.5}ui}{\reset@font\ptcSSfont 16}{subsection.5.5}}
+{\reset@font\ptcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {6}Finite Fields and Bit Lengths}{\reset@font\ptcSfont 18}{section.6}}
