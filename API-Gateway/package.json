@@ -5,8 +5,8 @@
   "repository": "https://github.com/EYBlockchain/nightfall",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=LOCAL nodemon --exec babel-node ./src/index.js",
-    "test": "./test-run",
+    "start": "NODE_ENV=LOCAL nodemon --exec babel-node ./src/index.js", 
+    "test": "mocha ./tests/*.js --compilers js:@babel/register --reporter mochawesome --timeout 100000",
     "test:api": "nyc --reporter=html --reporter=text mocha test/routes",
     "jsdoc": "jsdoc ./src/routes/",
     "apidoc": "apidoc -i ./src/routes/ -o out/api/"
@@ -28,7 +28,6 @@
     "express": "^4.16.2",
     "express-http-proxy": "^1.1.0",
     "jsonwebtoken": "^8.4.0",
-    "mocha": "^5.2.0",
     "nyc": "^14.1.1",
     "request": "^2.88.0",
     "safe-buffer": "^5.1.2",
@@ -40,7 +39,11 @@
     "@babel/core": "^7.4.4",
     "@babel/node": "^7.2.2",
     "@babel/preset-env": "^7.4.4",
-    "nodemon": "^1.19.0"
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "mochawesome": "^4.0.0",
+    "nodemon": "^1.19.0",
+    "supertest": "^4.0.2"
   },
   "apidoc": {
     "title": "",
