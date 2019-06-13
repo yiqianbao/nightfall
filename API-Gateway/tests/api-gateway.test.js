@@ -1,20 +1,15 @@
 const chai = require('chai');
-const should = chai.should();
+const {expect,should} = chai;
 const request = require('supertest');
-const apiGateway = require('../src/routes/api-gateway');
+const {aliceDetails, bobDetails, domainName} = require('./testData');
 
-describe('Suite', function() {
-    describe('Inner Test Suite1', function () {
-      it('should do something when some condition is met', function () {
-      });
-    });
+describe('Suite for API-Gateway', function() {
 
     describe('POST /createAccount', function () {
-        let data = { name: "user1", email: "user1@ey.com", password: "pass" };
-        it('should create an account', function (done) {
-            request(apiGateway)
+        it('should create an account for Alice', function (done) {
+            request(domainName)
                 .post('/createAccount')
-                .send(data)
+                .send(aliceDetails)
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .expect(200)
@@ -23,6 +18,54 @@ describe('Suite', function() {
                     done();
                 });
         });
+        it('should create an account for Bob', function (done) {
+            request(domainName)
+                .post('/createAccount')
+                .send(bobDetails)
+                .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end((err) => {
+                    if (err) return done(err);
+                    done();
+                });
+        });
+
+        it('should login to Alice\'s account', function (done) {
+            request(domainName)
+                .post('/login')
+                .send(bobDetails)
+                .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end((err, resp) => {
+                    if (err) return done(err);
+                    let body = resp.body.data;
+                    let token = body.token;
+                    expect(body).to.have.own.property('token').that.is.a('string');
+                    expect(token).that.is.not.empty;
+                    done();
+                });
+        });
+
+        it('should login to Bob\'s account', function (done) {
+            request(domainName)
+                .post('/login')
+                .send(bobDetails)
+                .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end((err, resp) => {
+                    if (err) return done(err);
+                    let body = resp.body.data;
+                    let token = body.token;
+                    expect(body).to.have.own.property('token').that.is.a('string');
+                    expect(token).that.is.not.empty;
+                    done();
+                });
+        });
+
+
     });
 
 });
