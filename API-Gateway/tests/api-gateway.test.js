@@ -30,7 +30,9 @@ describe('Suite for API-Gateway', function() {
                     done();
                 });
         });
+    });
 
+    describe('POST /login', function () {
         it('should login to Alice\'s account', function (done) {
             request(domainName)
                 .post('/login')
@@ -64,8 +66,6 @@ describe('Suite for API-Gateway', function() {
                     done();
                 });
         });
-
-
     });
 
 });
