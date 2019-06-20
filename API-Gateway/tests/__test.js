@@ -8,13 +8,12 @@
   return serialNumber;
 };
 
-require('./api-gateway.test');
-require('./ft.test');
-require('./nft.test');
-require('./token.test');
+//require('./api-gateway.test');
+//require('./ft.test');
+require('./coin.test');
+//require('./nft.test');
+//require('./token.test');
 //require('./teardown');
 
-//Seethu: ""
-//
 
 

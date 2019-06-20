@@ -1,7 +1,7 @@
 module.exports = {
     domainName: 'http://api.nightfall.docker',
-    aliceDetails: { name: "alice", email: "alice@ey.com", password: "pass" },
-    bobDetails:{ name: "bob", email: "bob@ey.com", password: "pass" },
+    aliceDetails: { name: "alice", email: "alice@ey.com", password: "pass", pk:"",sk:"", token:"" },
+    bobDetails:{ name: "bob", email: "bob@ey.com", password: "pass", pk:"",sk:"", token:"" },
     ft:{
        mintAmount: 1000,
        transferAmount:100,
@@ -11,6 +11,12 @@ module.exports = {
         tokenUriOne: 'widget01',
         tokenUriTwo: 'widget02',
         tokenUriThree:'widget03'
+     },
+     ft_commitment:{
+        mintTokenOne: 10,
+        mintTokenTwo: 20,
+        transferAmount:15,
+        burnAmount:15
      },
     databaseConfig:{
         host: 'nightfall_mongo_1',
