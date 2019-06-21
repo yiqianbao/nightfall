@@ -1,6 +1,7 @@
 const chai = require('chai');
 const { expect, should } = chai;
 const request = require('supertest');
+const {generateRandomSerial} = require('./utils');
 
 const { aliceDetails, bobDetails, domainName, nft } = require('./testData');
 
@@ -15,10 +16,10 @@ const bob = {
 const tokenInfo = {
   uri: nft.tokenUriOne,
   id: `0x${(Math.random() * 1000000000000000000000000000000e46).toString(16)}`,
-  salt: global.generateRandomSerial(),
+  salt: generateRandomSerial(),
   commitment: null, // will get set once token mint is done
   commitmentIndex: null, // will get set once token mint is done
-  transferSalt: global.generateRandomSerial(),
+  transferSalt: generateRandomSerial(),
   transferCommitment: null, // will get set once token transfer is done
   transferCommitmentIndex: null, // will get set once token transfer is done
 }

@@ -1,7 +1,7 @@
 module.exports = {
     domainName: 'http://api.nightfall.docker',
-    aliceDetails: { name: "alice", email: "alice@ey.com", password: "pass", pk:"",sk:"", token:"" },
-    bobDetails:{ name: "bob", email: "bob@ey.com", password: "pass", pk:"",sk:"", token:"" },
+    aliceDetails: { name: "alice", email: "alice@ey.com", password: "pass", pk:"",sk:"", token:"", address: ""},
+    bobDetails:{ name: "bob", email: "bob@ey.com", password: "pass", pk:"",sk:"", token:"", address:"" },
     ft:{
        mintAmount: 1000,
        transferAmount:100,

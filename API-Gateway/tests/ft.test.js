@@ -104,6 +104,4 @@ describe('Suite for ERC-20 Tokens', function() {
         
     });
 
-    //http://api.nightfall.docker/zkp/address/coin
-
 });

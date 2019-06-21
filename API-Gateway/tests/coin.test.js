@@ -1,7 +1,7 @@
 const chai = require('chai');
 const {expect} = chai;
 const request = require('supertest');
-const {generateRandomSerial, convertToNumber, convertToHex, getBalance} = require('./utils');
+const {generateRandomSerial, convertToHex, getBalance} = require('./utils');
 let {aliceDetails, bobDetails, domainName, ft, ft_commitment} = require('./testData');
 let coinOne = {}; 
 let coinTwo = {}; 
@@ -32,8 +32,8 @@ describe('Suite for ERC-20 Token Commitments', function() {
             let bobRes = resp[1];
             let aliceBody = aliceRes.body.data;
             let bobBody = bobRes.body.data;
-            Object.assign(aliceDetails,{pk: aliceBody.publickey, sk: aliceBody.secretkey, token: aliceBody.token});
-            Object.assign(bobDetails,{pk: bobBody.publickey, sk: bobBody.secretkey, token: bobBody.token});
+            Object.assign(aliceDetails,{pk: aliceBody.publickey, sk: aliceBody.secretkey, token: aliceBody.token, address: aliceBody.address});
+            Object.assign(bobDetails,{pk: bobBody.publickey, sk: bobBody.secretkey, token: bobBody.token, address: bobBody.address});
             await request(domainName)
                 .post('/ft/mint')
                 .send({amount:ft.mintAmount})
@@ -125,9 +125,25 @@ describe('Suite for ERC-20 Token Commitments', function() {
         });
     });
 
+    describe('GET /coin', function () {
+        it('should get list of ERC20 token commitments of Alice account', function (done) {
+            request(domainName)
+                .get(`/database/coin?address=${aliceDetails.address}`)
+                .set('Accept', 'application/json')
+                .set('Authorization', aliceDetails.token)
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end((err, resp) => {
+                    if (err) return done(err);
+                    expect(resp.body.data.data).to.have.lengthOf.above(0);
+                    done();
+                });
+        });
+    });
+
     describe('POST /coin/burn', function () {
         it(`should burn ERC20 token commitment from Alice \'s account`, function (done) {
-
+            this.timeout(500000);
             let body = {
                 A: convertToHex(ft_commitment.burnAmount),
                 sk_A: aliceDetails.sk,
@@ -152,20 +168,6 @@ describe('Suite for ERC-20 Token Commitments', function() {
     });
 
 
-    // describe('GET /nft', function () {
-    //     it('should get list of ERC721 tokens of Alice account', function (done) {
-    //         request(domainName)
-    //             .get('/nft')
-    //             .set('Accept', 'application/json')
-    //             .set('Authorization', aliceToken)
-    //             .expect('Content-Type', /json/)
-    //             .expect(200)
-    //             .end((err, resp) => {
-    //                 if (err) return done(err);
-    //                 expect(resp.body.data).to.have.lengthOf.above(1);
-    //                 done();
-    //             });
-    //     });
-    // });
+    
 
 });
