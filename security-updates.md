@@ -5,9 +5,9 @@ Critical security updates will be listed here (ordered newest to oldest). If you
 ---
 
 **date**: 2019-06-07  
-**description**: Prevent duplicate nullifier - ft-transfer
+**description**: Prevent duplicate nullifier - ft-transfer  
 **tag \#**:  v1.0.2  
-**PR \#**: [#28](https://github.com/EYBlockchain/nightfall/pull/28)  
+**PR \#**: [#29](https://github.com/EYBlockchain/nightfall/pull/29)  
 **issue \#**: n/a  
 **re-installation**:  
 `docker-compose build zkp`  
