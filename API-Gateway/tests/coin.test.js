@@ -92,7 +92,6 @@ describe('Suite for ERC-20 Token Commitments', function() {
     describe('POST /coin/transfer', function () { 
         it(`should transfer ERC20 token commitment of value ${ft_commitment.transferAmount} from Alice to Bob`, function (done) {
             this.timeout(500000);
-
             let body = {
                C: coinOne.A,
                D: coinTwo.A,
@@ -134,15 +133,15 @@ describe('Suite for ERC-20 Token Commitments', function() {
                 sk_A: aliceDetails.sk,
                 S_A: changeToken.S_F,
                 pk_A: aliceDetails.pk,
-                z_A_index: changeToken.z_E_index,
-                z_A: changeToken.z_E
+                z_A_index: changeToken.z_F_index,
+                z_A: changeToken.z_F
             };
 
             request(domainName)
                 .post('/coin/burn')
                 .send(body)
                 .set('Accept', 'application/json')
-                .set('Authorization', aliceToken)
+                .set('Authorization', aliceDetails.token)
                 .expect('Content-Type', /json/)
                 .expect(200)
                 .end((err) => {
