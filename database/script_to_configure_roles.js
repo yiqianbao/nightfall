@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-const existingRole = db.getRoles().map(data => data.role);
+var existingRole = db.getRoles().map(data => data.role);
 
 db.getCollectionNames().forEach(c => {
   if (existingRole.indexOf(c) !== -1) return;
