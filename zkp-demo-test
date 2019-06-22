@@ -1,0 +1,42 @@
+#!/bin/bash
+set -e
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+printf "${GREEN}*** Cleaning up all test containers ***${NC}\n"
+docker-compose -f docker-compose.test.yml down -v || true
+
+printf "${GREEN}*** Pull zokrates docker image ***${NC}\n"
+docker pull michaelconnor/zok:2Jan2019
+
+printf "${GREEN}*** Installing zkp-util dependencies"
+pushd zkp-utils
+npm install
+popd
+
+printf "${GREEN}*** Launching containerized ganache-test ***${NC}\n"
+docker-compose -f docker-compose.test.yml up -d ganache_test
+
+printf "${GREEN}*** Deploying all contracts ***${NC}\n"
+make offchain-test-migrate
+
+printf "${GREEN}*** Launching containerized microservices ***${NC}\n"
+docker-compose -f docker-compose.test.yml up -d
+
+sleep 30
+
+(
+	# RUN test suits and remove test containers
+	printf "${GREEN}*** Run Integration test ***${NC}\n"
+	npm run test
+) || printf "${RED}*** Integration test failed ***${NC}\n"
+
+(
+	printf "${GREEN}*** Cleaning up all test containers ***${NC}\n"
+	docker-compose -f docker-compose.test.yml down -v || true
+) || (
+	printf "${GREEN}*** Remove test-net network if not removed ***${NC}\n"
+	# docker network rm nightfall_test_net
+)

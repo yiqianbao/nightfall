@@ -1,5 +1,5 @@
 module.exports = {
-    domainName: 'http://api.nightfall.docker',
+    domainName: 'http://api-test.nightfall.docker',
     aliceDetails: { name: "alice", email: "alice@ey.com", password: "pass" },
     bobDetails:{ name: "bob", email: "bob@ey.com", password: "pass" },
     ft:{
