@@ -58,7 +58,7 @@ export async function mintToken(req, res, next) {
       tokenUri: req.body.uri,
       S_A: req.body.S_A,
       z_A: data.z_A,
-      z_A_index: data.z_A_index,
+      z_A_index: parseInt(data.z_A_index, 16),
       is_minted: true,
     });
 
@@ -130,7 +130,7 @@ export async function transferToken(req, res, next) {
       z_A_index: req.body.z_A_index,
       S_B: req.body.S_B,
       z_B: data.z_B,
-      z_B_index: data.z_B_index,
+      z_B_index: parseInt(data.z_B_index, 16),
       receiver_name: req.body.receiver_name,
       pk_B: req.body.pk_B,
       is_transferred: true,
@@ -143,7 +143,7 @@ export async function transferToken(req, res, next) {
       pk: req.body.pk_B,
       S_A: req.body.S_B,
       z_A: data.z_B,
-      z_A_index: data.z_B_index,
+      z_A_index: parseInt(data.z_B_index, 16),
       transferee: req.body.receiver_name,
       for: 'token',
     });

@@ -4,11 +4,10 @@ const request = require('supertest');
 const {aliceDetails, bobDetails, domainName, ft} = require('./testData');
 
 let aliceToken= null;
-let bobToken= null;
 
 describe('Suite for ERC-20 Tokens', function() {
 
-    beforeEach((done) => {
+    this.beforeAll((done) => {
         /**
          * Login woth Alice's account
          */
@@ -82,6 +81,23 @@ describe('Suite for ERC-20 Tokens', function() {
                 .expect(200)
                 .end((err) => {
                     if (err) return done(err);
+                    done();
+                });
+        });
+        
+    });
+
+    describe('GET /zkp/address/coin', function () {
+        it('should get ERC20 token balance of Alice \'s account', function (done) {
+            request(domainName)
+                .get('/zkp/address/coin')
+                .set('Accept', 'application/json')
+                .set('Authorization', aliceToken)
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end((err, resp) => {
+                    if (err) return done(err);
+                    expect(parseInt(resp.body.data.balance)).to.be.above(1);
                     done();
                 });
         });
