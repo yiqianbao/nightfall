@@ -8,15 +8,12 @@
 
 import express from 'express';
 import bodyParser from 'body-parser';
-import { argv } from 'yargs';
 import Response from '../response/response'; // class for creating response object
 import nfController from './nf-token-controller';
 import fController from './f-token-controller';
 import vkController from './vk-controller';
-import config from './config';
 import fTokenController from './f-token-controller';
 
-config.setEnv(argv.environment);
 
 const app = express();
 
