@@ -38,5 +38,5 @@ sleep 30
 	docker-compose -f docker-compose.test.yml down -v || true
 ) || (
 	printf "${GREEN}*** Remove test-net network if not removed ***${NC}\n"
-	# docker network rm nightfall_test_net
+	docker network rm nightfall_test_net
 )
