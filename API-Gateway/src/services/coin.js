@@ -51,7 +51,9 @@ export async function mintCoin(req, res, next) {
       S_A: req.body.S_A,
     });
 
+    data.coin_index = parseInt(data.coin_index, 16);
     data.action_type = 'minted';
+
     await db.addCoin(
       _.extend(req.body, data, {
         account: req.user.address,
@@ -115,6 +117,8 @@ export async function transferCoin(req, res, next) {
     req.body.pk_A = req.user.pk_A;
 
     const { data } = await zkp.transferCoin({ address }, req.body);
+    data.z_E_index = parseInt(data.z_E_index, 16);
+    data.z_F_index = parseInt(data.z_F_index, 16);
 
     req.body.action_type = 'transferred';
 
