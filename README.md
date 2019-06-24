@@ -80,12 +80,7 @@ for security. This step can take a while, depending on your hardware. Before you
 more that you have provisioned enough memory for Docker, as described above:
 
 ```sh
-cd zkp-utils
-npm ci
-cd ../zkp
-npm ci
-npm run setup-all
-cd ../
+npm run prepare
 ```
 
 Note that this is a completely automated run: although questions will be asked by the script they
@@ -98,14 +93,6 @@ another terminal.
 You just created all the files needed to generate zk-SNARKs. The proving keys, verifying keys and
 constraint files will allow you to create hidden tokens, move them under zero knowledge and then
 recover them — both for fungible (ERC-20) and non-fungible (ERC-721) tokens.
-
-Note that there is a bug in web3js that means you can get a string of npm errors if you run `npm ci`
-more than once. If this happens to you, just delete all of the node modules and run npm ci again:
-
-```sh
-rm -rf node_modules
-npm ci
-```
 
 ### Starting Nightfall
 

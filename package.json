@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha ./API-Gateway/tests/__test.js --reporter mochawesome --timeout 100000",
+    "prepare": "./scripts/install.sh",
     "fix": "npm run format && npm run lint -- --fix",
     "format": "prettier --write \"**/*.{json,css,scss,md,html}\"",
     "lint": "eslint .",
