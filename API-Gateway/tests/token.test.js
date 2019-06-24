@@ -14,7 +14,7 @@ const bob = {
   sk: null,
 };
 const tokenInfo = {
-  uri: nft.tokenUriOne,
+  uri: nft.tokenUriFour,
   id: `0x${(Math.random() * 1000000000000000000000000000000e46).toString(16)}`,
   salt: generateRandomSerial(),
   commitment: null, // will get set once token mint is done

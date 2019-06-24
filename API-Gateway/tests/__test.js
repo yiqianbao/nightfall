@@ -6,7 +6,6 @@ require('./nft.test');
 require('./token.test');
 require('./shield.test');
 require('./user.test');
-//require('./teardown');
 
 
 

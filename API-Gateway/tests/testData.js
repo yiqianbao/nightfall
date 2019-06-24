@@ -10,19 +10,13 @@ module.exports = {
     nft:{
         tokenUriOne: 'widget01',
         tokenUriTwo: 'widget02',
-        tokenUriThree:'widget03'
+        tokenUriThree:'widget03',
+        tokenUriFour:'widget04'
      },
      ft_commitment:{
         mintTokenOne: 10,
         mintTokenTwo: 20,
         transferAmount:15,
         burnAmount:15
-     },
-    databaseConfig:{
-        host: 'nightfall_mongo_1',
-        port: "27017",
-        databaseName: "nightfall",
-        admin: "admin",
-        password: "admin"
-    }
+     }
 }
