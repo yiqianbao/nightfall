@@ -1,15 +1,9 @@
-let env = 'LOCAL'; // set the environment to local if not mentioned while starting the app
+let env = 'local'; // set the environment to local if not mentioned while starting the app
 const props = {
-  LOCAL: {
+  local: {
     database: {
-      app: {
-        host: 'http://database',
-        port: '80',
-      },
-      rpc: {
-        host: 'http://ganache',
-        port: '8545',
-      },
+      host: 'http://database',
+      port: '80',
     },
     offchain: {
       app: {
@@ -22,14 +16,28 @@ const props = {
       },
     },
     authenticationApi: {
+      host: 'http://api-gateway',
+      port: '80',
+    },
+  },
+  test: {
+    database: {
+      host: 'http://database_test',
+      port: '80',
+    },
+    offchain: {
       app: {
-        host: 'http://api-gateway',
+        host: 'http://offchain_test',
         port: '80',
       },
       rpc: {
-        host: 'http://ganache',
+        host: 'http://ganache_test',
         port: '8545',
       },
+    },
+    authenticationApi: {
+      host: 'http://api-gateway_test',
+      port: '80',
     },
   },
 };
@@ -43,6 +51,7 @@ const setEnv = environment => {
     env = environment;
   }
 };
+setEnv(process.env.NODE_ENV);
 
 /**
  * get the appropriate environment config

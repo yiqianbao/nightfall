@@ -1,21 +1,23 @@
 version: '3'
 
 services:
-  accounts:
+  accounts_test:
     build:
       context: ./accounts
       dockerfile: Dockerfile
     restart: on-failure
     depends_on:
-      - ganache
+      - ganache_test
     volumes:
       - ./accounts/src:/app/src
       - ./accounts/config:/app/config
       - ./accounts/.babelrc:/app/.babelrc
     environment:
-      VIRTUAL_HOST: accounts.nightfall.docker
+      - NODE_ENV=test
+    networks: 
+      - test_net
 
-  api-gateway:
+  api-gateway_test:
     build:
       context: ./API-Gateway
       dockerfile: Dockerfile
@@ -24,37 +26,42 @@ services:
       - ./api-gateway/src:/app/src
       - ./api-gateway/.babelrc:/app/.babelrc
     environment:
-      VIRTUAL_HOST: api.nightfall.docker
+      - NODE_ENV=test
+      - VIRTUAL_HOST=api-test.nightfall.docker
+    networks: 
+      - test_net
 
-  offchain:
+  offchain_test:
     build:
       context: ./offchain
       dockerfile: Dockerfile
     restart: on-failure
     depends_on:
-      - ganache
+      - ganache_test
     volumes:
       - ./offchain/src:/app/src
       - ./offchain/response:/app/response
-      - ./offchain/build:/app/build
+      - ./offchain/build-test:/app/build
       - ./offchain/.babelrc:/app/.babelrc
       - ./offchain/__tests__:/app/__tests__
       - ./zkp-utils:/app/node_modules/zkp-utils
       - ./config:/app/config
     environment:
-      VIRTUAL_HOST: offchain.nightfall.docker
+      - NODE_ENV=test
+    networks: 
+      - test_net
 
-  zkp:
+  zkp_test:
     build:
       context: ./zkp
       dockerfile: Dockerfile
     restart: on-failure
     depends_on:
-      - ganache
+      - ganache_test
     volumes:
       - ./zkp/src:/app/src
       - ./zkp/response:/app/response
-      - ./zkp/build:/app/build
+      - ./zkp/build-test:/app/build
       - ./zkp/code:/app/code
       - ./zkp/.babelrc:/app/.babelrc
       - ./zkp-utils:/app/node_modules/zkp-utils
@@ -62,34 +69,25 @@ services:
       - ./config:/app/config
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - VIRTUAL_HOST=zkp.nightfall.docker
-      - NODE_ENV=docker
+      - NODE_ENV=test
+    networks: 
+      - test_net
 
-  ui:
-    build:
-      context: ./ui
-      dockerfile: Dockerfile
-    restart: on-failure
-    volumes:
-      - ./ui/src:/app/src
-      - ./ui/angular.json:/app/angular.json
-      - ./ui/tsconfig.json:/app/tsconfig.json
-    environment:
-      VIRTUAL_HOST: nightfall.docker
-
-  ganache:
+  ganache_test:
     image: trufflesuite/ganache-cli:latest
     command: ganache-cli --accounts=10 --defaultBalanceEther=1000
     ports:
-      - 8545:8545
+      - 8546:8545
+    networks: 
+      - test_net
 
-  database:
+  database_test:
     build:
       context: ./database
       dockerfile: Dockerfile
     restart: on-failure
     depends_on:
-      - mongo
+      - mongo_test
     volumes:
       - ./database/src:/app/src
       - ./database/response:/app/response
@@ -98,60 +96,75 @@ services:
       - ./config:/app/config
       - ./database/script_to_configure_roles.js:/app/script_to_configure_roles.js
     environment:
-      VIRTUAL_HOST: database.nightfall.docker
+      - NODE_ENV=test
+    networks: 
+      - test_net
 
-  mongo:
+  mongo_test:
     image: mongo
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin
-      - MONGO_INITDB_DATABASE=nightfall
+      - MONGO_INITDB_DATABASE=nightfall_test
     volumes:
       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
-      - mongo-volume:/data/db
+      - mongo_volume_test:/data/db
+    networks: 
+      - test_net
 
-  truffle-offchain:
+  truffle-offchain_test:
     image: ajmay/truffle:5.0.9
     environment:
       SOLC_VERSION: 0.5.8
-      ETH_HOST: ganache
+      ETH_HOST: ganache_test
       ETH_GAS: 6000000
       ETH_GAS_PRICE: 20000000000
     volumes:
       - ./offchain/contracts:/truffle/contracts:delegated
       - ./offchain/migrations/:/truffle/migrations:delegated
-      - ./offchain/build/contracts/:/truffle/build/contracts:cached
+      - ./offchain/build-test/contracts/:/truffle/build/contracts:cached
       - ./offchain/test/:/truffle/test:delegated
     depends_on:
-      - ganache
+      - ganache_test
     logging:
       options:
         max-size: 10m
+    networks: 
+      - test_net
 
-  truffle-zkp:
+  truffle-zkp_test:
     image: ajmay/truffle:5.0.9
     environment:
       SOLC_VERSION: 0.5.8
-      ETH_HOST: ganache
+      ETH_HOST: ganache_test
       ETH_GAS: 6000000
       ETH_GAS_PRICE: 20000000000
     volumes:
       - ./zkp/contracts/:/truffle/contracts:delegated
       - ./zkp/migrations/:/truffle/migrations:delegated
-      - ./zkp/build/contracts/:/truffle/build/contracts:cached
+      - ./zkp/build-test/contracts/:/truffle/build/contracts:cached
       - ./zkp/test/:/truffle/test:delegated
       - ./zkp/src/:/truffle/src:delegated
     depends_on:
-      - ganache
+      - ganache_test
     logging:
       options:
         max-size: 10m
+    networks: 
+      - test_net
 
 volumes:
-  mongo-volume: {}
+  mongo_volume_test: {}
   zkp-code:
     driver: local
     driver_opts:
       type: none
       device: $PWD/zkp/code/
       o: bind
+
+networks:
+  test_net:
+    driver: bridge
+    ipam:
+      driver: default
+

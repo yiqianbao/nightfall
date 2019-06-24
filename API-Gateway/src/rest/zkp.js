@@ -1,7 +1,7 @@
 const request = require('request');
 
 const Config = require('../config/config').getProps();
-const host = Config.zkp.app.host + ':' + Config.zkp.app.port;
+const host = Config.zkp.host + ':' + Config.zkp.port;
 
 
 const loadVks = (details, headers) => {

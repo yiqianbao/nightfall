@@ -3,7 +3,7 @@ import Config from '../config';
 
 const config = Config.getProps();
 
-const host = `${config.authenticationApi.app.host}:${config.authenticationApi.app.port}`;
+const host = `${config.authenticationApi.host}:${config.authenticationApi.port}`;
 
 const coinTransfer = (jwtToken, body) => {
   return new Promise((resolve, reject) => {
