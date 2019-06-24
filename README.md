@@ -24,7 +24,7 @@ As well as this file, please be sure to check out:
 - [UI.md](./UI.md) to learn how to drive the demonstration UI and make transactions.
 - [SECURITY.md](./SECURITY.md) to learn about how we handle security issues.
 
-## Security Updates
+## Security updates
 Critical security updates will be listed [here](./security-updates.md). If you had previously installed Nightfall prior to one of these security updates, please pull the latest code, and follow the extra re-installation steps.  
 
 ## Getting started
