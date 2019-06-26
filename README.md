@@ -80,7 +80,7 @@ for security. This step can take a while, depending on your hardware. Before you
 more that you have provisioned enough memory for Docker, as described above:
 
 ```sh
-npm run prepare
+npm run setupAll
 ```
 
 Note that this is a completely automated run: although questions will be asked by the script they
