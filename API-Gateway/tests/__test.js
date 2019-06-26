@@ -5,3 +5,9 @@ require('./nft.test');
 require('./token.test');
 require('./shield.test');
 require('./user.test');
+<<<<<<< HEAD
+
+
+
+=======
+>>>>>>> origin/asish.ap/integration-testing
