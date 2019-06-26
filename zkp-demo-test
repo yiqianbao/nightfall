@@ -25,6 +25,15 @@ make offchain-test-migrate
 printf "${GREEN}*** Launching containerized microservices ***${NC}\n"
 docker-compose -f docker-compose.test.yml up -d
 
+dir="$(pwd)"
+
+(osascript -e "
+  tell application \"Terminal\"
+    set currentTab to do script \"cd $dir\"
+    delay 2
+    do script \"docker-compose -f docker-compose.test.yml logs -f\" in currentTab
+  end tell") &
+
 sleep 30
 
 (

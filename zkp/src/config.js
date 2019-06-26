@@ -98,6 +98,7 @@ const props = {
         host: 'http://ganache',
         port: '8545',
       },
+      volume: 'nightfall_zkp-code'
     },
   },
   test: {
@@ -111,6 +112,7 @@ const props = {
         host: 'http://ganache_test',
         port: '8545',
       },
+      volume: 'nightfall_zkp_code_test'
     },
   },
 };

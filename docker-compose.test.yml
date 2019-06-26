@@ -155,7 +155,7 @@ services:
 
 volumes:
   mongo_volume_test: {}
-  zkp-code:
+  zkp_code_test:
     driver: local
     driver_opts:
       type: none
