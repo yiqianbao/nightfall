@@ -21,15 +21,14 @@ export class CoinApiService {
   * @param pk_A {String} Public key of Alice
   * @param S_A {String} Random Serial number 
   */
- mintCoin(A: string, pk_A: string, S_A: string) {
+ mintCoin(A: string, pk_A: string) {
   const httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
   };
 
   const body = {
     A: A,
-    pk_A,
-    S_A: S_A
+    pk_A
   }
 
   const url = config.apiGateway.root + 'coin/mint';
@@ -182,8 +181,6 @@ export class CoinApiService {
     S_D: string,
     z_C_index: string,
     z_D_index: string,
-    S_E: string,
-    S_F: string,
     z_C: string,
     z_D: string,
     sk_A: string,
@@ -202,8 +199,6 @@ export class CoinApiService {
       S_D,
       z_C_index,
       z_D_index,
-      S_E,
-      S_F,
       sk_A,
       z_C,
       z_D,
