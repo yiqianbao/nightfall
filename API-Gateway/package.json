@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon --exec babel-node ./src/index.js",
-    "test": "mocha ./tests/__test.js --reporter mochawesome --timeout 100000",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "test:api": "nyc --reporter=html --reporter=text mocha test/routes",
     "jsdoc": "jsdoc ./src/routes/",
     "apidoc": "apidoc -i ./src/routes/ -o out/api/"
@@ -39,12 +39,7 @@
     "@babel/core": "^7.4.4",
     "@babel/node": "^7.2.2",
     "@babel/preset-env": "^7.4.4",
-    "chai": "^4.2.0",
-    "mocha": "^5.2.0",
-    "mochawesome": "^4.0.0",
-    "mongodb": "^3.2.7",
-    "nodemon": "^1.19.0",
-    "supertest": "^4.0.2"
+    "nodemon": "^1.19.0"
   },
   "apidoc": {
     "title": "",
