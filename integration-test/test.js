@@ -2,6 +2,7 @@ const chai = require('chai');
 const { expect } = chai;
 const request = require('superagent');
 const prefix = require('superagent-prefix');
+const config = require('config');
 
 const {
 	alice,
@@ -14,7 +15,7 @@ const {
 	erc20CommitmentChange,
 } = require('./testData');
 
-const serverURL = 'http://api-test.nightfall.docker';
+const apiServerURL = config.get("apiServerURL");
 
 
 describe('****** Integration Test ******\n', function () {
@@ -29,7 +30,7 @@ describe('****** Integration Test ******\n', function () {
 		it('Sign up Alice', function (done) {
       request
         .post('/createAccount')
-        .use(prefix(serverURL))
+        .use(prefix(apiServerURL))
         .send(alice)
         .set('Accept', 'application/json')
         .end((err, res) => {
@@ -44,7 +45,7 @@ describe('****** Integration Test ******\n', function () {
 		it('Sign up Bob', function (done) {
       request
         .post('/createAccount')
-        .use(prefix(serverURL))
+        .use(prefix(apiServerURL))
         .send(bob)
         .set('Accept', 'application/json')
         .end((err, res) => {
@@ -65,7 +66,7 @@ describe('****** Integration Test ******\n', function () {
 		it('Sign in Alice', function (done) {
 			request
         .post('/login')
-        .use(prefix(serverURL))
+        .use(prefix(apiServerURL))
         .send(alice)
         .set('Accept', 'application/json')
         .end((err, res) => {
@@ -83,7 +84,7 @@ describe('****** Integration Test ******\n', function () {
 		it('Sign in Bob', function (done) {
 			request
         .post('/login')
-        .use(prefix(serverURL))
+        .use(prefix(apiServerURL))
         .send(bob)
         .set('Accept', 'application/json')
         .end((err, res) => {
@@ -115,7 +116,7 @@ describe('****** Integration Test ******\n', function () {
 			it('Mint ERC-721 token', function (done) {
 				request
 	        .post('/nft/mint')
-	        .use(prefix(serverURL))
+	        .use(prefix(apiServerURL))
 	        .send(erc721)
 	        .set('Accept', 'application/json')
 	        .set('Authorization', alice.token)
@@ -133,7 +134,7 @@ describe('****** Integration Test ******\n', function () {
 			it('Shield ERC-721 token', function (done) {
 				request
 	        .post('/token/mint')
-	        .use(prefix(serverURL))
+	        .use(prefix(apiServerURL))
 	        .send(erc721Commitment)
 	        .set('Accept', 'application/json')
 	        .set('Authorization', alice.token)
@@ -154,7 +155,7 @@ describe('****** Integration Test ******\n', function () {
 			it('Transfer ERC-721 Commitment to Bob', function (done) {
 				request
 	        .post('/token/transfer')
-	        .use(prefix(serverURL))
+	        .use(prefix(apiServerURL))
 	        .send({
 	        	A: erc721Commitment.tokenID,
 	          uri: erc721Commitment.uri,
@@ -191,7 +192,7 @@ describe('****** Integration Test ******\n', function () {
 			it("Burn ERC-721 Commitment", function (done) {
 				request
 	        .post('/token/burn')
-	        .use(prefix(serverURL))
+	        .use(prefix(apiServerURL))
 	        .send({
 	        	A: erc721Commitment.tokenID,
 	          uri: erc721Commitment.uri,
@@ -217,7 +218,7 @@ describe('****** Integration Test ******\n', function () {
 			it("Transfer ERC-721 token to Alice", function (done) {
 				request
 	        .post('/nft/transfer')
-	        .use(prefix(serverURL))
+	        .use(prefix(apiServerURL))
 	        .send({
 	        	tokenID: erc721.tokenID,
 		        uri: erc721.tokenURI,
@@ -246,7 +247,7 @@ describe('****** Integration Test ******\n', function () {
 			it('Burn ERC-721 token', function (done) {
 				request
 	        .post('/nft/burn')
-	        .use(prefix(serverURL))
+	        .use(prefix(apiServerURL))
 	        .send({
 	        	tokenID: erc721.tokenID,
 		        uri: erc721.tokenURI,
@@ -281,7 +282,7 @@ describe('****** Integration Test ******\n', function () {
 			it(`Mint ${erc20.mint} ERC-20 tokens`, function (done) {
 				request
 	        .post('/ft/mint')
-	        .use(prefix(serverURL))
+	        .use(prefix(apiServerURL))
 	        .send({
 	        	amount: erc20.mint
 	        })
@@ -301,7 +302,7 @@ describe('****** Integration Test ******\n', function () {
 			it(`Shield ${erc20.tobeShield[0]} ERC-20 tokens`, function (done) {
 				request
 	        .post('/coin/mint')
-	        .use(prefix(serverURL))
+	        .use(prefix(apiServerURL))
 	        .send(erc20Commitments[0])
 	        .set('Accept', 'application/json')
 	        .set('Authorization', alice.token)
@@ -322,7 +323,7 @@ describe('****** Integration Test ******\n', function () {
 			it(`Shield ${erc20.tobeShield[1]} ERC-20 tokens`, function (done) {
 				request
 	        .post('/coin/mint')
-	        .use(prefix(serverURL))
+	        .use(prefix(apiServerURL))
 	        .send(erc20Commitments[1])
 	        .set('Accept', 'application/json')
 	        .set('Authorization', alice.token)
@@ -347,7 +348,7 @@ describe('****** Integration Test ******\n', function () {
 				const [F, S_F] = Object.values(erc20CommitmentChange)
 				request
 	        .post('/coin/transfer')
-	        .use(prefix(serverURL))
+	        .use(prefix(apiServerURL))
 	        .send({
 	        	C, S_C, z_C, z_C_index,
 	        	D, S_D, z_D, z_D_index,
@@ -380,7 +381,7 @@ describe('****** Integration Test ******\n', function () {
 				if (!erc20.change) this.skip();
 				request
 	        .post('/coin/burn')
-	        .use(prefix(serverURL))
+	        .use(prefix(apiServerURL))
 	        .send({
 	        	A: erc20CommitmentChange.value,
 		        sk_A: alice.sk,
@@ -411,7 +412,7 @@ describe('****** Integration Test ******\n', function () {
 			it(`Burn ${erc20.transfer} ERC-20 Commitment`, function (done) {
 				request
 	        .post('/coin/burn')
-	        .use(prefix(serverURL))
+	        .use(prefix(apiServerURL))
 	        .send({
 	        	A: erc20CommitmentToTransfer.value,
 		        sk_A: bob.sk,
@@ -435,7 +436,7 @@ describe('****** Integration Test ******\n', function () {
 			it(`Transfer ${erc20.transfer} ERC-20 tokens to Alice`, function (done) {
 				request
 	        .post('/ft/transfer')
-	        .use(prefix(serverURL))
+	        .use(prefix(apiServerURL))
 	        .send({
 	        	amount: erc20.transfer,
 	        	receiver_name: alice.name,
@@ -463,7 +464,7 @@ describe('****** Integration Test ******\n', function () {
 			it(`Burn ${erc20.mint} ERC-20 tokens`, function (done) {
 				request
 	        .post('/ft/burn')
-	        .use(prefix(serverURL))
+	        .use(prefix(apiServerURL))
 	        .send({
 	        	amount: erc20.mint,
 	        })
