@@ -20,6 +20,9 @@ esac
 printf "${GREEN}*** Cleaning up all test containers ***${NC}\n"
 docker-compose -f docker-compose.test.yml down -v || true
 
+printf "${GREEN}*** Build image for all Containers ***${NC}\n"
+docker-compose -f docker-compose.test.yml build
+
 printf "${GREEN}*** Pull zokrates docker image ***${NC}\n"
 docker pull michaelconnor/zok:2Jan2019
 
