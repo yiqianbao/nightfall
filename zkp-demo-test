@@ -5,6 +5,9 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
+dir="$(pwd)"
+declare isTestPassed=true
+
 systemInfo="$(uname -s)"
 case "${systemInfo}" in
     Linux*)     machine=Linux;;
@@ -34,8 +37,6 @@ make offchain-test-migrate
 printf "${GREEN}*** Launching containerized microservices ***${NC}\n"
 docker-compose -f docker-compose.test.yml up -d
 
-dir="$(pwd)"
-declare isTestPassed=true
 
 # Create a child Terminal to see docker log, while running testcases.
 if [ "${machine}" == "Mac" ]; then
@@ -47,6 +48,7 @@ if [ "${machine}" == "Mac" ]; then
 	  end tell")
 fi
 
+# delay needed to ensure all container are in running state.
 sleep 30
 
 # RUN test suits and remove test containers
@@ -59,11 +61,14 @@ npm run test || {
 printf "${GREEN}*** Cleaning up all test containers ***${NC}\n"
 docker-compose -f docker-compose.test.yml down -v || true
 
+# delay need as waiting time so all container are properly done
+# nightfall_test_net network have no dependency left.
 sleep 3
+
+# removing network just in case docker-compose down haven't done the job.
 printf "${GREEN}*** Remove test-net network if not removed ***${NC}\n"
 docker network rm nightfall_test_net || true
 
-printf "${isTestPassed}"
 # Stop child terminal if all testcases passed.
 if [ "${machine}" == "Mac" ] && [ "${isTestPassed}" ]; then
 	osascript -e "
