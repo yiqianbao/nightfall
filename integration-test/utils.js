@@ -8,7 +8,7 @@ module.exports.generateSalt = () => {
   if (random < 0.1) {
     random += 0.1;
   }
-  return `0x${((0.1 + random) * 1000000000000000000000000000000e35).toString(16)}`;
+  return `0x${(random * 1000000000000000000000000000000e35).toString(16)}`;
 }
 
 /**
