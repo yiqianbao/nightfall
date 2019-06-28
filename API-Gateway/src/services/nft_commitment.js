@@ -48,15 +48,14 @@ export async function mintToken(req, res, next) {
     // mint a private 'token commitment' within the shield contract to represent the public NFToken with the specified tokenID
     const { data } = await zkp.mintToken(req.user, {
       A: req.body.tokenID,
-      pk_A: req.user.pk_A,
-      S_A: req.body.S_A,
+      pk_A: req.user.pk_A
     });
 
     // add the new token commitment (and details of its hash preimage) to the token db.
     await db.addToken(req.user, {
       A: req.body.tokenID,
       tokenUri: req.body.uri,
-      S_A: req.body.S_A,
+      S_A: data.S_A,
       z_A: data.z_A,
       z_A_index: parseInt(data.z_A_index, 16),
       is_minted: true,
@@ -128,7 +127,7 @@ export async function transferToken(req, res, next) {
       S_A: req.body.S_A,
       z_A: req.body.z_A,
       z_A_index: req.body.z_A_index,
-      S_B: req.body.S_B,
+      S_B: data.S_B,
       z_B: data.z_B,
       z_B_index: parseInt(data.z_B_index, 16),
       receiver_name: req.body.receiver_name,
@@ -141,7 +140,7 @@ export async function transferToken(req, res, next) {
       tokenUri: req.body.uri,
       A: req.body.A,
       pk: req.body.pk_B,
-      S_A: req.body.S_B,
+      S_A: data.S_B,
       z_A: data.z_B,
       z_A_index: parseInt(data.z_B_index, 16),
       transferee: req.body.receiver_name,
