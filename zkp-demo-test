@@ -35,25 +35,39 @@ printf "${GREEN}*** Launching containerized microservices ***${NC}\n"
 docker-compose -f docker-compose.test.yml up -d
 
 dir="$(pwd)"
+declare isTestPassed=true
 
+# Create a child Terminal to see docker log, while running testcases.
 if [ "${machine}" == "Mac" ]; then
-	osascript -e "
+	childTab=$(osascript -e "
 	  tell application \"Terminal\"
 	    set currentTab to do script \"cd $dir\"
 	    delay 2
 	    do script \"docker-compose -f docker-compose.test.yml logs -f\" in currentTab
-	  end tell"
+	  end tell")
 fi
 
 sleep 30
 
 # RUN test suits and remove test containers
 printf "${GREEN}*** Run Integration test ***${NC}\n"
-npm run test || printf "${RED}*** Integration test failed ***${NC}\n"
-
+npm run test || {
+	isTestPassed=false
+	printf "${RED}*** Integration test failed ***${NC}\n"
+}
 
 printf "${GREEN}*** Cleaning up all test containers ***${NC}\n"
 docker-compose -f docker-compose.test.yml down -v || true
 
+sleep 3
 printf "${GREEN}*** Remove test-net network if not removed ***${NC}\n"
-docker network rm nightfall_test_net
+docker network rm nightfall_test_net || true
+
+printf "${isTestPassed}"
+# Stop child terminal if all testcases passed.
+if [ "${machine}" == "Mac" ] && [ "${isTestPassed}" ]; then
+	osascript -e "
+	  tell application \"Terminal\"
+	    do script \"exit\" in $childTab
+	  end tell"
+fi
