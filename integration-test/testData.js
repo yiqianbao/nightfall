@@ -52,5 +52,5 @@ module.exports = {
 		value: numberToHexString(this.erc20.mint - this.erc20.transfer),
 		S_F: generateSalt(),
 	};
-	this.erc20.change = this.erc20.mint - this.erc20.transfer;
+	this.erc20.change = (this.erc20.tobeShield[0] + this.erc20.tobeShield[1]) - this.erc20.transfer;
 }).call(module.exports);
