@@ -88,7 +88,7 @@ export class TokenApiService {
    * @param Sk_A {String} Secret key of Alice
    * @param z_A_index {String} Token commitment index
    */
-  burnToken(A: string, uri: string, S_A: string, z_A: string, Sk_A: string, z_A_index: number) {
+  burnToken(A: string, uri: string, S_A: string, z_A: string, Sk_A: string, z_A_index: number, payTo:string) {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
@@ -98,7 +98,8 @@ export class TokenApiService {
       S_A,
       z_A,
       Sk_A,
-      z_A_index
+      z_A_index,
+      payTo
     };
     const url = config.apiGateway.root + 'token/burn';
     return this.http
