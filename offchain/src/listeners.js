@@ -1,34 +1,43 @@
-import db from './rest/db';
 import apiGateway from './rest/api-gateway';
 
-const addFToken = async data => {
+const addFToken = async (data, userData) => {
   try {
     console.log('\noffchain/src/listeners.js', '\naddFToken', '\ndata', data);
 
-    await db.addFToken(data, {
-      amount: data.amount,
-      shield_contract_address: data.shield_contract_address,
-      transferor: data.transferor,
-      transferor_address: data.transferor_address,
-      is_received: true,
-    });
+    await apiGateway.addFToken( 
+      {
+        authorization: userData.jwtToken,
+      },
+      {
+        amount: data.amount,
+        shield_contract_address: data.shield_contract_address,
+        transferor: data.transferor,
+        transferor_address: data.transferor_address,
+        is_received: true,
+      }
+    );
   } catch (err) {
     console.log(err);
   }
 };
 
-const addNFTToken = async data => {
+const addNFTToken = async (data, userData) => {
   try {
     console.log('\noffchain/src/listeners.js', '\naddNFTToken', '\ndata', data);
 
-    await db.addNFTToken(data, {
-      uri: data.uri,
-      token_id: data.token_id,
-      shield_contract_address: data.shield_contract_address,
-      transferor: data.transferor,
-      transferor_address: data.transferor_address,
-      is_received: true,
-    });
+    await apiGateway.addNFTToken(
+      {
+        authorization: userData.jwtToken,
+      },
+      {
+        uri: data.uri,
+        token_id: data.token_id,
+        shield_contract_address: data.shield_contract_address,
+        transferor: data.transferor,
+        transferor_address: data.transferor_address,
+        is_received: true,
+      }
+    );
   } catch (err) {
     console.log(err);
   }
@@ -58,16 +67,21 @@ const addToken = async (data, userData) => {
       correctnessChecks,
     );
 
-    await db.addToken(data, {
-      tokenUri: data.tokenUri,
-      A: data.A,
-      S_A: data.S_A,
-      pk: data.pk,
-      z_A: data.z_A,
-      z_A_index: data.z_A_index,
-      is_received: true,
-      ...correctnessChecks.data,
-    });
+    await apiGateway.addToken(
+      {
+        authorization: userData.jwtToken,
+      }, 
+      {
+        tokenUri: data.tokenUri,
+        A: data.A,
+        S_A: data.S_A,
+        pk: data.pk,
+        z_A: data.z_A,
+        z_A_index: data.z_A_index,
+        is_received: true,
+        ...correctnessChecks.data,
+      }
+    );
   } catch (err) {
     console.log(err);
   }
@@ -97,17 +111,22 @@ const addCoin = async (data, userData) => {
       correctnessChecks,
     );
 
-    await db.addCoin(data, {
-      E: data.E,
-      S_E: data.S_E,
-      pk: data.pk,
-      z_E: data.z_E,
-      z_E_index: data.z_E_index,
-      is_received: true,
-      action_type: 'received',
-      toSave: 'receiverSide',
-      ...correctnessChecks.data,
-    });
+    await apiGateway.addCoin(
+      {
+        authorization: userData.jwtToken,
+      },
+      {
+        E: data.E,
+        S_E: data.S_E,
+        pk: data.pk,
+        z_E: data.z_E,
+        z_E_index: data.z_E_index,
+        is_received: true,
+        action_type: 'received',
+        toSave: 'receiverSide',
+        ...correctnessChecks.data,
+      }
+    );
   } catch (err) {
     console.log(err);
   }

@@ -96,10 +96,82 @@ const sendWhisperMessage = (jwtToken, body) => {
   });
 };
 
+const addNFTToken = (headers, body) => {
+  return new Promise((resolve, reject) => {
+    const options = {
+      url: `${host}/database/nft`,
+      method: 'POST',
+      json: true,
+      headers,
+      body,
+    };
+
+    request(options, (err, res, responseBody) => {
+      if (err) reject(err);
+      resolve(responseBody);
+    });
+  });
+};
+
+const addFToken = (headers, body) => {
+  return new Promise((resolve, reject) => {
+    const options = {
+      url: `${host}/database/ft/transaction`,
+      method: 'POST',
+      json: true,
+      headers,
+      body,
+    };
+
+    request(options, (err, res, responseBody) => {
+      if (err) reject(err);
+      resolve(responseBody);
+    });
+  });
+};
+
+const addToken = (headers, body) => {
+  return new Promise((resolve, reject) => {
+    const options = {
+      url: `${host}/database/token`,
+      method: 'POST',
+      json: true,
+      headers,
+      body,
+    };
+
+    request(options, (err, res, responseBody) => {
+      if (err) reject(err);
+      resolve(responseBody);
+    });
+  });
+};
+
+const addCoin = (headers, body) => {
+  return new Promise((resolve, reject) => {
+    const options = {
+      url: `${host}/database/coin`,
+      method: 'POST',
+      json: true,
+      headers,
+      body,
+    };
+
+    request(options, (err, res, responseBody) => {
+      if (err) reject(err);
+      resolve(responseBody);
+    });
+  });
+};
+
 export default {
   coinTransfer,
   checkCorrectnessCoin,
   tokenTransfer,
   checkCorrectnessToken,
   sendWhisperMessage,
+  addNFTToken,
+  addFToken,
+  addToken,
+  addCoin,
 };
