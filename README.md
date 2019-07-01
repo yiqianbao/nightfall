@@ -135,7 +135,7 @@ volumes, and images created by up, using
 docker-compose down -v
 ```
 
-### To run tests (or if UI is not preferred)
+### To run zkp service unit tests
 
 After following the steps from 'Installing Nightfall' section,
 
@@ -165,6 +165,15 @@ directories.
 - `utils.test.js` - These are unit tests for utils used for running the tests.
 
 Note that, the zkp service tests take a while to run (approx. 2 hours)
+
+
+### To run Nightfall integration test
+
+Be sure to be in the main directory and then open terminal and run
+
+```sh
+./zkp-demo-test
+```
 
 ## Using other ERC-20 and ERC-721 contracts
 
