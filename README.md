@@ -174,6 +174,10 @@ Be sure to be in the main directory and then open terminal and run
 ```sh
 ./zkp-demo-test
 ```
+-  Mac 
+  - Test suites will open a terminal, where you can see test container's log. And, this terminal will get close
+    automatically.
+  - configure `Teminal.app` to close window when shell exists `exit`.
 
 ## Using other ERC-20 and ERC-721 contracts
 
