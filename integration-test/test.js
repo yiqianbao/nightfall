@@ -102,7 +102,7 @@ describe('****** Integration Test ******\n', function () {
 	* This Suite will test ERC-721 & ERC-721 commitment
 	* Mint, Transfer and Burn features.
 	* Story line:
-	*  Alice minted a ERC-721 token. She then Shield that token
+	*  Alice minted a ERC-721 token. She then Shield(mint ERC-721 commitment) that token
 	*  and transfer to Bob. He then burns received ERC-721 commitment,
 	*  and then transferred resultant ERC-721 token to Alice.
 	* finally, Alice burns received ERC-721 token
@@ -129,9 +129,9 @@ describe('****** Integration Test ******\n', function () {
 			});
 			/*
 			* Step 4.
-			* Shield ERC-721 Token.
+			* Mint ERC-721 token commitment.
 			*/
-			it('Shield ERC-721 token', function (done) {
+			it('Mint ERC-721 token commitment', function (done) {
 				request
 	        .post('/token/mint')
 	        .use(prefix(apiServerURL))
@@ -268,7 +268,7 @@ describe('****** Integration Test ******\n', function () {
 	* This Suite will test ERC-20 & ERC-20 commitment
 	* Mint, Transfer and Burn features.
 	* Story line:
-	*  Alice minted a 5 ERC-20 token. She then Shield two token with value 2 and 3
+	*  Alice minted a 5 ERC-20 token. She then Shield(mint ERC-20 commitment) two token with value 2 and 3
 	*  and transfer 4 token to Bob. He then burns received ERC-20 commitment,
 	*  and then transferred resultant  4 ERC-20 token to Alice.
 	* finally, Alice burns her received and change, 5 ERC-20 token
@@ -297,9 +297,9 @@ describe('****** Integration Test ******\n', function () {
 			});
 			/*
 			* Step 10.
-			* Shield ERC-20 token
+			* Mint ERC-20 token commitment.
 			*/
-			it(`Shield ${erc20.tobeShield[0]} ERC-20 tokens`, function (done) {
+			it(`Mint ${erc20.tobeShield[0]} ERC-20 token commitments`, function (done) {
 				request
 	        .post('/coin/mint')
 	        .use(prefix(apiServerURL))
@@ -318,9 +318,9 @@ describe('****** Integration Test ******\n', function () {
 			});
 			/*
 			* Step 11.
-			* Shield ERC-20 token
+			* Mint ERC-20 token commitment.
 			*/
-			it(`Shield ${erc20.tobeShield[1]} ERC-20 tokens`, function (done) {
+			it(`Mint ${erc20.tobeShield[1]} ERC-20 token commitments`, function (done) {
 				request
 	        .post('/coin/mint')
 	        .use(prefix(apiServerURL))
