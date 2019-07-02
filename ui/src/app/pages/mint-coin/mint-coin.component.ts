@@ -80,9 +80,15 @@ export class MintCoinsComponent implements OnInit {
    * Method to Mint ERC-20 token commitemnt.
    */
   mintCoin() {
-    this.isRequesting = true;
+    
     this.serialNumber = this.utilService.generateRandomSerial();
-    var hexValue = (this.mintCoinForm.controls['A'].value).toString(16);
+    const coinToMint = this.mintCoinForm.controls['A'].value;
+    if (!coinToMint) return;
+    if (coinToMint > this.coinCount) {
+      return this.toastr.error('You do not have enought ERC-20 tokens');
+    }
+    this.isRequesting = true;
+    var hexValue = (coinToMint).toString(16);
     var hexString = '0x' + hexValue.padStart(32,"0");
     console.log('Hexstring::',hexString);
     this.coinApiService.mintCoin(hexString, localStorage.getItem('publickey'), this.serialNumber).subscribe(tokenDetails => {
