@@ -132,22 +132,6 @@ module.exports = class AccountService {
     }
   }
 
-
-  async  getAuditorDetail (auditor) {
-    let condition = {is_auditor: true};
-    if (auditor) {
-      condition._id = auditor;
-    }
-    try {
-      return await this.db.getData(
-        enums.COLLECTIONS.USER,
-        condition
-      );
-    } catch (err) {
-      return Promise.reject(err);
-    }
-  }
-
   async addCoinShieldContractAddress ({
     contract_name,
     contract_address
