@@ -117,7 +117,7 @@ app.route('/token/transfer').post(async (req, res) => {
 });
 
 app.route('/token/burn').post(async (req, res) => {
-  const { A, S_A, Sk_A, z_A, z_A_index } = req.body;
+  const { A, S_A, Sk_A, z_A, z_A_index, payTo } = req.body;
   const { address } = req.headers;
   const response = new Response();
   try {
@@ -128,7 +128,7 @@ app.route('/token/burn').post(async (req, res) => {
       z_A,
       z_A_index,
       address,
-      address, // payed to same user.
+      payTo, // payed to same user.
     );
     response.statusCode = 200;
     response.data = {

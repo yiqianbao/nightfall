@@ -7,7 +7,8 @@ const coinMapper = ({
 	coin_index,
   burnedCoin,
 	burnedCoin_index,
-  action_type
+  action_type,
+  receiver_name
 }) => {
   return {
   	account: (account || '').toLowerCase(),
@@ -16,7 +17,8 @@ const coinMapper = ({
 		salt: (S_A || '').toLowerCase(),
     coin_commitment: (coin || burnedCoin || '').toLowerCase(),
 		coin_commitment_index: (coin_index || coin_index===0)? coin_index : (burnedCoin_index || burnedCoin_index===0)? burnedCoin_index : '',
-    type: (action_type || '').toLowerCase()
+    type: (action_type || '').toLowerCase(),
+    receiver_name,
   }
 }
 

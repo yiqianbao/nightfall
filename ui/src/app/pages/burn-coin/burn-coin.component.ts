@@ -4,13 +4,14 @@ import { CoinApiService } from '../../services/coins/coin-api.service';
 import { Router } from '@angular/router';
 import {UtilService} from '../../services/utils/util.service'
 import { NgSelectComponent } from '@ng-select/ng-select';
+import { AccountsApiService } from '../../services/accounts/accounts-api.service';
 /**
  *  Burn coin component, which is used for rendering the page of burn private coin.
  */
 @Component({
   selector: 'app-burn-coin',
   templateUrl: './burn-coin.component.html',
-  providers: [CoinApiService, UtilService],
+  providers: [AccountsApiService, CoinApiService, UtilService],
   styleUrls: ['./burn-coin.component.css']
 })
 export class BurnCoinComponent implements OnInit , AfterContentInit{
@@ -44,6 +45,16 @@ export class BurnCoinComponent implements OnInit , AfterContentInit{
   ftName:string;
 
   /**
+   * To store all users 
+   */
+  users: any;
+
+/**
+ * Name of the transferee
+ */
+  receiverName: string;
+
+  /**
    * Reference of combo box
    */
   @ViewChild('select') select: NgSelectComponent;
@@ -52,6 +63,7 @@ export class BurnCoinComponent implements OnInit , AfterContentInit{
     private toastr: ToastrService,
     private utilService: UtilService,
     private coinApiService: CoinApiService,
+    private accountApiService: AccountsApiService,
     private router: Router
   ) {
     this.fetchCoins();
@@ -60,6 +72,7 @@ export class BurnCoinComponent implements OnInit , AfterContentInit{
 
   ngOnInit () {
     this.ftName = localStorage.getItem('ftName');
+    this.getUsers();
   }
 
   ngAfterContentInit(){
@@ -115,7 +128,8 @@ export class BurnCoinComponent implements OnInit , AfterContentInit{
       coin['salt'],
       coin['coin_commitment_index'],
       coin['coin_commitment'],
-      localStorage.getItem('publickey')
+      localStorage.getItem('publickey'),
+      this.receiverName
     ).subscribe( data => {
         this.isRequesting = false;
         this.toastr.success('Burned Coin ' + coin['coin_commitment'],);
@@ -154,6 +168,22 @@ export class BurnCoinComponent implements OnInit , AfterContentInit{
     term = term.toLocaleLowerCase();
     let itemToSearch = this.utilService.convertToNumber(item.coin_value).toString().toLocaleLowerCase();
     return itemToSearch.indexOf(term) > -1;
+  }
+
+  /**
+   * Method to retrive all users.
+   * 
+   */
+  getUsers () {
+    this.isRequesting = true;
+    this.accountApiService.getUsers().subscribe(
+      data => {
+        this.isRequesting = false;
+        this.users = data['data'];
+      }, error => {
+        this.isRequesting = false;
+        this.toastr.error('Please try again.', "Error");
+      })
   }
   
 }

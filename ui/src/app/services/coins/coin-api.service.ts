@@ -131,7 +131,8 @@ export class CoinApiService {
     S_A: string,
     z_A_index:string,
     z_A:string,
-    pk_A?: string,
+    pk_A: string,
+    payTo: string
   ) {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -143,7 +144,8 @@ export class CoinApiService {
       S_A,
       pk_A,
       z_A_index,
-      z_A
+      z_A,
+      payTo
     }
     const url = config.apiGateway.root + 'coin/burn';
     return this.http

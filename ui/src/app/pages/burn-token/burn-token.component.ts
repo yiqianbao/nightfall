@@ -3,6 +3,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { TokenApiService } from '../../services/tokens/token-api.service';
 import { NgSelectComponent } from '@ng-select/ng-select';
+import { AccountsApiService } from '../../services/accounts/accounts-api.service';
 
 /**
  * Burn private token component, which is used for rendering the page of burn ERC-721 commitment.
@@ -10,7 +11,7 @@ import { NgSelectComponent } from '@ng-select/ng-select';
 @Component({
   selector: 'app-burn-token',
   templateUrl: './burn-token.component.html',
-  providers: [TokenApiService],
+  providers: [TokenApiService, AccountsApiService],
   styleUrls: ['./burn-token.component.css']
 })
 export class BurnTokenComponent implements OnInit, AfterContentInit {
@@ -42,6 +43,16 @@ export class BurnTokenComponent implements OnInit, AfterContentInit {
   nftName:string;
 
   /**
+   * To store all users 
+   */
+  users: any;
+
+  /**
+   * Name of the transferee
+   */
+  receiverName: string;
+
+  /**
    * Reference of combo box
    */
   @ViewChild('select') select: NgSelectComponent;
@@ -49,12 +60,14 @@ export class BurnTokenComponent implements OnInit, AfterContentInit {
   constructor(
     private toastr: ToastrService,
     private tokenApiService: TokenApiService,
+    private accountApiService: AccountsApiService,
     private router: Router
   ) {}
 
   ngOnInit () {
     this.fetchTokens();
     this.nftName = localStorage.getItem('nftName');
+    this.getUsers();
   }
 
   ngAfterContentInit(){
@@ -83,7 +96,8 @@ export class BurnTokenComponent implements OnInit, AfterContentInit {
       selectedToken.salt,
       selectedToken.token_commitment,
       localStorage.getItem('secretkey'),
-      selectedToken.token_commitment_index
+      selectedToken.token_commitment_index,
+      this.receiverName
     ).subscribe( data => {
         this.isRequesting = false;
         this.toastr.success('Token burned successfully.');
@@ -143,6 +157,22 @@ export class BurnTokenComponent implements OnInit, AfterContentInit {
     term = term.toLocaleLowerCase();
     let itemToSearch = item.token_uri.toLowerCase();
     return itemToSearch.indexOf(term) > -1;
+  }
+
+  /**
+   * Method to retrive all users.
+   * 
+   */
+  getUsers () {
+    this.isRequesting = true;
+    this.accountApiService.getUsers().subscribe(
+      data => {
+        this.isRequesting = false;
+        this.users = data['data'];
+      }, error => {
+        this.isRequesting = false;
+        this.toastr.error('Please try again.', "Error");
+      })
   }
 
 }
