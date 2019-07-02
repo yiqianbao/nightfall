@@ -82,7 +82,7 @@ export class MintCoinsComponent implements OnInit {
     const coinToMint = this.mintCoinForm.controls['A'].value;
     if (!coinToMint) return;
     if (coinToMint > this.coinCount) {
-      return this.toastr.error('You do not have enought ERC-20 tokens');
+      return this.toastr.error('You do not have enough ERC-20 tokens');
     }
     this.isRequesting = true;
     var hexValue = coinToMint.toString(16);
