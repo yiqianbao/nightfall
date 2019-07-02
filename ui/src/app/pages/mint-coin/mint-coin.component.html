@@ -38,6 +38,7 @@
                   <div class="row col-sm-12">
                     <input
                       type="number"
+                      (keypress)="utilService.validate($event)"
                       autoFocus
                       class="form-control simple-text"
                       id="A"

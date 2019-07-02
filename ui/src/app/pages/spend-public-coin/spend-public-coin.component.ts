@@ -3,6 +3,7 @@ import { ToastrService } from 'ngx-toastr';
 import { CoinApiService } from '../../services/coins/coin-api.service';
 import { AccountsApiService } from '../../services/accounts/accounts-api.service';
 import { Router } from '@angular/router';
+import { UtilService } from '../../services/utils/util.service';
 
 /**
  *  Spend public coin component, which is used for rendering the page of transfer ERC-20 token to the selected receipent.
@@ -10,7 +11,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-spend-public-coin',
   templateUrl: './spend-public-coin.component.html',
-  providers: [CoinApiService, AccountsApiService],
+  providers: [CoinApiService, AccountsApiService, UtilService],
   styleUrls: ['./spend-public-coin.component.css']
 })
 export class SpendPublicCoinComponent implements OnInit {
@@ -45,6 +46,7 @@ export class SpendPublicCoinComponent implements OnInit {
     private toastr: ToastrService,
     private coinApiService: CoinApiService,
     private accountApiService: AccountsApiService,
+    private utilService: UtilService,
     private router: Router
   ) {
     
