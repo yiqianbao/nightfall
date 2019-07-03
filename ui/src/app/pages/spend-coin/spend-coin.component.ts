@@ -121,7 +121,7 @@ export class SpendCoinComponent implements OnInit , AfterContentInit{
     this.accountApiService.getUsers().subscribe(
       data => {
         this.isRequesting = false;
-        this.users = data['data'].filter(user => user !=='auditor');
+        this.users = data['data'];
       }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again.', "Error");
