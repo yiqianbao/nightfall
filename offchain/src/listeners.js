@@ -2,9 +2,9 @@ import apiGateway from './rest/api-gateway';
 
 const addFToken = async (data, userData) => {
   try {
-    console.log('\noffchain/src/listeners.js', '\naddFToken', '\ndata', data);
+    console.log('\noffchain/src/listeners.js', '\addFToken', '\ndata', data);
 
-    await apiGateway.addFToken( 
+    await apiGateway.addFTokenToDB( 
       {
         authorization: userData.jwtToken,
       },
@@ -21,11 +21,11 @@ const addFToken = async (data, userData) => {
   }
 };
 
-const addNFTToken = async (data, userData) => {
+const addNFToken = async (data, userData) => {
   try {
-    console.log('\noffchain/src/listeners.js', '\naddNFTToken', '\ndata', data);
+    console.log('\noffchain/src/listeners.js', '\addNFToken', '\ndata', data);
 
-    await apiGateway.addNFTToken(
+    await apiGateway.addNFTokenToDB(
       {
         authorization: userData.jwtToken,
       },
@@ -43,9 +43,9 @@ const addNFTToken = async (data, userData) => {
   }
 };
 
-const addToken = async (data, userData) => {
+const addTokenCommitment = async (data, userData) => {
   try {
-    console.log('\noffchain/src/listeners.js', '\naddToken', '\ndata', data, '\nuserData', userData);
+    console.log('\noffchain/src/listeners.js', '\naddTokenCommitment', '\ndata', data, '\nuserData', userData);
 
     const correctnessChecks = await apiGateway.checkCorrectnessToken(
       {
@@ -62,12 +62,12 @@ const addToken = async (data, userData) => {
 
     console.log(
       '\noffchain/src/listeners.js',
-      '\naddToken',
+      '\naddTokenCommitment',
       '\ncorrectnessChecks',
       correctnessChecks,
     );
 
-    await apiGateway.addToken(
+    await apiGateway.addTokenCommitmentToDB(
       {
         authorization: userData.jwtToken,
       }, 
@@ -87,9 +87,9 @@ const addToken = async (data, userData) => {
   }
 };
 
-const addCoin = async (data, userData) => {
+const addCoinCommitment = async (data, userData) => {
   try {
-    console.log('\noffchain/src/listeners.js', '\naddCoin', '\ndata', data, '\nuserData', userData);
+    console.log('\noffchain/src/listeners.js', '\naddCoinCommitment', '\ndata', data, '\nuserData', userData);
 
     const correctnessChecks = await apiGateway.checkCorrectnessCoin(
       {
@@ -106,12 +106,12 @@ const addCoin = async (data, userData) => {
 
     console.log(
       '\noffchain/src/listeners.js',
-      '\naddCoin',
+      '\naddCoinCommitment',
       '\ncorrectnessChecks',
       correctnessChecks,
     );
 
-    await apiGateway.addCoin(
+    await apiGateway.addCoinCommitmentToDB(
       {
         authorization: userData.jwtToken,
       },
@@ -138,13 +138,13 @@ const listeners = async (data, userData) => {
   const actualPayload = data.payload;
   switch (actualPayload.for) {
     case 'coin':
-      await addCoin(actualPayload, userData);
+      await addCoinCommitment(actualPayload, userData);
       break;
     case 'token':
-      await addToken(actualPayload, userData);
+      await addTokenCommitment(actualPayload, userData);
       break;
     case 'NFTToken':
-      await addNFTToken(actualPayload, userData);
+      await addNFToken(actualPayload, userData);
       break;
     case 'FToken':
       await addFToken(actualPayload, userData);

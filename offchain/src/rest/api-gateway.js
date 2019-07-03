@@ -96,7 +96,7 @@ const sendWhisperMessage = (jwtToken, body) => {
   });
 };
 
-const addNFTToken = (headers, body) => {
+const addNFTokenToDB = (headers, body) => {
   return new Promise((resolve, reject) => {
     const options = {
       url: `${host}/database/nft`,
@@ -113,7 +113,7 @@ const addNFTToken = (headers, body) => {
   });
 };
 
-const addFToken = (headers, body) => {
+const addFTokenToDB = (headers, body) => {
   return new Promise((resolve, reject) => {
     const options = {
       url: `${host}/database/ft/transaction`,
@@ -130,7 +130,7 @@ const addFToken = (headers, body) => {
   });
 };
 
-const addToken = (headers, body) => {
+const addTokenCommitmentToDB = (headers, body) => {
   return new Promise((resolve, reject) => {
     const options = {
       url: `${host}/database/token`,
@@ -147,7 +147,7 @@ const addToken = (headers, body) => {
   });
 };
 
-const addCoin = (headers, body) => {
+const addCoinCommitmentToDB = (headers, body) => {
   return new Promise((resolve, reject) => {
     const options = {
       url: `${host}/database/coin`,
@@ -170,8 +170,8 @@ export default {
   tokenTransfer,
   checkCorrectnessToken,
   sendWhisperMessage,
-  addNFTToken,
-  addFToken,
-  addToken,
-  addCoin,
+  addNFTokenToDB,
+  addFTokenToDB,
+  addTokenCommitmentToDB,
+  addCoinCommitmentToDB,
 };
