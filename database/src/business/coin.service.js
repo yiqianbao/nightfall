@@ -190,7 +190,8 @@ module.exports = class CoinService {
             coin_value,
             salt,
             burn_coin_commitment,
-            burn_coin_commitment_index
+            burn_coin_commitment_index,
+            receiver_name,
         } = coinMapper(data);
         //Add coin burn transaction to coin-transaction history
         await this.coinTransactionService.addNewCoinTransaction(data);
@@ -206,7 +207,8 @@ module.exports = class CoinService {
                     'burn_coin_commitment': burn_coin_commitment,
                     'burn_timestamp': new Date(),
                     burn_coin_commitment_index,
-                    'type': 'burned'
+                    'type': 'burned',
+                    receiver_name,
                 }
             }
         );

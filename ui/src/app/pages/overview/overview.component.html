@@ -193,7 +193,7 @@
                     </td>
                     <td>{{ transaction.token_uri }}</td>
                     <td>{{ transaction.created_at | date: 'dd/MM/yyyy hh:mm:ss a' }}</td>
-                    <td>{{ transaction.transferee ? transaction.transferee : '' }}</td>
+                    <td>{{ transaction.transferee || transaction.receiver_name ? (transaction.transferee || transaction.receiver_name) : '' }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -317,7 +317,7 @@
                     <td *ngIf="transaction.type !== 'transferred'"></td>
 
                     <td>{{ transaction.timestamp | date: 'dd/MM/yyyy hh:mm:ss a' }}</td>
-                    <td *ngIf="transaction.type === 'transferred'">
+                    <td *ngIf="transaction.type === 'transferred' || transaction.type === 'burned'">
                       {{ transaction.receiver_name ? transaction.receiver_name : '' }}
                     </td>
                     <td *ngIf="transaction.type !== 'transferred'"></td>
