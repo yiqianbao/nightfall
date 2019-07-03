@@ -22,7 +22,7 @@ module.exports = {
 	},
 	erc20: {
 		mint: 5,
-		tobeShield: [2, 3],
+		toBeMintedAsCommitment: [2, 3],
 		transfer: 4,
 	},
 };
@@ -36,11 +36,11 @@ module.exports = {
 	};
 	this.erc20Commitments = [
 		{
-			A: numberToHexString(this.erc20.tobeShield[0]),
+			A: numberToHexString(this.erc20.toBeMintedAsCommitment[0]),
 			S_A: generateSalt(), // salt while mint
 		},
 		{
-			A: numberToHexString(this.erc20.tobeShield[1]),
+			A: numberToHexString(this.erc20.toBeMintedAsCommitment[1]),
 			S_A: generateSalt(), // salt while mint
 		}
 	];
@@ -52,5 +52,5 @@ module.exports = {
 		value: numberToHexString(this.erc20.mint - this.erc20.transfer),
 		S_F: generateSalt(),
 	};
-	this.erc20.change = (this.erc20.tobeShield[0] + this.erc20.tobeShield[1]) - this.erc20.transfer;
+	this.erc20.change = (this.erc20.toBeMintedAsCommitment[0] + this.erc20.toBeMintedAsCommitment[1]) - this.erc20.transfer;
 }).call(module.exports);

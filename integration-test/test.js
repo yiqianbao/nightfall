@@ -299,7 +299,7 @@ describe('****** Integration Test ******\n', function () {
 			* Step 10.
 			* Mint ERC-20 token commitment.
 			*/
-			it(`Mint ${erc20.tobeShield[0]} ERC-20 token commitment`, function (done) {
+			it(`Mint ${erc20.toBeMintedAsCommitment[0]} ERC-20 token commitment`, function (done) {
 				request
 	        .post('/coin/mint')
 	        .use(prefix(apiServerURL))
@@ -320,7 +320,7 @@ describe('****** Integration Test ******\n', function () {
 			* Step 11.
 			* Mint ERC-20 token commitment.
 			*/
-			it(`Mint ${erc20.tobeShield[1]} ERC-20 token commitment`, function (done) {
+			it(`Mint ${erc20.toBeMintedAsCommitment[1]} ERC-20 token commitment`, function (done) {
 				request
 	        .post('/coin/mint')
 	        .use(prefix(apiServerURL))
