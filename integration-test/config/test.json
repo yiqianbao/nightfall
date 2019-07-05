@@ -1,3 +1,4 @@
 {
-	"apiServerURL": "http://api-test.nightfall.docker"
+	"apiServerURL": "http://api-test.nightfall.docker",
+  "HASHLENGTH": 27
 }
