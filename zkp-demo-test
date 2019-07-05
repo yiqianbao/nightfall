@@ -73,7 +73,7 @@ printf "${GREEN}*** Remove test-net network if not removed ***${NC}\n"
 docker network rm nightfall_test_net || true
 
 # Stop child terminal if all testcases passed.
-if [ "${machine}" == "Mac" ] && [ "${isTestPassed}" ]; then
+if [ "${machine}" == "Mac" ] && [ "${isTestPassed}" == "true" ]; then
 	osascript -e "
 	  tell application \"Terminal\"
 	    do script \"exit\" in $childTab
