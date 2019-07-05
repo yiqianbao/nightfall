@@ -1,6 +1,7 @@
-const utils = require('../zkp-utils')('../config/stats');
-const config = require('config');
+import Utils from '../zkp-utils'
+import config from 'config';
 
+const utils = Utils('../config/stats');
 const { rndHex, padHex } = utils;
 const HASHLENGTH = config.get('HASHLENGTH');
 
@@ -10,7 +11,7 @@ const generateTokenID = async () => await rndHex(32);
 const numberToHexString = int => padHex(int, 128);
 
 // test data.
-module.exports.testData = {
+export const testData = {
 	alice: {
 		name: 'alice1',
 		email: 'alice@ey.com',
@@ -133,7 +134,7 @@ module.exports.testData = {
 /*
 *  a function which will configure dependent test data.
 */
-module.exports.configureDependentTestData = (async function () {
+export const configureDependentTestData = (async function  () {
   this.erc721Commitment = await this.erc721Commitment();
   this.erc20Commitments = await this.erc20Commitments();
-}).bind(module.exports.testData)
+}).bind(testData)

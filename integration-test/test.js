@@ -1,12 +1,11 @@
-const chai = require('chai');
-const { expect } = chai;
-const request = require('superagent');
-const prefix = require('superagent-prefix');
-const config = require('config');
-const {
+import { expect } from 'chai';
+import request from 'superagent';
+import prefix from 'superagent-prefix';
+import config from 'config';
+import {
   testData,
   configureDependentTestData
-} = require('./testData');
+} from './testData';
 
 const apiServerURL = config.get('apiServerURL');
 
