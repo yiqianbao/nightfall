@@ -9,21 +9,26 @@ const {
 } = require('./testData');
 
 const apiServerURL = config.get('apiServerURL');
-const {
-  // independent test data.
-  alice, 
-  bob, 
-  erc20,
-  // dependent test data. which need to be configured.
+
+// independent test data.
+const
+  alice = testData.alice, 
+  bob = testData.bob, 
+  erc20 = testData.erc20;
+
+// dependent test data. which need to be configured.
+let
   erc721,
   erc721Commitment,
-  erc20Commitments,
-} = testData;
+  erc20Commitments;
 
 
 describe('****** Integration Test ******\n', function () {
   before(async function () {
     await configureDependentTestData();
+    erc721 = testData.erc721;
+    erc721Commitment = testData.erc721Commitment;
+    erc20Commitments = testData.erc20Commitments;
   });
   /*
   *  Step 1.
