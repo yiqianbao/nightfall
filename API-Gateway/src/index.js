@@ -6,8 +6,8 @@
 *****************************************************************************/
 
 import rootRouter from './routes/api-gateway';
-import tokenRoutes from './routes/token';
-import coinRoutes from './routes/coin';
+import nftCommitmentRoutes from './routes/nft_commitment';
+import ftCommitmentRoutes from './routes/ft_commitment';
 import ftRoutes from './routes/ft';
 import nftRoutes from './routes/nft';
 import userRoutes from './routes/user';
@@ -45,8 +45,8 @@ app.use(
 );
 app.use('/', unlockAccount, router);
 app.use('/', rootRouter);
-app.use('/token', tokenRoutes);
-app.use('/coin', coinRoutes);
+app.use('/token', nftCommitmentRoutes);
+app.use('/coin', ftCommitmentRoutes);
 app.use('/ft', ftRoutes);
 app.use('/nft', nftRoutes);
 app.use('/user', userRoutes);
