@@ -25,11 +25,12 @@
           <div class="col-sm-12">
             <label for="name mb-1">Enter amount</label>
             <input
-              type="text"
+              type="number"
               class="form-control text-box"
               autoFocus
               [(ngModel)]="amount"
               (keydown)="$event.keyCode == 13 ? transferPublicCoin() : null"
+              (keypress)="utilService.validate($event)"
               placeholder="Please enter amount"
               required
             />
