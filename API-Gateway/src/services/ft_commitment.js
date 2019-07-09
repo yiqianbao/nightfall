@@ -46,8 +46,7 @@ export async function mintCoin(req, res, next) {
   try {
     const { data } = await zkp.mintCoin(req.user, {
       A: req.body.A,
-      pk_A: req.user.pk_A,
-      S_A: req.body.S_A,
+      pk_A: req.user.pk_A
     });
 
     data.coin_index = parseInt(data.coin_index, 16);
@@ -133,7 +132,7 @@ export async function transferCoin(req, res, next) {
     // F is the value returned as 'change' to the transferor
     await whisperTransaction(req, {
       E: req.body.E,
-      S_E: req.body.S_E,
+      S_E: data.S_E,
       pk: req.body.pk_B,
       z_E: data.z_E,
       z_E_index: data.z_E_index,

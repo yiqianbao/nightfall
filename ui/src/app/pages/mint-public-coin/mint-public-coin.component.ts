@@ -2,13 +2,14 @@ import { Component, OnInit} from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { CoinApiService } from '../../services/coins/coin-api.service';
 import { Router } from '@angular/router';
+import { UtilService } from '../../services/utils/util.service';
 /**
  * Mint public coin component, which is used for rendering the page of mint ERC-20 token.
  */
 @Component({
   selector: 'app-mint-public-coin',
   templateUrl: './mint-public-coin.component.html',
-  providers: [CoinApiService],
+  providers: [CoinApiService, UtilService],
   styleUrls: ['./mint-public-coin.component.css']
 })
 export class MintPublicCoinComponent implements OnInit {
@@ -31,6 +32,7 @@ export class MintPublicCoinComponent implements OnInit {
   constructor(
     private toastr: ToastrService,
     private coinApiService: CoinApiService,
+    private utilService: UtilService,
     private router: Router
   ) {
     

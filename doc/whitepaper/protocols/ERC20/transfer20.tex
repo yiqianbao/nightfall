@@ -85,7 +85,7 @@ For Alice to transfer a value of $e$ (and receive $f$ as change) within the Shie
           \begin{enumerate}
             \item $pk_A$ equals $h(\;sk_A\;)$; (Proof of knowledge of the secret key to $pk_A$) (see Details for why $pk_A$ isn't an input to $C$)
             \item $Z_c$ equals $h(\;c\;|\;pk_A\;|\;\sigma_c\;)$ (Proof of the constituent values of $Z_c$)
-            \item $Z_d$ equals $h(\;d\;|\;pk_A\;|\;\sigma_d\;)$ (Proof of the constituent values of $Z_c$)
+            \item $Z_d$ equals $h(\;d\;|\;pk_A\;|\;\sigma_d\;)$ (Proof of the constituent values of $Z_d$)
             
             (See Details for why $Z_c$ and $Z_d$ aren't inputs to $C$)
             \item $\roott_{n+m+k-1}$ equals $h\br*{\psi_{Z_c}(1)\;|...|\;h\br*{\psi_{Z_c}(d-2)\;|\;h\br*{\psi_{Z_c}(d-1)\;|\;Z_c}\;}...}$ (Proof that $Z_c$ belongs to the on-chain Merkle Tree)
