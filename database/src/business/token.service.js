@@ -41,7 +41,8 @@ module.exports = class TokenService {
 			COLLECTIONS.PUBLIC_TOKEN,
 			{
 				token_id,
-				is_transferred: {$exists: false}
+				is_transferred: {$exists: false},
+				is_shielded: false
 			},
 			{ '$set': data }
 		);

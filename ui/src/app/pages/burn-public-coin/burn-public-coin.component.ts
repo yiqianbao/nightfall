@@ -3,6 +3,7 @@ import { ToastrService } from 'ngx-toastr';
 import { CoinApiService } from '../../services/coins/coin-api.service';
 import { Router } from '@angular/router';
 import { AccountsApiService } from '../../services/accounts/accounts-api.service';
+import { UtilService } from '../../services/utils/util.service';
 
 /**
  * Burn public coin component, which is used for rendering the page of burn public coin.
@@ -10,7 +11,7 @@ import { AccountsApiService } from '../../services/accounts/accounts-api.service
 @Component({
   selector: 'app-burn-public-coin',
   templateUrl: './burn-public-coin.component.html',
-  providers: [CoinApiService, AccountsApiService],
+  providers: [CoinApiService, UtilService, AccountsApiService],
   styleUrls: ['./burn-public-coin.component.css']
 })
 export class BurnPublicCoinComponent implements OnInit {
@@ -39,6 +40,7 @@ export class BurnPublicCoinComponent implements OnInit {
     private toastr: ToastrService,
     private coinApiService: CoinApiService,
     private accountsApiService: AccountsApiService,
+    private utilService: UtilService,
     private router: Router
   ) {
     
@@ -82,6 +84,9 @@ export class BurnPublicCoinComponent implements OnInit {
         this.toastr.error('Please try again', 'Error');      
     })
   }
+
+
+   
   
 }
 

@@ -72,10 +72,9 @@ export class MintTokensComponent implements OnInit, AfterContentInit {
    * Method to mint ERC-721 token commitment.
    */
   mintToken() {
-      var serialNumber = this.utilService.generateRandomSerial();
       this.isRequesting = true;
       this.selectedToken = this.selectedTokenList[0];
-      this.tokenApiService.mintToken(serialNumber, this.selectedToken).subscribe(tokenDetails => {
+      this.tokenApiService.mintToken(this.selectedToken).subscribe(tokenDetails => {
         console.log('Token Minted is ' + tokenDetails['data']['z_A']);
         this.isRequesting = false;
         this.toastr.success('Token Minted is ' + tokenDetails['data']['z_A'].slice(0,20)+'...');
