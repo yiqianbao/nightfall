@@ -5,8 +5,6 @@ const utils = Utils('../config/stats');
 const { rndHex, padHex } = utils;
 const HASHLENGTH = config.get('HASHLENGTH');
 
-
-const generateSalt = async () => await rndHex(HASHLENGTH);
 const generateTokenID = async () => await rndHex(32);
 const numberToHexString = int => padHex(int, 128);
 
@@ -17,7 +15,7 @@ export const testData = {
 		email: 'alice@ey.com',
 		password: 'pass',
     get pk () {
-      return utils.hash(this.sk); // sk get set at login test suit
+      return utils.hash(this.sk); // sk - set at login test suit (step 2)
     },
 	},
 	bob: {
@@ -25,7 +23,7 @@ export const testData = {
 		email: 'bob@ey.com',
 		password: 'pass',
     get pk () {
-      return utils.hash(this.sk); // sk get set at login test suit
+      return utils.hash(this.sk); // sk - set at login test suit (step 2)
     },
 	},
 	erc721: {
@@ -51,22 +49,20 @@ export const testData = {
     return {
       uri: erc721.tokenURI,
       tokenID: erc721.tokenID,
-      S_A: await generateSalt(), // salt while mint
-      S_B: await generateSalt(), //  salt while transfer
       mintCommitmentIndex: '0',
       transferCommitmentIndex: '1',
       get mintCommitment () { //commitment while mint
         return utils.recursiveHashConcat(
           utils.strip0x(this.tokenID).slice(-(HASHLENGTH * 2)),
           alice.pk,
-          this.S_A,
+          this.S_A, // S_A - set at erc-721 commitment mint (step 4)
         );
       },
       get transferCommitment () { // commitment while transfer
         return utils.recursiveHashConcat(
           utils.strip0x(this.tokenID).slice(-(HASHLENGTH * 2)),
           bob.pk,
-          this.S_B,
+          this.S_B, // S_B - set at erc-721 commitment transfer to bob (step 5)
         );
       },
     }
@@ -81,49 +77,45 @@ export const testData = {
     return {
       mint: [{
         A: numberToHexString(erc20.toBeMintedAsCommitment[0]),
-        S_A: await generateSalt(), // salt, used while mint
         commitmentIndex: 0,
         get commitment () {
           return utils.recursiveHashConcat(
             this.A,
             alice.pk,
-            this.S_A
+            this.S_A // S_A - set at erc-20 commitment mint (step 10)
           );
         },
       },
       {
         A: numberToHexString(erc20.toBeMintedAsCommitment[1]),
-        S_A: await generateSalt(), // salt, used while mint
         commitmentIndex: 1,
         get commitment () {
           return utils.recursiveHashConcat(
             this.A,
             alice.pk,
-            this.S_A
+            this.S_A // S_A - set at erc-20 commitment mint (step 11)
           );
         },
       }],
       transfer: {
         value: numberToHexString(erc20.transfer),
-        S_E: await generateSalt(),
         commitmentIndex: 2,
         get commitment () {
           return utils.recursiveHashConcat(
             this.value,
             bob.pk,
-            this.S_E
+            this.S_E // S_E - set at erc-20 commitment transfer (step 12)
           );
         },
       },
       change: {
         value: numberToHexString(erc20.change),
-        S_F: await generateSalt(),
         commitmentIndex: 3,
         get commitment () {
           return utils.recursiveHashConcat(
             this.value,
             alice.pk,
-            this.S_F
+            this.S_F // S_F - set at erc-20 commitment transfer (step 12)
           );
         },
       }

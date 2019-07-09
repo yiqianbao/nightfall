@@ -150,8 +150,12 @@ describe('****** Integration Test ******\n', function () {
           .set('Authorization', alice.token)
           .end((err, res) => {
             if (err) return done(err);
+            expect(res).to.have.nested.property('body.data.S_A');
             expect(res).to.have.nested.property('body.data.z_A');
             expect(res).to.have.nested.property('body.data.z_A_index');
+
+            erc721Commitment.S_A = res.body.data.S_A; // set Salt from response to calculate and verify commitment.
+
             expect(res.body.data.z_A).to.be.equal(erc721Commitment.mintCommitment);
             expect(res.body.data.z_A_index).to.be.equal(erc721Commitment.mintCommitmentIndex);
             done();
@@ -179,8 +183,12 @@ describe('****** Integration Test ******\n', function () {
           .set('Authorization', alice.token)
           .end((err, res) => {
             if (err) return done(err);
+            expect(res).to.have.nested.property('body.data.S_B');
             expect(res).to.have.nested.property('body.data.z_B');
             expect(res).to.have.nested.property('body.data.z_B_index');
+
+            erc721Commitment.S_B = res.body.data.S_B; // set Salt from response to calculate and verify commitment.
+
             expect(res.body.data.z_B).to.be.equal(erc721Commitment.transferCommitment);
             expect(res.body.data.z_B_index).to.be.equal(erc721Commitment.transferCommitmentIndex);
             done();
@@ -316,8 +324,12 @@ describe('****** Integration Test ******\n', function () {
           .set('Authorization', alice.token)
           .end((err, res) => {
             if (err) return done(err);
+            expect(res).to.have.nested.property('body.data.S_A');
             expect(res).to.have.nested.property('body.data.coin');
             expect(res).to.have.nested.property('body.data.coin_index');
+
+            erc20Commitments.mint[0].S_A = res.body.data.S_A; // set Salt from response to calculate and verify commitment.
+
             expect(res.body.data.coin).to.be.equal(erc20Commitments.mint[0].commitment);
             expect(res.body.data.coin_index).to.be.equal(erc20Commitments.mint[0].commitmentIndex);
             done();
@@ -336,8 +348,12 @@ describe('****** Integration Test ******\n', function () {
           .set('Authorization', alice.token)
           .end((err, res) => {
             if (err) return done(err);
+            expect(res).to.have.nested.property('body.data.S_A');
             expect(res).to.have.nested.property('body.data.coin');
             expect(res).to.have.nested.property('body.data.coin_index');
+
+            erc20Commitments.mint[1].S_A = res.body.data.S_A; // set Salt from response to calculate and verify commitment.
+            
             expect(res.body.data.coin).to.be.equal(erc20Commitments.mint[1].commitment);
             expect(res.body.data.coin_index).to.be.equal(erc20Commitments.mint[1].commitmentIndex);
             done();
@@ -348,18 +364,17 @@ describe('****** Integration Test ******\n', function () {
       * Transfer ERC-20 Commitment.
       */
       it(`Transfer ${erc20.transfer} ERC-20 Commitment to Bob`, function (done) {
-        const [C, S_C, z_C_index, z_C] = Object.values(erc20Commitments.mint[0]);
-        const [D, S_D, z_D_index, z_D] = Object.values(erc20Commitments.mint[1]);
-        const [E, S_E] = Object.values(erc20Commitments.transfer)
-        const [F, S_F] = Object.values(erc20Commitments.change)
+        const [C, z_C_index, z_C, S_C] = Object.values(erc20Commitments.mint[0]);
+        const [D, z_D_index, z_D, S_D] = Object.values(erc20Commitments.mint[1]);
+        const [E] = Object.values(erc20Commitments.transfer)
+        const [F] = Object.values(erc20Commitments.change)
         request
           .post('/coin/transfer')
           .use(prefix(apiServerURL))
           .send({
             C, S_C, z_C, z_C_index,
             D, S_D, z_D, z_D_index,
-            E, S_E,
-            F, S_F,
+            E, F,
             sk_A: alice.sk,
             receiver_name: bob.name,
           })
@@ -367,10 +382,16 @@ describe('****** Integration Test ******\n', function () {
           .set('Authorization', alice.token)
           .end((err, res) => {
             if (err) return done(err);
+            expect(res).to.have.nested.property('body.data.S_E');
+            expect(res).to.have.nested.property('body.data.S_F');
             expect(res).to.have.nested.property('body.data.z_E');
             expect(res).to.have.nested.property('body.data.z_E_index');
             expect(res).to.have.nested.property('body.data.z_F');
             expect(res).to.have.nested.property('body.data.z_F_index');
+
+            erc20Commitments.transfer.S_E = res.body.data.S_E; // set Salt from response to calculate and verify commitment.
+            erc20Commitments.change.S_F = res.body.data.S_F; // set Salt from response to calculate and verify commitment.
+
             expect(res.body.data.z_E).to.be.equal(erc20Commitments.transfer.commitment);
             expect(res.body.data.z_E_index).to.be.equal(erc20Commitments.transfer.commitmentIndex);
             expect(res.body.data.z_F).to.be.equal(erc20Commitments.change.commitment);
