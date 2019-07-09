@@ -50,8 +50,6 @@ depth row  width  st#     end#
     event VerifierChanged(address newVerifierContract);
     event VkIdsChanged(bytes32 mintVkId, bytes32 transferVkId, bytes32 burnVkId);
 
-    address payable private _owner;
-
     uint constant merkleWidth = 4294967296; //2^32
     uint constant merkleDepth = 33; //33
 
@@ -84,7 +82,7 @@ depth row  width  st#     end#
     self destruct
     */
     function close() external onlyOwner {
-        selfdestruct(_owner);
+        selfdestruct(address(uint160(_owner)));
     }
 
     /**

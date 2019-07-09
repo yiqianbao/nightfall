@@ -121,7 +121,7 @@ export class OverviewComponent extends Config implements OnInit {
         localStorage.setItem('ftName', this.ftName);
         this.ftSymbol = responseList[0]['data']['symbol'];
         localStorage.setItem('ftSymbol', this.ftSymbol);
-        this.nftBalance = responseList[2]['data']['balance'];
+        this.nftBalance = parseInt(responseList[2]['data']['balance'], 16);
         this.nftName = responseList[2]['data']['nftName'];
         localStorage.setItem('nftName', this.nftName);
         this.nftSymbol = responseList[2]['data']['nftSymbol'];

@@ -18,6 +18,8 @@ import fTokenController from './f-token-controller';
 
 config.setEnv(argv.environment);
 
+const utils = require('zkp-utils')('/app/config/stats.json');
+
 const app = express();
 
 app.use((req, res, next) => {
@@ -59,9 +61,8 @@ app.route('/vk').post(async (req, res) => {
 
 app.route('/token/mint').post(async (req, res) => {
   const { address } = req.headers;
-
-  const { A, pk_A, S_A } = req.body;
-
+  const { A, pk_A } = req.body;
+  const S_A = await utils.rndHex(27);
   const response = new Response();
 
   try {
@@ -71,6 +72,7 @@ app.route('/token/mint').post(async (req, res) => {
     response.data = {
       z_A,
       z_A_index,
+      S_A
     };
     res.json(response);
   } catch (err) {
@@ -82,7 +84,8 @@ app.route('/token/mint').post(async (req, res) => {
 });
 
 app.route('/token/transfer').post(async (req, res) => {
-  const { A, pk_B, S_A, S_B, sk_A, z_A, z_A_index } = req.body;
+  const { A, pk_B, S_A, sk_A, z_A, z_A_index } = req.body;
+  const S_B = await utils.rndHex(27);
   const { address } = req.headers;
   const response = new Response();
   try {
@@ -102,6 +105,7 @@ app.route('/token/transfer').post(async (req, res) => {
       z_B,
       z_B_index,
       txObj,
+      S_B
     };
     res.json(response);
   } catch (err) {
@@ -113,7 +117,7 @@ app.route('/token/transfer').post(async (req, res) => {
 });
 
 app.route('/token/burn').post(async (req, res) => {
-  const { A, S_A, Sk_A, z_A, z_A_index } = req.body;
+  const { A, S_A, Sk_A, z_A, z_A_index, payTo } = req.body;
   const { address } = req.headers;
   const response = new Response();
   try {
@@ -124,7 +128,7 @@ app.route('/token/burn').post(async (req, res) => {
       z_A,
       z_A_index,
       address,
-      address, // payed to same user.
+      payTo, // payed to same user.
     );
     response.statusCode = 200;
     response.data = {
@@ -230,8 +234,8 @@ app
 
 app.route('/coin/mint').post(async (req, res) => {
   const { address } = req.headers;
-  const { A, pk_A, S_A } = req.body;
-
+  const { A, pk_A } = req.body;
+  const S_A = await utils.rndHex(27);
   const response = new Response();
 
   try {
@@ -240,6 +244,7 @@ app.route('/coin/mint').post(async (req, res) => {
     response.data = {
       coin,
       coin_index,
+      S_A
     };
     res.json(response);
   } catch (err) {
@@ -252,8 +257,9 @@ app.route('/coin/mint').post(async (req, res) => {
 
 app.route('/coin/transfer').post(async (req, res) => {
   const { address } = req.headers;
-  const { C, D, E, F, pk_B, S_C, S_D, S_E, S_F, sk_A, z_C, z_C_index, z_D, z_D_index } = req.body;
-
+  const { C, D, E, F, pk_B, S_C, S_D, sk_A, z_C, z_C_index, z_D, z_D_index } = req.body;
+  const S_E =  await utils.rndHex(27);
+  const S_F =  await utils.rndHex(27);
   const response = new Response();
   try {
     const { z_E, z_E_index, z_F, z_F_index, txObj } = await fController.transfer(
@@ -280,6 +286,8 @@ app.route('/coin/transfer').post(async (req, res) => {
       z_F,
       z_F_index,
       txObj,
+      S_E,
+      S_F
     };
     res.json(response);
   } catch (err) {

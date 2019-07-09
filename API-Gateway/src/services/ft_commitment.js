@@ -47,11 +47,12 @@ export async function mintCoin(req, res, next) {
   try {
     const { data } = await zkp.mintCoin(req.user, {
       A: req.body.A,
-      pk_A: req.body.pk_A,
-      S_A: req.body.S_A,
+      pk_A: req.body.pk_A
     });
 
+    data.coin_index = parseInt(data.coin_index, 16);
     data.action_type = 'minted';
+
     await db.addCoin(
       _.extend(req.body, data, {
         account: req.user.address,
@@ -115,6 +116,8 @@ export async function transferCoin(req, res, next) {
     req.body.pk_A = req.user.pk_A;
 
     const { data } = await zkp.transferCoin({ address }, req.body);
+    data.z_E_index = parseInt(data.z_E_index, 16);
+    data.z_F_index = parseInt(data.z_F_index, 16);
 
     req.body.action_type = 'transferred';
 
@@ -129,7 +132,7 @@ export async function transferCoin(req, res, next) {
     // F is the value returned as 'change' to the transferor
     await whisperTransaction(req, {
       E: req.body.E,
-      S_E: req.body.S_E,
+      S_E: data.S_E,
       pk: req.body.pk_B,
       z_E: data.z_E,
       z_E_index: data.z_E_index,
@@ -156,7 +159,8 @@ export async function transferCoin(req, res, next) {
       S_A: '0xa31adb1074f977413fddd3953e333529a3494e110251368cc823fb',
       pk_A: '0xf38da818df95339871ef7c6dcabc2fb90344bbf553c4e688323305',
       z_A_index: 0,
-      z_A: '0x1ec4a9b406fd3d79a01360ccd14c8530443ea9869f8e9560dafa56' 
+      z_A: '0x1ec4a9b406fd3d79a01360ccd14c8530443ea9869f8e9560dafa56',
+      payTo: 'bob',
      }
      * @param {*} req
      * @param {*} res
@@ -165,11 +169,40 @@ export async function burnCoin(req, res, next) {
   const response = new Response();
 
   try {
-    const { data } = await zkp.burnCoin(req.body, req.user);
+    const payToAddress = (await offchain.getAddressFromName(req.body.payTo || req.user.name)).address;
+
+    const { data } = await zkp.burnCoin({...req.body,  payTo: payToAddress }, req.user);
     data.action_type = 'burned';
 
     const senderAddress = req.user.address;
-    await db.updateCoinForBurn(req.user, _.extend(req.body, data, { account: senderAddress }));
+    await db.updateCoinForBurn(req.user, {
+      ...req.body,
+      ...data,
+      account: senderAddress,
+      receiver_name: (req.body.payTo || req.user.name)
+    });
+
+    const user = await db.fetchUser(req.user);
+
+    if (req.body.payTo) {
+      await whisperTransaction(req, {
+        amount: Number(req.body.A),
+        shield_contract_address: user.selected_coin_shield_contract,
+        transferee: req.body.payTo,
+        transferor: req.user.name,
+        transferor_address: req.user.address,
+        for: 'FToken',
+      }); // send ft token data to BOB side
+    } else {
+      await db.addFTTransaction(req.user, {
+        amount: Number(req.body.A),
+        shield_contract_address: user.selected_coin_shield_contract,
+        transferee: req.body.payTo,
+        transferor: req.user.name,
+        transferor_address: req.user.address,
+        is_received: true,
+      });
+    }
 
     response.statusCode = 200;
     response.data = data;

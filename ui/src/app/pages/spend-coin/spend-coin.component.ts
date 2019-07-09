@@ -163,8 +163,6 @@ export class SpendCoinComponent implements OnInit , AfterContentInit{
       coin2['salt'],
       coin1['coin_commitment_index'],
       coin2['coin_commitment_index'],
-      this.utilService.generateRandomSerial(),
-      this.utilService.generateRandomSerial(),
       coin1['coin_commitment'],
       coin2['coin_commitment'],
       localStorage.getItem('secretkey'),

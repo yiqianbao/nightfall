@@ -107,104 +107,114 @@ module.exports = class CoinService {
 
   async updateCoins(data) {
     const {
-      coins,
-      receiver_public_key,
-      receiver_coin_commitment,
-      returned_coin_commitment,
-      receiver_coin_value,
-      returned_coin_value,
-      receiver_name,
-      receiver_coin_commitment_index,
-      returned_coin_commitment_index,
+        coins,
+        receiver_public_key,
+        receiver_coin_commitment,
+        returned_coin_commitment,
+        receiver_coin_value,
+        returned_coin_value,
+        receiver_name,
+        receiver_coin_commitment_index,
+        returned_coin_commitment_index
     } = coinMapper(data);
 
-    for (let i = 0; i < coins.length; i += 1) {
-      const coin = coins[i];
-      this.db.updateData(
-        COLLECTIONS.COIN,
-        {
-          coin_value: coin.coin_value,
-          salt: coin.salt,
-        },
-        {
-          $set: {
-            receiver_public_key,
-            transfer_timestamp: new Date(),
-            receiver_coin_commitment,
-            returned_coin_commitment,
-            receiver_coin_value,
-            returned_coin_value,
-            receiver_coin_commitment_index,
-            returned_coin_commitment_index,
-            type: 'transfer',
-            receiver_name,
-          },
-        },
-      );
+    for (var i = 0; i < coins.length; i++) {
+        var coin = coins[i]
+        await this.db.updateData(
+            COLLECTIONS.COIN,
+            {
+                "coin_value": coin.coin_value,
+                "salt": coin.salt,
+            },
+            {
+                '$set': {
+                    'receiver_public_key': receiver_public_key,
+                    'transfer_timestamp': new Date(),
+                    'receiver_coin_commitment': receiver_coin_commitment,
+                    'returned_coin_commitment': returned_coin_commitment,
+                    'receiver_coin_value': receiver_coin_value,
+                    'returned_coin_value': returned_coin_value,
+                    receiver_coin_commitment_index,
+                    returned_coin_commitment_index,
+                    'type': 'transfer',
+                    'receiver_name': receiver_name
+                }
+            }
+        );
     }
-    // capture coin transfer transaction and add to coin-transaction history
+    //capture coin transfer transaction and add to coin-transaction history
     await this.coinTransactionService.addNewCoinTransaction(data);
-  }
+}
 
-  async addReturnCoins(data) {
+async  addReturnCoins(data) {
     const {
-      returned_coin_value,
-      sender_public_key,
-      returned_salt,
-      returned_coin_commitment,
-      returned_coin_commitment_index,
+        returned_coin_value,
+        sender_public_key,
+        returned_salt,
+        returned_coin_commitment,
+        returned_coin_commitment_index,
     } = coinMapper(data);
 
-    // Inserting coin change
-    const transactions = {
-      coin_value: returned_coin_value,
-      sender_public_key,
-      salt: returned_salt,
-      coin_commitment: returned_coin_commitment,
-      coin_commitment_index: returned_coin_commitment_index,
-      type: 'change',
-    };
-    await this.db.saveData(COLLECTIONS.COIN, transactions);
+    //Inserting coin change
+    let transactions = {
+        coin_value: returned_coin_value,
+        sender_public_key,
+        salt: returned_salt,
+        coin_commitment: returned_coin_commitment,
+        coin_commitment_index: returned_coin_commitment_index,
+        type: 'change'
+    }
+    await this.db.saveData(
+        COLLECTIONS.COIN,
+        transactions
+    );
 
-    // TODO-- db change -- history
-    // capture coin change transaction and add to coin-transaction history
-    // eslint-disable-next-line
+    //TODO-- db change -- history
+    //capture coin change transaction and add to coin-transaction history
     data.action_type = 'change';
     await this.coinTransactionService.addNewCoinTransaction(data);
-  }
+};
 
-  async updateBurnedCoin(data) {
-    const { coin_value, salt, burn_coin_commitment, burn_coin_commitment_index } = coinMapper(data);
-    // Add coin burn transaction to coin-transaction history
+async  updateBurnedCoin(data) {
+    const {
+        coin_value,
+        salt,
+        burn_coin_commitment,
+        burn_coin_commitment_index,
+        receiver_name,
+    } = coinMapper(data);
+    //Add coin burn transaction to coin-transaction history
     await this.coinTransactionService.addNewCoinTransaction(data);
 
     await this.db.updateData(
-      COLLECTIONS.COIN,
-      {
-        coin_value,
-        salt,
-      },
-      {
-        $set: {
-          burn_coin_commitment,
-          burn_timestamp: new Date(),
-          burn_coin_commitment_index,
-          type: 'burned',
+        COLLECTIONS.COIN,
+        {
+            "coin_value": coin_value,
+            "salt": salt,
         },
-      },
+        {
+            '$set': {
+                'burn_coin_commitment': burn_coin_commitment,
+                'burn_timestamp': new Date(),
+                burn_coin_commitment_index,
+                'type': 'burned',
+                receiver_name,
+            }
+        }
     );
-  }
+}
 
-  async getPrivateCoinTransactions(query) {
-    const { pageNo, limit } = query;
-    const collection = COLLECTIONS.COIN_TRANSACTION;
-    return this.db.getDbData(
-      collection,
-      null,
-      null,
-      { timestamp: -1 },
-      parseInt(pageNo, 10),
-      parseInt(limit, 10),
+async getPrivateCoinTransactions(query) {
+    const {pageNo, limit } = query
+    let collection = COLLECTIONS.COIN_TRANSACTION
+    return await this.db.getDbData(
+        collection,
+        null,
+        null,
+        { timestamp: -1 },
+        parseInt(pageNo),
+        parseInt(limit)
     );
-  }
-};
+}
+
+}

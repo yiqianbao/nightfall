@@ -25,7 +25,8 @@
           <label for="name mb-1">Enter amount</label>
           <div class="row col-sm-12">
             <input
-              type="text"
+              type="number"
+              (keypress)="utilService.validate($event)"
               class="form-control text-box"
               autoFocus
               [(ngModel)]="amount"

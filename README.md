@@ -24,7 +24,7 @@ As well as this file, please be sure to check out:
 - [UI.md](./UI.md) to learn how to drive the demonstration UI and make transactions.
 - [SECURITY.md](./SECURITY.md) to learn about how we handle security issues.
 
-## Security Updates
+## Security updates
 Critical security updates will be listed [here](./security-updates.md). If you had previously installed Nightfall prior to one of these security updates, please pull the latest code, and follow the extra re-installation steps.  
 
 ## Getting started
@@ -80,7 +80,7 @@ for security. This step can take a while, depending on your hardware. Before you
 more that you have provisioned enough memory for Docker, as described above:
 
 ```sh
-npm run prepare
+npm run setupAll
 ```
 
 Note that this is a completely automated run: although questions will be asked by the script they
