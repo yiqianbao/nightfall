@@ -10,11 +10,11 @@ declare isTestPassed=true
 
 systemInfo="$(uname -s)"
 case "${systemInfo}" in
-    Linux*)     machine=Linux;;
-    Darwin*)    machine=Mac;;
-    CYGWIN*)    machine=Cygwin;;
-    MINGW*)     machine=MinGw;;
-    *)          machine="UNKNOWN:${systemInfo}"
+  Linux*)     machine=Linux;;
+  Darwin*)    machine=Mac;;
+  CYGWIN*)    machine=Cygwin;;
+  MINGW*)     machine=MinGw;;
+  *)          machine="UNKNOWN:${systemInfo}"
 esac
 
 printf "${GREEN}*** Cleaning up all test containers ***${NC}\n"
@@ -25,6 +25,9 @@ docker-compose -f docker-compose.test.yml build
 
 printf "${GREEN}*** Pull zokrates docker image ***${NC}\n"
 docker pull michaelconnor/zok:2Jan2019
+
+printf "${GREEN}*** Install node modules dependencies of nightfall ***${NC}\n"
+npm ci
 
 printf "${GREEN}*** Installing zkp-util dependencies"
 pushd zkp-utils
