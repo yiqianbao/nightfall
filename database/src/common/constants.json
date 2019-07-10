@@ -3,8 +3,6 @@
         "USER": "User",
         "COIN": "Coin",
         "TOKEN": "Token",
-        "AUDIT": "Audit",
-        "COIN_AUDIT": "Coin_audit",
         "TOKEN_TRANSACTION": "Token_Transaction",
         "COIN_TRANSACTION": "Coin_Transaction",
         "CONTRACT": "Contract",

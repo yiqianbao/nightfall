@@ -68,14 +68,13 @@ router
 router.post('/set-all-publickey', async (req, res) => {
   const {
     pk,
-    whisper_pk: whisperPk,
-    audit_signing_pk: auditSigningPk,
+    whisper_pk: whisperPk
   } = req.body;
   const { address } = req.headers;
   const response = Response();
 
   try {
-    await setPublicKeys([auditSigningPk, whisperPk, pk], address);
+    await setPublicKeys([whisperPk, pk], address);
     response.statusCode = 200;
     response.data = { message: 'Keys Added.' };
     res.json(response);
