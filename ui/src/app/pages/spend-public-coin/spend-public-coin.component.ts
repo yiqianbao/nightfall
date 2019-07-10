@@ -80,7 +80,7 @@ export class SpendPublicCoinComponent implements OnInit {
    */
   transferPublicCoin() {
     if (!this.amount || !this.receiverName) return;
-    if (parseInt(this.amount) > this.coinCount) {
+    if (this.amount > this.coinCount) {
       return this.toastr.error('You do not have enough ERC-20 tokens');
     }
     this.isRequesting = true;
