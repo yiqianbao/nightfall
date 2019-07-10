@@ -78,7 +78,7 @@ export class MintTokensComponent implements OnInit, AfterContentInit {
         console.log('Token Minted is ' + tokenDetails['data']['z_A']);
         this.isRequesting = false;
         this.toastr.success('Token Minted is ' + tokenDetails['data']['z_A'].slice(0,20)+'...');
-        this.router.navigate(['/token/list']);
+        this.router.navigate(['/overview'], { queryParams: { selectedTab: 'tokens' } });
       }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');

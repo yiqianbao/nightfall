@@ -65,7 +65,7 @@ export class SpendPublicCoinComponent implements OnInit {
     this.coinApiService.transferPublicCoin(this.amount,localStorage.getItem('address'), this.receiverName).subscribe(transaction => {
       this.isRequesting = false;
       this.toastr.success('Public Coin transferred Successfully.');     
-      this.router.navigate(['/overview']);
+      this.router.navigate(['/overview'], { queryParams: { selectedTab: 'publiccoins' } });
     }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');      

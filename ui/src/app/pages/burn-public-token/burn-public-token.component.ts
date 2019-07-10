@@ -72,7 +72,7 @@ export class BurnPublicTokenComponent implements OnInit {
         this.isRequesting = false;
         this.toastr.success('Burn Successful');
         this.selectedToken = undefined;
-        this.router.navigate(['token/public/list']);
+        this.router.navigate(['/overview'], { queryParams: { selectedTab: 'publictokens' } });
       }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');

@@ -5,6 +5,7 @@ import {Config} from '../../config/config';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/forkJoin';
 import { UtilService } from '../../services/utils/util.service';
+import { ActivatedRoute, Router } from '@angular/router';
 /**
  * Overview component, which is used for rendering the overview page.
  * Here user can see the total count of ERC-20 tokens, ERC-20 token commitments, ERC-721 tokens and ERC-721 token commitments.
@@ -91,18 +92,41 @@ export class OverviewComponent extends Config implements OnInit {
    */
   ftSymbol: string;
 
+  /**
+   * Current selected tab
+   */
+  selectedTab:string = 'publictokens';
+
   constructor(
     private toastr: ToastrService,
     private accountService: AccountsApiService,
-    private utilService: UtilService
+    private utilService: UtilService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     super("ERC-20");
   }
 
   ngOnInit(): void {
     this.getUser();
-    this.getTransactions('publictokens');
     this.getUserERC20AndERC721TokenCount();
+    this.route
+      .queryParams
+      .subscribe(params => {
+        this.selectedTab = params['selectedTab'] || 'publictokens';
+        if(this.selectedTab === 'publictokens'){
+          this.getTransactions('publictokens');
+        }if(this.selectedTab === 'tokens'){ 
+          this.getTransactions('tokens');
+        }if(this.selectedTab === 'publiccoins'){
+          this.getTransactions('publiccoins');
+        }if(this.selectedTab === 'coins'){
+          this.getTransactions('coins');
+        }else{
+          this.getTransactions('publictokens');
+        }
+      });
+
   }
 
   /**
