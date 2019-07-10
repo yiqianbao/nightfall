@@ -112,8 +112,8 @@
     <div class="row   mb-3">
       <div class="col-sm-12">
         <h3 class="mb-2">Transactions History</h3>
-        <ngb-tabset>
-          <ngb-tab>
+        <ngb-tabset activeId="{{selectedTab}}">
+          <ngb-tab id="publictokens">
             <ng-template ngbTabTitle>
               <div (click)="getTransactions('publictokens')">
                 <strong>{{ nftName }}</strong>
@@ -134,7 +134,7 @@
                 <tbody>
                   <tr *ngFor="let transaction of publicTokenTransactions">
                     <td>{{ transaction.type.toUpperCase() }}</td>
-                    <td [title]="transaction.asset_hash">
+                    <td [title]="transaction.token_id">
                       {{ transaction.token_id.slice(0, 20) }}....
                     </td>
                     <td>{{ transaction.uri }}</td>
@@ -168,7 +168,7 @@
             </ng-template>
           </ngb-tab>
 
-          <ngb-tab>
+          <ngb-tab id="tokens">
             <ng-template ngbTabTitle>
               <div (click)="getTransactions('tokens')">
                 <strong>{{ nftName }} Commitment</strong>
@@ -188,7 +188,7 @@
                 <tbody>
                   <tr *ngFor="let transaction of tokenTransactions">
                     <td>{{ transaction.type.toUpperCase() }}</td>
-                    <td [title]="transaction.asset_hash">
+                    <td [title]="transaction.token_id">
                       {{ transaction.token_id.slice(0, 20) }}....
                     </td>
                     <td>{{ transaction.token_uri }}</td>
@@ -209,7 +209,7 @@
             </ng-template>
           </ngb-tab>
 
-          <ngb-tab>
+          <ngb-tab id="publiccoins">
             <ng-template ngbTabTitle>
               <div (click)="getTransactions('publiccoins')">
                 <strong>{{ ftName }}</strong>
@@ -249,7 +249,7 @@
             </ng-template>
           </ngb-tab>
 
-          <ngb-tab>
+          <ngb-tab id="coins">
             <ng-template ngbTabTitle>
               <div (click)="getTransactions('coins')">
                 <strong>{{ ftName }} Commitment</strong>
@@ -276,7 +276,7 @@
                     <td>
                       {{ ftSymbol + ' ' + utilService.convertToNumber(transaction.coin_value) }}
                     </td>
-                    <td>{{ transaction.coin_commitment.slice(0, 20) }}...</td>
+                    <td [title]="transaction.coin_commitment">{{ transaction.coin_commitment.slice(0, 20) }}...</td>
 
                     <td *ngIf="transaction.type === 'transferred'">
                       {{

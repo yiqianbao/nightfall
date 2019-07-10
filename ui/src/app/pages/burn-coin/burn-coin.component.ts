@@ -132,10 +132,10 @@ export class BurnCoinComponent implements OnInit , AfterContentInit{
       this.receiverName
     ).subscribe( data => {
         this.isRequesting = false;
-        this.toastr.success('Burned Coin ' + coin['coin_commitment'],);
-        this.router.navigate(['/coin/list']);
+        this.toastr.success('Burned Coin ' + coin['coin_commitment']);
         transactions.splice(Number(index), 1);
         this.selectedCoin = undefined;
+        this.router.navigate(['/overview'], { queryParams: { selectedTab: 'coins' } });
       }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');

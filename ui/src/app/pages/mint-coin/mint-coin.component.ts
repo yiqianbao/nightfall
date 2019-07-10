@@ -87,7 +87,7 @@ export class MintCoinsComponent implements OnInit {
     this.coinApiService.mintCoin(hexString, localStorage.getItem('publickey')).subscribe(tokenDetails => {
       this.isRequesting = false;
       this.toastr.success('Coin Minted is ' + tokenDetails['data']['coin']);
-      this.router.navigate(['/coin/list']);
+      this.router.navigate(['/overview'], { queryParams: { selectedTab: 'coins' } });
     }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');
