@@ -1,5 +1,5 @@
 import express from 'express';
-import { checkCorrectnessToken, mintToken, transferToken, burnToken } from '../services/token';
+import { checkCorrectnessToken, mintToken, transferToken, burnToken } from '../services/nft_commitment';
 
 const router = express.Router();
 

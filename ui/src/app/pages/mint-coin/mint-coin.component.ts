@@ -80,8 +80,6 @@ export class MintCoinsComponent implements OnInit {
    * Method to Mint ERC-20 token commitemnt.
    */
   mintCoin() {
-    
-    this.serialNumber = this.utilService.generateRandomSerial();
     const coinToMint = this.mintCoinForm.controls['A'].value;
     if (!coinToMint) return;
     if (coinToMint > this.coinCount) {
@@ -89,9 +87,10 @@ export class MintCoinsComponent implements OnInit {
     }
     this.isRequesting = true;
     var hexValue = (coinToMint).toString(16);
+
     var hexString = '0x' + hexValue.padStart(32,"0");
     console.log('Hexstring::',hexString);
-    this.coinApiService.mintCoin(hexString, localStorage.getItem('publickey'), this.serialNumber).subscribe(tokenDetails => {
+    this.coinApiService.mintCoin(hexString, localStorage.getItem('publickey')).subscribe(tokenDetails => {
       this.isRequesting = false;
       this.toastr.success('Coin Minted is ' + tokenDetails['data']['coin']);
       this.router.navigate(['/coin/list']);
