@@ -1,4 +1,4 @@
-import AccountUtils from 'account-utils';
+import AccountUtils from '../src/account-utils/account-utils';
 
 import {
   generateWhisperKeys,

@@ -1,5 +1,5 @@
 import Utils from 'zkp-utils';
-import AccountUtils from 'account-utils';
+import AccountUtils from '../src/account-utils/account-utils';
 
 import controller from '../src/f-token-controller';
 
