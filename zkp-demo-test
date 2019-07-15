@@ -64,16 +64,19 @@ npm run test || {
 	printf "${RED}*** Integration test failed ***${NC}\n"
 }
 
+
 printf "${GREEN}*** Cleaning up all test containers ***${NC}\n"
-docker-compose -f docker-compose.test.yml down -v || true
+docker-compose -f docker-compose.test.yml down -v || {
+  # delay need as waiting time so all container are properly done
+  # nightfall_test_net network have no dependency left.
+  sleep 3
 
-# delay need as waiting time so all container are properly done
-# nightfall_test_net network have no dependency left.
-sleep 3
+  networkID="$(docker network ls --filter name=nightfall_test_net --quiet)"
+  # removing network just in case docker-compose down haven't done the job.
+  printf "${GREEN}*** Remove test-net network if not removed ***${NC}\n"
+  [ -z "$networkID" ] && true || docker network rm nightfall_test_net
+}
 
-# removing network just in case docker-compose down haven't done the job.
-printf "${GREEN}*** Remove test-net network if not removed ***${NC}\n"
-docker network rm nightfall_test_net || true
 
 # Stop child terminal if all testcases passed.
 if [ "${machine}" == "Mac" ] && [ "${isTestPassed}" == "true" ]; then
