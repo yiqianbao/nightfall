@@ -65,7 +65,7 @@ Create and start a container using the zokrates image and make it durable
 async function runContainerMounted(_hostDirPath) {
   // if we're running this under docker-compose, the input directory is fixed, otherwise we need to set it:
   console.log(`ZoKrates running with Nodejs environment ${process.env.NODE_ENV}`);
-  const hostDirPath = process.env.NODE_ENV !== 'setup' ? 'nightfall_zkp-code' : _hostDirPath;
+  const hostDirPath = process.env.NODE_ENV !== 'setup' ? config.zkp.volume : _hostDirPath;
   // We mount from the safe_dir, to avoid accidental deletion or overwriting of the oringinal files that sit in config.ZOKRATES_HOST_CODE_DIRPATH_REL.
   // We mount to a new 'code' folder in the container. We can't mount to the 'outputs' folder, because we'll overwrite the zokrates app.
   console.log(
