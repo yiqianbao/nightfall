@@ -1,10 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import config from './config';
 import { pkdRouter, whisperRouter } from './routes';
 
-// require the config file
-config.setEnv(process.argv[2]);
 
 const app = express();
 

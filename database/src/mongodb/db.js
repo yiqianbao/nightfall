@@ -203,11 +203,10 @@ module.exports = class DB {
 
   updateUserRole() {
     return new Promise((resolve, reject) => {
-      exec(
-        `mongo nightfall --host=mongo -u ${config.mongo.admin} -p ${
-          config.mongo.password
-        } script_to_configure_roles.js`,
-        err => {
+      exec(`mongo ${config.mongo.databaseName} --host=${config.mongo.host} -u ${
+        config.mongo.admin
+        } -p ${config.mongo.password} script_to_configure_roles.js`,
+        (err) => {
           if (err) return reject(err);
           resolve();
           return 0;
