@@ -108,7 +108,6 @@ export class SpendTokenComponent implements OnInit, AfterContentInit {
       selectedToken.token_uri,
       selectedToken.salt,
       selectedToken.token_commitment,
-      this.utilService.generateRandomSerial(),
       localStorage.getItem('secretkey'),
       this.receiverName,
       selectedToken.token_commitment_index

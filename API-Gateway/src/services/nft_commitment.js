@@ -48,17 +48,16 @@ export async function mintToken(req, res, next) {
     // mint a private 'token commitment' within the shield contract to represent the public NFToken with the specified tokenID
     const { data } = await zkp.mintToken(req.user, {
       A: req.body.tokenID,
-      pk_A: req.user.pk_A,
-      S_A: req.body.S_A,
+      pk_A: req.user.pk_A
     });
 
     // add the new token commitment (and details of its hash preimage) to the token db.
     await db.addToken(req.user, {
       A: req.body.tokenID,
       tokenUri: req.body.uri,
-      S_A: req.body.S_A,
+      S_A: data.S_A,
       z_A: data.z_A,
-      z_A_index: data.z_A_index,
+      z_A_index: parseInt(data.z_A_index, 16),
       is_minted: true,
     });
 
@@ -128,9 +127,9 @@ export async function transferToken(req, res, next) {
       S_A: req.body.S_A,
       z_A: req.body.z_A,
       z_A_index: req.body.z_A_index,
-      S_B: req.body.S_B,
+      S_B: data.S_B,
       z_B: data.z_B,
-      z_B_index: data.z_B_index,
+      z_B_index: parseInt(data.z_B_index, 16),
       receiver_name: req.body.receiver_name,
       pk_B: req.body.pk_B,
       is_transferred: true,
@@ -141,9 +140,9 @@ export async function transferToken(req, res, next) {
       tokenUri: req.body.uri,
       A: req.body.A,
       pk: req.body.pk_B,
-      S_A: req.body.S_B,
+      S_A: data.S_B,
       z_A: data.z_B,
-      z_A_index: data.z_B_index,
+      z_A_index: parseInt(data.z_B_index, 16),
       transferee: req.body.receiver_name,
       for: 'token',
     });
@@ -173,7 +172,8 @@ export async function transferToken(req, res, next) {
           S_A: '0xf4c7028d78d140333a36381540e70e6210895a994429fb0483fb91',
           z_A: '0xe0e327cee19c16949a829977a1e3a36b92c2ef22b735b6d7af6c33',
           Sk_A: '0x99ba1bd95aef4bab8c4f8f73ccc804913c58828f6e11ed4760b2cd',
-          z_A_index: 1
+          z_A_index: 1,
+          payTo: 'bob',
       }
      * @param {*} req
      * @param {*} res
@@ -181,6 +181,7 @@ export async function transferToken(req, res, next) {
 export async function burnToken(req, res, next) {
   const response = new Response();
   try {
+    const payToAddress = (await offchain.getAddressFromName(req.body.payTo || req.user.name)).address;
     // Release the public token from escrow:
     // Nullify the burnor's 'token commitment' within the shield contract.
     // Transfer the public token from the shield contract to the owner.
@@ -190,6 +191,7 @@ export async function burnToken(req, res, next) {
       Sk_A: req.body.Sk_A,
       z_A: req.body.z_A,
       z_A_index: req.body.z_A_index,
+      payTo: payToAddress,
     });
 
     await db.updateToken(req.user, {
@@ -198,6 +200,7 @@ export async function burnToken(req, res, next) {
       S_A: req.body.S_A,
       z_A: req.body.z_A,
       z_A_index: req.body.z_A_index,
+      receiver_name: req.body.payTo || req.user.name,
       is_burned: true,
     });
 

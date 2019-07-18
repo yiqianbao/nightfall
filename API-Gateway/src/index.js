@@ -6,8 +6,8 @@
 *****************************************************************************/
 
 import rootRouter from './routes/api-gateway';
-import tokenRoutes from './routes/token';
-import coinRoutes from './routes/coin';
+import nftCommitmentRoutes from './routes/nft_commitment';
+import ftCommitmentRoutes from './routes/ft_commitment';
 import ftRoutes from './routes/ft';
 import nftRoutes from './routes/nft';
 import userRoutes from './routes/user';
@@ -20,7 +20,6 @@ var bodyParser = require('body-parser');
 const proxy = require('express-http-proxy');
 
 const config = require('./config/config'); // require the config file
-config.setEnv(process.env.NODE_ENV);
 const Config = require('./config/config').getProps(); //get the properties of environment
 
 const logger = require('./logger');
@@ -36,17 +35,17 @@ app.use(bodyParser.json()); // set up a filter to parse JSON
 app.use(cors()); // cross origin filter
 app.use(authentication);
 
-app.use('/zkp', unlockAccount, proxy(Config.zkp.app.host + ':' + Config.zkp.app.port));
+app.use('/zkp', unlockAccount, proxy(Config.zkp.host + ':' + Config.zkp.port));
 app.use('/database', proxy(Config.database.host + ':' + Config.database.port));
 app.use(
   '/offchain-service',
   unlockAccount,
-  proxy(Config.offchain.app.host + ':' + Config.offchain.app.port),
+  proxy(Config.offchain.host + ':' + Config.offchain.port),
 );
 app.use('/', unlockAccount, router);
 app.use('/', rootRouter);
-app.use('/token', tokenRoutes);
-app.use('/coin', coinRoutes);
+app.use('/token', nftCommitmentRoutes);
+app.use('/coin', ftCommitmentRoutes);
 app.use('/ft', ftRoutes);
 app.use('/nft', nftRoutes);
 app.use('/user', userRoutes);

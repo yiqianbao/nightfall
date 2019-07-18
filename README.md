@@ -24,7 +24,7 @@ As well as this file, please be sure to check out:
 - [UI.md](./UI.md) to learn how to drive the demonstration UI and make transactions.
 - [SECURITY.md](./SECURITY.md) to learn about how we handle security issues.
 
-## Security Updates
+## Security updates
 Critical security updates will be listed [here](./security-updates.md). If you had previously installed Nightfall prior to one of these security updates, please pull the latest code, and follow the extra re-installation steps.  
 
 ## Getting started
@@ -80,7 +80,7 @@ for security. This step can take a while, depending on your hardware. Before you
 more that you have provisioned enough memory for Docker, as described above:
 
 ```sh
-npm run prepare
+npm run setupAll
 ```
 
 Note that this is a completely automated run: although questions will be asked by the script they
@@ -135,7 +135,7 @@ volumes, and images created by up, using
 docker-compose down -v
 ```
 
-### To run tests (or if UI is not preferred)
+### To run zkp service unit tests
 
 After following the steps from 'Installing Nightfall' section,
 
@@ -165,6 +165,19 @@ directories.
 - `utils.test.js` - These are unit tests for utils used for running the tests.
 
 Note that, the zkp service tests take a while to run (approx. 2 hours)
+
+
+### To run Nightfall integration test
+
+Be sure to be in the main directory and then open terminal and run
+
+```sh
+./zkp-demo-test
+```
+-  Mac 
+  - Test suites will open a terminal, where you can see test container's log. And, this terminal will get close
+    automatically.
+  - configure `Teminal.app` to close window when shell exists `exit`.
 
 ## Using other ERC-20 and ERC-721 contracts
 

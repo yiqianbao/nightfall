@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 
 
 const Response = require('../response/response') // class for creating response object
-const config = require('./config') // require the config file
 
 const logger = require('./logger');
 
@@ -13,7 +12,6 @@ const cors = require('cors');
 const setDB = require('./middlewares/setDBMiddleware');
 const dbConnection = require('./middlewares/dbConnectionMiddleware');
 
-config.setEnv(process.argv[2])
 let accountRouter = require('../src/routes/accounts.routes')
 let tokenRouter = require('../src/routes/token.routes')
 let coinRouter = require('../src/routes/coin.routes')

@@ -21,16 +21,14 @@ export class TokenApiService {
    * 
    * Method to initiate a HTTP request to mint ERC-721 token commitment. 
    * 
-   * @param S_A {String} Random Serial number
    * @param token {String} Amount to mint
    */
-  mintToken(S_A: string, token: any) {
+  mintToken(token: any) {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
 
     const body = {
-      S_A,
       uri: token.uri,
       tokenID: token.token_id,
       contractAddress: token.shield_contract_address
@@ -51,12 +49,11 @@ export class TokenApiService {
  * @param uri {String} Token name
  * @param S_A {String} Serial number of token
  * @param z_A {String} Token2 commitment 
- * @param S_B String} Serial number of token
  * @param sk_A {String} Secret key of Alice
  * @param receiver_name {String} Rceiver name
  * @param z_A_index {String} Token commitment index
  */
-  spendToken(A: string, uri: string, S_A: string, z_A: string, S_B: string, sk_A: string, receiver_name:string, z_A_index: number) {
+  spendToken(A: string, uri: string, S_A: string, z_A: string, sk_A: string, receiver_name:string, z_A_index: number) {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
@@ -65,7 +62,6 @@ export class TokenApiService {
       A,
       uri,
       S_A,
-      S_B,
       sk_A,
       z_A,
       receiver_name,
@@ -88,7 +84,7 @@ export class TokenApiService {
    * @param Sk_A {String} Secret key of Alice
    * @param z_A_index {String} Token commitment index
    */
-  burnToken(A: string, uri: string, S_A: string, z_A: string, Sk_A: string, z_A_index: number) {
+  burnToken(A: string, uri: string, S_A: string, z_A: string, Sk_A: string, z_A_index: number, payTo:string) {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
@@ -98,7 +94,8 @@ export class TokenApiService {
       S_A,
       z_A,
       Sk_A,
-      z_A_index
+      z_A_index,
+      payTo
     };
     const url = config.apiGateway.root + 'token/burn';
     return this.http
