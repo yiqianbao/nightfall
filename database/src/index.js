@@ -3,7 +3,6 @@ const app = express();
 const router = express.Router()
 const bodyParser = require('body-parser');
 
-
 const Response = require('../response/response') // class for creating response object
 
 const logger = require('./logger');
