@@ -4,6 +4,9 @@
 @desc constants used by a nubmer of other modules
 */
 
+/* eslint-disable import/no-commonjs */
+
+
 let env = 'local' //set the environment to local if not mentioned while starting the app
 const props = {
   local: {

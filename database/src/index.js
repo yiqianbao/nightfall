@@ -1,3 +1,6 @@
+/* eslint-disable import/no-commonjs */
+/* eslint-disable func-names */
+
 const express = require('express');
 const app = express();
 const router = express.Router()
