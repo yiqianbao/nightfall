@@ -48,5 +48,22 @@ export class UtilService {
       if(theEvent.preventDefault) theEvent.preventDefault();
     }
   }
+
+  allowLowercase(evt){
+    let theEvent = evt || window.event;
+    let key;
+    if (theEvent.type === 'paste') { // Handle paste
+        key = evt.clipboardData.getData('text/plain');
+    } else {// Handle key press
+        key = theEvent.keyCode || theEvent.which;
+        key = String.fromCharCode(key);
+    }
+    var regex = /^[a-z]+$/;
+    if( !regex.test(key) ) {
+      theEvent.returnValue = false;
+      if(theEvent.preventDefault) theEvent.preventDefault();
+    }
+  }
+
   
 }
