@@ -1,41 +1,9 @@
-let Response = require('./response/response')
-let AccountService = require('../business/accounts.service')
-let CoinService = require('../business/coin.service')
-let TokenService = require('../business/token.service')
+/* eslint-disable import/no-commonjs */
 
-
-// initializing routes
-exports.init = router => {
-    // Route to get user by name, also use while login
-    router.route('/login').post(getUserByName)
-
-    // Route to create a public Account
-    router.route('/createAccount').post(createAccountHandler)
-
-    // Route to create a private account & get private account
-    router.route('/privateAccount').post(createPrivateAccountHandler)
-
-    // Route to get a user
-    router.route('/user').get(getUserHandler)
-
-    router.route('/count').get(getCountHandler)
-
-    router.route('/user/whisperIdentity')
-        .get(getWhisperIdentity)
-        .patch(updateWhisperIdentity);
-
-    router.route('/user/coinShield')
-        .post(addCoinShieldContractAddress)
-        .put(updateCoinShieldContractAddress)
-        .delete(deleteCoinShieldContractAddress)
-
-    router.route('/user/tokenShield')
-        .post(addTokenShieldContractAddress)
-        .put(updateTokenShieldContractAddress)
-        .delete(deleteTokenShieldContractAddress)
-};
-
-
+import Response from './response/response';
+import AccountService from '../business/accounts.service';
+import CoinService from '../business/coin.service';
+import TokenService from '../business/token.service';
 
 /**
  * this function is used to add ERC-20 Contract related information in user table, such as contract addresses,
@@ -48,19 +16,18 @@ exports.init = router => {
  * @param {*} req
  * @param {*} res
  */
-let addCoinShieldContractAddress = async (req, res, next) => {
-    const accountService = new AccountService(req.user.db);
-    try {
-        await accountService.addCoinShieldContractAddress(req.body);
-        let response = new Response(200, {message: "Contract Information Added"}, null);
-        res.json(response);
-    } catch (err) {
-        let response = new Response(500, null, {message: err.message});
-        res.status(500).json(response);
-        next(err);
-    }
-}
-
+const addCoinShieldContractAddress = async (req, res, next) => {
+  const accountService = new AccountService(req.user.db);
+  try {
+    await accountService.addCoinShieldContractAddress(req.body);
+    const response = new Response(200, { message: 'Contract Information Added' }, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
 /**
  * this function is used to remove ERC-20 contract related information from user table
@@ -70,19 +37,18 @@ let addCoinShieldContractAddress = async (req, res, next) => {
  * @param {*} req
  * @param {*} res
  */
-let deleteCoinShieldContractAddress = async (req, res, next) => {
-    const accountService = new AccountService(req.user.db);
-    try {
-        const status = await accountService.deleteCoinShieldContractAddress(req.query);
-        let response = new Response(200, {message: "Contract Information Removed", status}, null);
-        res.json(response);
-    } catch (err) {
-        let response = new Response(500, null, {message: err.message});
-        res.status(500).json(response);
-        next(err);
-    }
-}
-
+const deleteCoinShieldContractAddress = async (req, res, next) => {
+  const accountService = new AccountService(req.user.db);
+  try {
+    const status = await accountService.deleteCoinShieldContractAddress(req.query);
+    const response = new Response(200, { message: 'Contract Information Removed', status }, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
 /**
  * this function is used to update ERC-20 Contract related information in user table, such as contract addresses,
@@ -95,19 +61,18 @@ let deleteCoinShieldContractAddress = async (req, res, next) => {
  * @param {*} req
  * @param {*} res
  */
-let updateCoinShieldContractAddress = async (req, res, next) => {
-    const accountService = new AccountService(req.user.db);
-    try {
-        await accountService.updateCoinShieldContractAddress(req.body);
-        let response = new Response(200, {message: "Contract Information Updated"}, null);
-        res.json(response);
-    } catch (err) {
-        let response = new Response(500, null, {message: err.message});
-        res.status(500).json(response);
-        next(err);
-    }
-}
-
+const updateCoinShieldContractAddress = async (req, res, next) => {
+  const accountService = new AccountService(req.user.db);
+  try {
+    await accountService.updateCoinShieldContractAddress(req.body);
+    const response = new Response(200, { message: 'Contract Information Updated' }, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
 /**
  * this function is used to add ERC-721 contract related information in user table, such as contract addresses,
@@ -120,19 +85,18 @@ let updateCoinShieldContractAddress = async (req, res, next) => {
  * @param {*} req
  * @param {*} res
  */
-let addTokenShieldContractAddress = async (req, res, next) => {
-    const accountService = new AccountService(req.user.db);
-    try {
-        await accountService.addTokenShieldContractAddress(req.body);
-        let response = new Response(200, {message: "Contract Information Added"}, null);
-        res.json(response);
-    } catch (err) {
-        let response = new Response(500, null, {message: err.message});
-        res.status(500).json(response);
-        next(err);
-    }
-}
-
+const addTokenShieldContractAddress = async (req, res, next) => {
+  const accountService = new AccountService(req.user.db);
+  try {
+    await accountService.addTokenShieldContractAddress(req.body);
+    const response = new Response(200, { message: 'Contract Information Added' }, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
 /**
  * this function is used to remove ERC-721 contract related information from user table
@@ -142,19 +106,18 @@ let addTokenShieldContractAddress = async (req, res, next) => {
  * @param {*} req
  * @param {*} res
  */
-let deleteTokenShieldContractAddress = async (req, res, next) => {
-    const accountService = new AccountService(req.user.db);
-    try {
-        const status = await accountService.deleteTokenShieldContractAddress(req.query);
-        let response = new Response(200, {message: "Contract Information Removed", status}, null);
-        res.json(response);
-    } catch (err) {
-        let response = new Response(500, null, {message: err.message});
-        res.status(500).json(response);
-        next(err);
-    }
-}
-
+const deleteTokenShieldContractAddress = async (req, res, next) => {
+  const accountService = new AccountService(req.user.db);
+  try {
+    const status = await accountService.deleteTokenShieldContractAddress(req.query);
+    const response = new Response(200, { message: 'Contract Information Removed', status }, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
 /**
  * this function is used to update ERC-721 Contract related information in user table, such as contract addresses,
@@ -167,19 +130,18 @@ let deleteTokenShieldContractAddress = async (req, res, next) => {
  * @param {*} req
  * @param {*} res
  */
-let updateTokenShieldContractAddress = async (req, res, next) => {
-    const accountService = new AccountService(req.user.db);
-    try {
-        await accountService.updateTokenShieldContractAddress(req.body);
-        let response = new Response(200, {message: "Contract Information Updated"}, null);
-        res.json(response);
-    } catch (err) {
-        let response = new Response(500, null, {message: err.message});
-        res.status(500).json(response);
-        next(err);
-    }
-}
-
+const updateTokenShieldContractAddress = async (req, res, next) => {
+  const accountService = new AccountService(req.user.db);
+  try {
+    await accountService.updateTokenShieldContractAddress(req.body);
+    const response = new Response(200, { message: 'Contract Information Updated' }, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
 /**
  * This method called at login, assigning new whisper key in user at db.
@@ -187,20 +149,19 @@ let updateTokenShieldContractAddress = async (req, res, next) => {
  * @param {*} req
  * @param {*} res
  */
-let updateWhisperIdentity = async (req, res, next) => {
-    const {shhIdentity} = req.body;
-    const accountService = new AccountService(req.user.db);
-    try {
-        await accountService.updateWhisperIdentity(shhIdentity);
-        let response = new Response(200, {message: "Whisper-key updated"}, null);
-        res.json(response);
-    } catch (err) {
-        let response = new Response(500, null, {message: err.message});
-        res.status(500).json(response);
-        next(err);
-    }
-}
-
+const updateWhisperIdentity = async (req, res, next) => {
+  const { shhIdentity } = req.body;
+  const accountService = new AccountService(req.user.db);
+  try {
+    await accountService.updateWhisperIdentity(shhIdentity);
+    const response = new Response(200, { message: 'Whisper-key updated' }, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
 /**
  * This method fetch whisper key associated with user.
@@ -208,48 +169,46 @@ let updateWhisperIdentity = async (req, res, next) => {
  * @param {*} req
  * @param {*} res
  */
-let getWhisperIdentity = async (req, res, next) => {
-    const accountService = new AccountService(req.user.db);
-    try {
-        let keys = await accountService.getWhisperIdentity();
-        let response = new Response(200, {...keys}, null);
-        res.json(response);
-    } catch (err) {
-        let response = new Response(500, null, {message: err.message});
-        res.status(500).json(response);
-        next(err);
-    }
-}
-
+const getWhisperIdentity = async (req, res, next) => {
+  const accountService = new AccountService(req.user.db);
+  try {
+    const keys = await accountService.getWhisperIdentity();
+    const response = new Response(200, { ...keys }, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
 /**
  * This function is used to get account balances
  * @param {*} req
  * @param {*} res
  */
-let getCountHandler = async (req, res, next) => {
-    const tokenService = new TokenService(req.user.db);
-    const coinService = new CoinService(req.user.db);
-    try{
-        let tokens  = await tokenService.getToken();
-        let coins = await coinService.getCoinByAccount();
-        let coinList = coins.data;
-        let totalAmount = 0;
-        if(coinList.length){
-            coinList.forEach(coin => {
-                totalAmount += Number(coin.coin_value)
-            });
-        }
-        let data = { tokenCount:  tokens ? tokens.length : 0, totalAmount }
-        let response = new Response(200, data, null)
-        res.json(response)
-    }catch(err){
-        let response = new Response(500, null, {message: err.message})
-        res.status(500).json(response)
-        next(err)
+const getCountHandler = async (req, res, next) => {
+  const tokenService = new TokenService(req.user.db);
+  const coinService = new CoinService(req.user.db);
+  try {
+    const tokens = await tokenService.getToken();
+    const coins = await coinService.getCoinByAccount();
+    const coinList = coins.data;
+    let totalAmount = 0;
+    if (coinList.length) {
+      coinList.forEach(coin => {
+        totalAmount += Number(coin.coin_value);
+      });
     }
-}
-
+    const data = { tokenCount: tokens ? tokens.length : 0, totalAmount };
+    const response = new Response(200, data, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
 /**
  * This function is used to fetch user by name (login purpose).
@@ -257,19 +216,18 @@ let getCountHandler = async (req, res, next) => {
  * @param {*} req
  * @param {*} res
  */
-let getUserByName = async (req, res, next) => {
-    const accountService = new AccountService(req.user.db)
-    try{
-        let data = await accountService.getUser({name: req.body.name})
-        let response = new Response(200, data, null)
-        res.json(response)
-    }catch(err) {
-        let response = new Response(500, null, {message: err.message})
-        res.status(500).json(response)
-        next(err)
-    }
-}
-
+const getUserByName = async (req, res, next) => {
+  const accountService = new AccountService(req.user.db);
+  try {
+    const data = await accountService.getUser({ name: req.body.name });
+    const response = new Response(200, data, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
 /**
  * This function will create a user(public ethereum account)
@@ -280,19 +238,18 @@ let getUserByName = async (req, res, next) => {
  * @param {*} req
  * @param {*} res
  */
-let createAccountHandler =  async (req, res, next) => {
-    const accountService = new AccountService(req.user.db);
-    try{
-        let data = await accountService.createAccount(req.body)
-        let response = new Response(200, data, null)
-        res.json(response)
-    }catch(err){
-        let response = new Response(500, null, {message: err.message})
-        res.status(500).json(response)
-        next(err);
-    }
-}
-
+const createAccountHandler = async (req, res, next) => {
+  const accountService = new AccountService(req.user.db);
+  try {
+    const data = await accountService.createAccount(req.body);
+    const response = new Response(200, data, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
 /**
  * This function is used to create private account for a user
@@ -303,19 +260,18 @@ let createAccountHandler =  async (req, res, next) => {
  * @param {*} req
  * @param {*} res
  */
-let createPrivateAccountHandler = async (req, res, next) => {
-    const accountService = new AccountService(req.user.db);
-    try{
-        let data = await accountService.updateUserWithPrivateAccount(req.body)
-        let response = new Response(200, data, null)
-        res.json(response)
-    }catch(err){
-        let response = new Response(500, null, {message: err.message})
-        res.status(500).json(response)
-        next(err);
-    }
-}
-
+const createPrivateAccountHandler = async (req, res, next) => {
+  const accountService = new AccountService(req.user.db);
+  try {
+    const data = await accountService.updateUserWithPrivateAccount(req.body);
+    const response = new Response(200, data, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
 /**
  * This function is used to get the user using public key
@@ -323,15 +279,49 @@ let createPrivateAccountHandler = async (req, res, next) => {
  * @param {*} req
  * @param {*} res
  */
-let getUserHandler = async (req, res, next) => {
-     const accountService = new AccountService(req.user.db);
-    try{
-        let data = await accountService.getUser()
-        let response = new Response(200, data, null)
-        res.json(response)
-    }catch(err){
-        let response = new Response(500, null, {message: err.message})
-        res.status(500).json(response)
-        next(err)
-    }
-}
+const getUserHandler = async (req, res, next) => {
+  const accountService = new AccountService(req.user.db);
+  try {
+    const data = await accountService.getUser();
+    const response = new Response(200, data, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
+
+// initializing routes
+exports.init = router => {
+  // Route to get user by name, also use while login
+  router.route('/login').post(getUserByName);
+
+  // Route to create a public Account
+  router.route('/createAccount').post(createAccountHandler);
+
+  // Route to create a private account & get private account
+  router.route('/privateAccount').post(createPrivateAccountHandler);
+
+  // Route to get a user
+  router.route('/user').get(getUserHandler);
+
+  router.route('/count').get(getCountHandler);
+
+  router
+    .route('/user/whisperIdentity')
+    .get(getWhisperIdentity)
+    .patch(updateWhisperIdentity);
+
+  router
+    .route('/user/coinShield')
+    .post(addCoinShieldContractAddress)
+    .put(updateCoinShieldContractAddress)
+    .delete(deleteCoinShieldContractAddress);
+
+  router
+    .route('/user/tokenShield')
+    .post(addTokenShieldContractAddress)
+    .put(updateTokenShieldContractAddress)
+    .delete(deleteTokenShieldContractAddress);
+};

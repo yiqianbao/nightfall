@@ -1,7 +1,7 @@
 const request = require('request');
 
 const Config = require('../config/config').getProps();
-const host = Config.offchain.app.host + ':' + Config.offchain.app.port;
+const host = Config.offchain.host + ':' + Config.offchain.port;
 
 
 const isNameInUse = name => {

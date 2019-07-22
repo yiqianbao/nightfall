@@ -1,3 +1,5 @@
+/* eslint-disable import/no-commonjs */
+
 module.exports = ({name, email, address, shhIdentity}) => {
     let user = {}
     user.name = name
