@@ -61,15 +61,9 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('name',data['data']['name']);
         localStorage.setItem('publickey',data['data']['publickey']);
         localStorage.setItem('secretkey',data['data']['secretkey']);
-        localStorage.setItem('isAuditor',data['data']['is_auditor']);
         this.isRequesting = false;
         this.sg['name'] = data['data']['name'];
-        this.sg['isAuditor'] = data['data']['is_auditor'];
-        if(data['data']['is_auditor']){
-          this.router.navigate(['/audit']);
-        }else{
-          this.router.navigate(['/overview']);
-        }
+        this.router.navigate(['/overview']);
         
       },
       (err: HttpErrorResponse) => {

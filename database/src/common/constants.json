@@ -3,8 +3,6 @@
         "USER": "User",
         "COIN": "Coin",
         "TOKEN": "Token",
-        "AUDIT": "Audit",
-        "COIN_AUDIT": "Coin_audit",
         "TOKEN_TRANSACTION": "Token_Transaction",
         "COIN_TRANSACTION": "Coin_Transaction",
         "CONTRACT": "Contract",
@@ -12,4 +10,4 @@
         "PUBLIC_TOKEN_TRANSACTION": "Public_Token_Transaction",
         "PUBLIC_COIN_TRANSACTION": "Public_Coin_Transaction"
     }
-}
+  }

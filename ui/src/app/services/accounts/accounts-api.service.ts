@@ -156,8 +156,7 @@ export class AccountsApiService {
     const body = {
       name: account.accountName,
       email: account.email,
-      password: account.passphrase,
-      isAuditor: account.isAuditor
+      password: account.passphrase
     };
     return this.http.post(url, body, httpOptions).pipe(tap(data => console.log('Account Created')));
   }

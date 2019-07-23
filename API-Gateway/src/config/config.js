@@ -1,50 +1,42 @@
-let env = 'LOCAL' //set the environment to local if not mentioned while starting the app
+let env = 'local' //set the environment to local if not mentioned while starting the app
 const props = {
-    LOCAL: {
+    local: {
         HASHLENGTH: 8, //expected length of a hash in bytes
-        accounts: {
-            app: {
-                host: 'http://accounts',
-                port: "80"
-            },
-            rpc: {
-                host: 'http://ganache',
-                port: "8545"
-            }
-        },
-        authenticationApi: {
-            app: {
-                host: 'http://api',
-                port: "80"
-            },
-            rpc: {
-                host: 'http://ganache',
-                port: "8545"
-            }
+        accounts:{
+            host: 'http://accounts',
+            port: "80"
         },
         zkp: {
-            app: {
-                host: 'http://zkp',
-                port: "80"
-            },
-            rpc: {
-                host: 'http://localhost',
-                port: "8545"
-            }
+            host: 'http://zkp',
+            port: "80"
         },
         database: {
             host: 'http://database',
             port: "80"
         },
         offchain: {
-            app: {
-                host: 'http://offchain',
-                port: "80"
-            },
-            rpc: {
-                host: 'http://ganache',
-                port: "8545"
-            }
+            host: 'http://offchain',
+            port: "80"
+        },
+        enable_logger: true
+    },
+    test: {
+        HASHLENGTH: 8, //expected length of a hash in bytes
+        accounts:{
+            host: 'http://accounts_test',
+            port: "80"
+        },
+        zkp: {
+            host: 'http://zkp_test',
+            port: "80"
+        },
+        database: {
+            host: 'http://database_test',
+            port: "80"
+        },
+        offchain: {
+            host: 'http://offchain_test',
+            port: "80"
         },
         enable_logger: true
     },
@@ -59,6 +51,7 @@ let setEnv = (environment) => {
         env = environment
     }
 }
+setEnv(process.env.NODE_ENV);
 
 /**
  * get the appropriate environment config
