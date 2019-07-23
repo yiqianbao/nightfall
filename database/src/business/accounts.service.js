@@ -135,19 +135,11 @@ export default class AccountService {
     }
   }
 
-  async getAuditorDetail(auditor) {
-    const condition = { is_auditor: true };
-    if (auditor) {
-      condition.id = auditor;
-    }
-    try {
-      return await this.db.getData(enums.COLLECTIONS.USER, condition);
-    } catch (err) {
-      return Promise.reject(err);
-    }
-  }
+  async addCoinShieldContractAddress ({
+    contract_name,
+    contract_address
+  }) {
 
-  async addCoinShieldContractAddress({ contract_name, contract_address }) {
     await this.db.updateData(
       enums.COLLECTIONS.USER,
       {

@@ -32,10 +32,6 @@ export async function loginHandler(req, res, next) {
     // get jwt token
     const token = createToken(data, password);
 
-    if (data.is_auditor) {
-      await audit.configureEventWatch(data);
-    }
-
     const userData = {
       address: data.address,
       name: data.name,
@@ -68,7 +64,7 @@ export async function loginHandler(req, res, next) {
 export async function createAccountHandler(req, res, next) {
   const response = new Response();
 
-  const { password, name, isAuditor } = req.body;
+  const { password, name } = req.body;
 
   try {
     const { status } = await offchain.isNameInUse(name);

@@ -233,7 +233,6 @@ const getUserByName = async (req, res, next) => {
  * This function will create a user(public ethereum account)
  * req.body = { name: 'a',
                 email: 'a',
-                idAuditor: false,
                 address: '0xE237b19f7a9f2E92018a68f4fB07C451F578fa26' => Ethereum account
             }
  * @param {*} req
