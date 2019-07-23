@@ -1,0 +1,87 @@
+#!/bin/bash
+set -e
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+dir="$(pwd)"
+declare isTestPassed=true
+
+systemInfo="$(uname -s)"
+case "${systemInfo}" in
+  Linux*)     machine=Linux;;
+  Darwin*)    machine=Mac;;
+  CYGWIN*)    machine=Cygwin;;
+  MINGW*)     machine=MinGw;;
+  *)          machine="UNKNOWN:${systemInfo}"
+esac
+
+printf "${GREEN}*** Cleaning up all test containers ***${NC}\n"
+docker-compose -f docker-compose.test.yml down -v || true
+
+printf "${GREEN}*** Build image for all Containers ***${NC}\n"
+docker-compose -f docker-compose.test.yml build
+
+printf "${GREEN}*** Pull zokrates docker image ***${NC}\n"
+docker pull michaelconnor/zok:2Jan2019
+
+printf "${GREEN}*** Install node modules dependencies of nightfall ***${NC}\n"
+npm ci
+
+printf "${GREEN}*** Installing zkp-util dependencies"
+pushd zkp-utils
+npm install
+popd
+
+printf "${GREEN}*** Launching containerized ganache-test ***${NC}\n"
+docker-compose -f docker-compose.test.yml up -d ganache_test
+
+printf "${GREEN}*** Deploying all contracts ***${NC}\n"
+make offchain-test-migrate
+
+printf "${GREEN}*** Launching containerized microservices ***${NC}\n"
+docker-compose -f docker-compose.test.yml up -d
+
+
+# Create a child Terminal to see docker log, while running testcases.
+if [ "${machine}" == "Mac" ]; then
+	childTab=$(osascript -e "
+	  tell application \"Terminal\"
+	    set currentTab to do script \"cd $dir\"
+	    delay 2
+	    do script \"docker-compose -f docker-compose.test.yml logs -f\" in currentTab
+	  end tell")
+fi
+
+# delay needed to ensure all container are in running state.
+sleep 30
+
+# RUN test suits and remove test containers
+printf "${GREEN}*** Run Integration test ***${NC}\n"
+npm run test || {
+	isTestPassed=false
+	printf "${RED}*** Integration test failed ***${NC}\n"
+}
+
+
+printf "${GREEN}*** Cleaning up all test containers ***${NC}\n"
+docker-compose -f docker-compose.test.yml down -v || {
+  # delay need as waiting time so all container are properly done
+  # nightfall_test_net network have no dependency left.
+  sleep 3
+
+  networkID="$(docker network ls --filter name=nightfall_test_net --quiet)"
+  # removing network just in case docker-compose down haven't done the job.
+  printf "${GREEN}*** Remove test-net network if not removed ***${NC}\n"
+  [ -z "$networkID" ] && true || docker network rm nightfall_test_net
+}
+
+
+# Stop child terminal if all testcases passed.
+if [ "${machine}" == "Mac" ] && [ "${isTestPassed}" == "true" ]; then
+	osascript -e "
+	  tell application \"Terminal\"
+	    do script \"exit\" in $childTab
+	  end tell"
+fi

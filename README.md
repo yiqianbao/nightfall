@@ -25,7 +25,10 @@ As well as this file, please be sure to check out:
 - [SECURITY.md](./SECURITY.md) to learn about how we handle security issues.
 
 ## Security updates
-Critical security updates will be listed [here](./security-updates.md). If you had previously installed Nightfall prior to one of these security updates, please pull the latest code, and follow the extra re-installation steps.  
+
+Critical security updates will be listed [here](./security-updates.md). If you had previously
+installed Nightfall prior to one of these security updates, please pull the latest code, and follow
+the extra re-installation steps.
 
 ## Getting started
 
@@ -44,15 +47,18 @@ The Nightfall demonstration requires the following software to run:
     space (minimum - 12GB memory is better) or 16GB of memory with 512MB of swap. **The default
     values for Docker Desktop will NOT work. No, they really won't**.
 - Python
-  - Be sure npm is setup to use v2.7 of python, not python3. To check the python version, run `python --version`
-  - You may need to run `npm config set python /usr/bin/python2.7` (or wherever your python 2 location is)
+  - Be sure npm is setup to use v2.7 of python, not python3. To check the python version, run
+    `python --version`
+  - You may need to run `npm config set python /usr/bin/python2.7` (or wherever your python 2
+    location is)
 - Node (tested with node 10.15.3) with npm and node-gyp.
   - Will not work with node v12. To check the node version, run `node --version`
-  - If using mac/brew, then you may need to run `brew install node@10` and `brew link --overwrite node@10 --force`
+  - If using mac/brew, then you may need to run `brew install node@10` and
+    `brew link --overwrite node@10 --force`
 - Xcode Command line tools:
   - If running macOS, install Xcode then run `xcode-select --install` to install command line tools.
-- docker-proxy
-  - <https://github.com/aj-may/docker-proxy/>
+- dotdocker
+  - <https://github.com/aj-may/dotdocker/>
 
 ### Starting servers
 
@@ -60,9 +66,9 @@ Start Docker:
 
 - On Mac, open Docker.app.
 
-Start docker-proxy:
+Start dotdocker:
 
-- `docker-proxy start`
+- `dotdocker start`
 
 ### Installing Nightfall
 
@@ -135,7 +141,7 @@ volumes, and images created by up, using
 docker-compose down -v
 ```
 
-### To run tests (or if UI is not preferred)
+### To run zkp service unit tests
 
 After following the steps from 'Installing Nightfall' section,
 
@@ -166,6 +172,19 @@ directories.
 
 Note that, the zkp service tests take a while to run (approx. 2 hours)
 
+
+### To run Nightfall integration test
+
+Be sure to be in the main directory and then open terminal and run
+
+```sh
+./zkp-demo-test
+```
+-  Mac 
+  - Test suites will open a terminal, where you can see test container's log. And, this terminal will get close
+    automatically.
+  - configure `Teminal.app` to close window when shell exists `exit`.
+
 ## Using other ERC-20 and ERC-721 contracts
 
 Nightfall will operate with any ERC-20 and ERC-721 compliant contract. The contracts' addresses are
@@ -193,10 +212,11 @@ Ganache one we provide
 ## Acknowledgements
 
 Team Nightfall thanks those who have indirectly contributed to it, with the ideas and tools that
-they have shared with the community:  
-- [ZoKrates](https://hub.docker.com/r/michaelconnor/zok)  
-- [Libsnark](https://github.com/scipr-lab/libsnark)  
-- [Zcash](https://github.com/zcash/zcash)  
+they have shared with the community:
+
+- [ZoKrates](https://hub.docker.com/r/michaelconnor/zok)
+- [Libsnark](https://github.com/scipr-lab/libsnark)
+- [Zcash](https://github.com/zcash/zcash)
 - [GM17](https://eprint.iacr.org/2017/540.pdf)
 - [0xcert](https://github.com/0xcert/ethereum-erc721/)
 - [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/token/ERC20/ERC20.sol)

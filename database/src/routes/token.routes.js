@@ -1,36 +1,11 @@
-let Response = require('./response/response')
-let TokenService = require('../business/token.service')
-let accountsService = require('../business/accounts.service')
+/* eslint-disable camelcase */
+/* eslint-disable import/no-commonjs */
 
-// initializing routes
-exports.init = router => {
-    // public non-fungible tokens
-    router.route('/nft')
-        .post(addNFToken)
-        .patch(updateNFToken)
-        .get(getNFTokens);
-
-    router.route('/nft/transaction')
-        .get(getNFTTransactions);
-
-    router.route('/nft/:token_id')
-        .get(getNFToken);
-
-
-    // private non-fungible tokens
-    router.route('/token')
-        .post(addTokenHandler)
-        .get(getTokenHandler)
-        .patch(updateTokenHandler);
-
-    router.route('/token/transaction')
-        .get(getPrivateTokenTransactions);
-};
-
-
+import Response from './response/response';
+import TokenService from '../business/token.service';
 
 // public non-fungible tokens
-    /**
+/**
      * This function will add new ERC 721 token in db.
      * req.body {
             uri: 'table/t1',
@@ -46,21 +21,20 @@ exports.init = router => {
      * @param {*} req
      * @param {*} res
      */
-     let addNFToken = async function (req, res, next) {
-        try {
-            const tokenService = new TokenService(req.user.db);
-            await tokenService.addNFToken(req.body);
-            let response = new Response(200, { message: "inserted" }, null)
-            res.json(response)
-        } catch (err) {
-            let response = new Response(500, null, {message: err.message})
-            res.status(500).json(response)
-            next(err);
-        }
-    }
+const addNFToken = async (req, res, next) => {
+  try {
+    const tokenService = new TokenService(req.user.db);
+    await tokenService.addNFToken(req.body);
+    const response = new Response(200, { message: 'inserted' }, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
-
-    /**
+/**
      * This function will update ERC 721 token in db.
      * req.body {
             uri: 'table/t1',
@@ -77,22 +51,20 @@ exports.init = router => {
      * @param {*} req
      * @param {*} res
      */
-    let updateNFToken = async function (req, res, next) {
-        try {
-            const tokenService = new TokenService(req.user.db);
-            await tokenService.updateNFToken(req.body);
-            let response = new Response(200, { message: "updated" }, null)
-            res.json(response)
-        } catch (err) {
-            let response = new Response(500, null, {message: err.message})
-            res.status(500).json(response)
-            next(err);
+const updateNFToken = async (req, res, next) => {
+  try {
+    const tokenService = new TokenService(req.user.db);
+    await tokenService.updateNFToken(req.body);
+    const response = new Response(200, { message: 'updated' }, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
-        }
-    }
-
-
-    /**
+/**
      * This method to list down all public NFT Tokens (ERC 721)
      * with or without pagination.
      * if pagination "pageNo" and "limit" will be present
@@ -106,21 +78,20 @@ exports.init = router => {
      * @param {*} res
      * @param {*} next
      */
-    let getNFTokens = async function (req, res, next) {
-        try {
-            const tokenService = new TokenService(req.user.db);
-            let tokens = await tokenService.getNFTokens(req.query);
-            let response = new Response(200, tokens, null);
-            res.json(response)
-        } catch (err) {
-            let response = new Response(500, null, {message: err.message})
-            res.status(500).json(response)
-            next(err);
-        }
-    }
+const getNFTokens = async (req, res, next) => {
+  try {
+    const tokenService = new TokenService(req.user.db);
+    const tokens = await tokenService.getNFTokens(req.query);
+    const response = new Response(200, tokens, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
-
-    /**
+/**
      * This function returns all the ERC 721 tokens transactions.
      * req.query {
             pageNo: 1,
@@ -129,21 +100,20 @@ exports.init = router => {
      * @param {*} req
      * @param {*} res
      */
-    let getNFTTransactions = async function (req, res, next) {
-        const tokenService = new TokenService(req.user.db);
-        try {
-            const transactions = await tokenService.getNFTTransactions(req.query);
-            let response = new Response(200, transactions, null)
-            res.json(response)
-        } catch (err) {
-            let response = new Response(500, null, {message: err.message})
-            res.status(500).json(response)
-            next(err);
-        }
-    }
+const getNFTTransactions = async (req, res, next) => {
+  const tokenService = new TokenService(req.user.db);
+  try {
+    const transactions = await tokenService.getNFTTransactions(req.query);
+    const response = new Response(200, transactions, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
-
-    /**
+/**
      * This function returns a specfic ERC 721 token by token_id, to get its detail.
      * req.params {
             token_id: '0xa23..'
@@ -151,24 +121,21 @@ exports.init = router => {
      * @param {*} req
      * @param {*} res
      */
-    let getNFToken = async function (req, res, next) {
-        try {
-            const tokenService = new TokenService(req.user.db);
-            let token = await tokenService.getNFToken(req.params.token_id);
-            let response = new Response(200, { token }, null);
-            res.json(response)
-        } catch (err) {
-            let response = new Response(500, null, {message: err.message})
-            res.status(500).json(response)
-            next(err);
-
-        }
-    }
-
-
+const getNFToken = async (req, res, next) => {
+  try {
+    const tokenService = new TokenService(req.user.db);
+    const token = await tokenService.getNFToken(req.params.token_id);
+    const response = new Response(200, { token }, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
 // private non-fungible tokens
-    /**
+/**
      * This function will add new private token in db.
      * req.body {
             A: '0xa23..',
@@ -184,22 +151,21 @@ exports.init = router => {
      * @param {*} req
      * @param {*} res
      */
-    let addTokenHandler = async function (req, res, next) {
-        try {
-            const tokenService = new TokenService(req.user.db);
-            await tokenService.addNewToken(req.body);
-            let response = new Response(200, { message: "inserted" }, null)
-            res.json(response)
-        } catch (err) {
-            console.log(err);
-            let response = new Response(500, null, {message: err.message})
-            res.status(500).json(response)
-            next(err);
-        }
-    }
+const addTokenHandler = async (req, res, next) => {
+  try {
+    const tokenService = new TokenService(req.user.db);
+    await tokenService.addNewToken(req.body);
+    const response = new Response(200, { message: 'inserted' }, null);
+    res.json(response);
+  } catch (err) {
+    console.log(err);
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
-
-    /**
+/**
      * This function returns all the available private tokens
      * req.query {
             pageNo: 1,
@@ -208,21 +174,20 @@ exports.init = router => {
      * @param {*} req
      * @param {*} res
      */
-    let getTokenHandler = async function (req, res, next) {
-        const tokenService = new TokenService(req.user.db);
-        try {
-            const tokens = await tokenService.getToken(req.query);
-            let response = new Response(200, tokens, null)
-            res.json(response)
-        } catch (err) {
-            let response = new Response(500, null, {message: err.message})
-            res.status(500).json(response)
-            next(err);
-        }
-    }
+const getTokenHandler = async (req, res, next) => {
+  const tokenService = new TokenService(req.user.db);
+  try {
+    const tokens = await tokenService.getToken(req.query);
+    const response = new Response(200, tokens, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
-
-    /**
+/**
      * This function will update a private token in db.
      * req.body {
             A: '0xa23..',
@@ -243,36 +208,57 @@ exports.init = router => {
      * @param {*} req
      * @param {*} res
      */
-    let updateTokenHandler = async function (req, res, next) {
-        const tokenService = new TokenService(req.user.db);
-        try {
-            let {action_type} = req.body;
-            await tokenService.updateToken(req.body);
-            let response = new Response(200, { message: "updated" }, null)
-            res.json(response)
-        }  catch (err) {
-            let response = new Response(500, null, {message: err.message})
-            res.status(500).json(response)
-            next(err)
-        }
-    }
+const updateTokenHandler = async (req, res, next) => {
+  const tokenService = new TokenService(req.user.db);
+  try {
+    await tokenService.updateToken(req.body);
+    const response = new Response(200, { message: 'updated' }, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
+/**
+ * This function returns all the private tokens transactions.
+ * req.query = { pageNo: 1, limit: 5}
+ * @param {*} req
+ * @param {*} res
+ */
+const getPrivateTokenTransactions = async (req, res, next) => {
+  const tokenService = new TokenService(req.user.db);
+  try {
+    const transactions = await tokenService.getPrivateTokenTransactions(req.query);
+    const response = new Response(200, transactions, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
-    /**
-     * This function returns all the private tokens transactions.
-     * req.query = { pageNo: 1, limit: 5}
-     * @param {*} req
-     * @param {*} res
-     */
-    let getPrivateTokenTransactions = async function (req, res, next) {
-        const tokenService = new TokenService(req.user.db);
-        try {
-            const transactions = await tokenService.getPrivateTokenTransactions(req.query);
-            let response = new Response(200, transactions, null)
-            res.json(response)
-        } catch (err) {
-            let response = new Response(500, null, {message: err.message})
-            res.status(500).json(response)
-            next(err);
-        }
-    }
+// initializing routes
+exports.init = router => {
+  // public non-fungible tokens
+  router
+    .route('/nft')
+    .post(addNFToken)
+    .patch(updateNFToken)
+    .get(getNFTokens);
+
+  router.route('/nft/transaction').get(getNFTTransactions);
+
+  router.route('/nft/:token_id').get(getNFToken);
+
+  // private non-fungible tokens
+  router
+    .route('/token')
+    .post(addTokenHandler)
+    .get(getTokenHandler)
+    .patch(updateTokenHandler);
+
+  router.route('/token/transaction').get(getPrivateTokenTransactions);
+};
