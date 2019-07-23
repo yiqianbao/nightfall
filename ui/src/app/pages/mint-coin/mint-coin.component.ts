@@ -12,10 +12,9 @@ import { UtilService } from '../../services/utils/util.service';
   selector: 'app-mint-coin',
   templateUrl: './mint-coin.component.html',
   providers: [CoinApiService, AccountsApiService, UtilService],
-  styleUrls: ['./mint-coin.component.css']
+  styleUrls: ['./mint-coin.component.css'],
 })
 export class MintCoinsComponent implements OnInit {
-
   /**
    * Flag for http request
    */
@@ -23,9 +22,9 @@ export class MintCoinsComponent implements OnInit {
   /**
    * To store the random hex string.
    */
-  serialNumber = "";
+  serialNumber = '';
   /**
-   * Form object to collect mint details. 
+   * Form object to collect mint details.
    */
   mintCoinForm: FormGroup;
   /**
@@ -35,7 +34,7 @@ export class MintCoinsComponent implements OnInit {
   /**
    * Fungeble Token name , read from ERC-20 contract.
    */
-  ftName:string;
+  ftName: string;
 
   constructor(
     private fb: FormBuilder,
@@ -43,9 +42,8 @@ export class MintCoinsComponent implements OnInit {
     private coinApiService: CoinApiService,
     private accountService: AccountsApiService,
     private utilService: UtilService,
-    private router: Router
-  ) { }
-
+    private router: Router,
+  ) {}
 
   ngOnInit() {
     this.ftName = localStorage.getItem('ftName');
@@ -56,15 +54,15 @@ export class MintCoinsComponent implements OnInit {
   /**
    * Method to list down all ERC-20 tokens.
    */
-  getCoins(){
+  getCoins() {
     this.accountService.getCoins().subscribe(
       data => {
-        this.coinCount = data['data']['balance']
+        this.coinCount = data['data']['balance'];
       },
       error => {
-        console.log("error in user get", error)
-      }
-    )
+        console.log('error in user get', error);
+      },
+    );
   }
 
   /**
@@ -72,7 +70,7 @@ export class MintCoinsComponent implements OnInit {
    */
   createForm() {
     this.mintCoinForm = this.fb.group({
-      A : ['', Validators.required]
+      A: ['', Validators.required],
     });
   }
 
@@ -80,18 +78,26 @@ export class MintCoinsComponent implements OnInit {
    * Method to Mint ERC-20 token commitemnt.
    */
   mintCoin() {
+    const coinToMint = this.mintCoinForm.controls['A'].value;
+    if (!coinToMint) return;
+    if (coinToMint > this.coinCount) {
+      return this.toastr.error('You do not have enough ERC-20 tokens');
+    }
     this.isRequesting = true;
-    var hexValue = (this.mintCoinForm.controls['A'].value).toString(16);
-    var hexString = '0x' + hexValue.padStart(32,"0");
-    console.log('Hexstring::',hexString);
-    this.coinApiService.mintCoin(hexString, localStorage.getItem('publickey')).subscribe(tokenDetails => {
-      this.isRequesting = false;
-      this.toastr.success('Coin Minted is ' + tokenDetails['data']['coin']);
-      this.router.navigate(['/coin/list']);
-    }, error => {
+    var hexValue = coinToMint.toString(16);
+
+    var hexString = '0x' + hexValue.padStart(32, '0');
+    console.log('Hexstring::', hexString);
+    this.coinApiService.mintCoin(hexString, localStorage.getItem('publickey')).subscribe(
+      tokenDetails => {
+        this.isRequesting = false;
+        this.toastr.success('Coin Minted is ' + tokenDetails['data']['coin']);
+        this.router.navigate(['/coin/list']);
+      },
+      error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');
-    })
+      },
+    );
   }
-
 }

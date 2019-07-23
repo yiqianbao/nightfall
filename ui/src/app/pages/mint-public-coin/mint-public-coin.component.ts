@@ -50,7 +50,7 @@ export class MintPublicCoinComponent implements OnInit {
     this.coinApiService.mintPublicCoin(localStorage.getItem('address'), this.amount).subscribe(transaction => {
       this.isRequesting = false;
       this.toastr.success('Public coin minted successfully.');     
-      this.router.navigate(['/overview']);
+      this.router.navigate(['/overview'], { queryParams: { selectedTab: 'publiccoins' } });
     }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');      
