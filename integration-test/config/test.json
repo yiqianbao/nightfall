@@ -1,0 +1,4 @@
+{
+	"apiServerURL": "http://api-test.nightfall.docker",
+  "HASHLENGTH": 27
+}

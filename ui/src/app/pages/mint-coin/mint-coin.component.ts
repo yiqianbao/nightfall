@@ -81,11 +81,10 @@ export class MintCoinsComponent implements OnInit {
    */
   mintCoin() {
     this.isRequesting = true;
-    this.serialNumber = this.utilService.generateRandomSerial();
     var hexValue = (this.mintCoinForm.controls['A'].value).toString(16);
     var hexString = '0x' + hexValue.padStart(32,"0");
     console.log('Hexstring::',hexString);
-    this.coinApiService.mintCoin(hexString, localStorage.getItem('publickey'), this.serialNumber).subscribe(tokenDetails => {
+    this.coinApiService.mintCoin(hexString, localStorage.getItem('publickey')).subscribe(tokenDetails => {
       this.isRequesting = false;
       this.toastr.success('Coin Minted is ' + tokenDetails['data']['coin']);
       this.router.navigate(['/coin/list']);

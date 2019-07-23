@@ -3,7 +3,7 @@ import Config from '../config';
 
 const config = Config.getProps();
 
-const host = `${config.database.app.host}:${config.database.app.port}`;
+const host = `${config.database.host}:${config.database.port}`;
 
 const addCoin = ({ transferee }, body) => {
   return new Promise((resolve, reject) => {

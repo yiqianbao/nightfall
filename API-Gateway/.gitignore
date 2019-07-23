@@ -88,4 +88,8 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
+#API report
+mochawesome-report
+
 # End of https://www.gitignore.io/api/node
+

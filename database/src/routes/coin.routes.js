@@ -1,33 +1,10 @@
-let Response = require('./response/response')
-let CoinService = require('../business/coin.service')
-let accountsService = require('../business/accounts.service')
+/* eslint-disable import/no-commonjs */
 
-
-// initializing routes
-exports.init = router => {
-    // public fungible tokens
-    router.route('/ft/transaction')
-        .post(addFTTransaction)
-        .get(getFTTransactions);
-
-
-    // private fungible tokens
-    router.route('/coin')
-        .post(addCoinHandler)
-        .get(getCoinHandler)
-        .patch(updateCoinHandler);
-
-    router.route('/coin/burn')
-        .patch(burnCoinHandler)
-
-    router.route('/coin/transaction')
-        .get(getPrivateCoinTransactions);
-}
-
-
+import Response from './response/response';
+import CoinService from '../business/coin.service';
 
 // public fungible tokens
-    /**
+/**
      * This function add ERC-20 transactions in database
      * req.body = {
         amount: 20,
@@ -40,43 +17,40 @@ exports.init = router => {
      * @param {*} req
      * @param {*} res
      */
-    let addFTTransaction = async function (req, res, next) {
-        try {
-            const coinService = new CoinService(req.user.db);
-            await coinService.addFTokenTransaction(req.body);
-            let response = new Response(200, { message: "inserted" }, null)
-            res.json(response)
-        } catch (err) {
-            let response = new Response(500, null, {message: err.message})
-            res.status(500).json(response)
-            next(err);
-        }
-    }
+const addFTTransaction = async (req, res, next) => {
+  try {
+    const coinService = new CoinService(req.user.db);
+    await coinService.addFTokenTransaction(req.body);
+    const response = new Response(200, { message: 'inserted' }, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
-
-    /**
-     * This function returns all the Coins transactions
-     * req.query = { pageNo: 1, limit: 5}
-     * @param {*} req
-     * @param {*} res
-     */
-    let getFTTransactions = async function (req, res, next) {
-        const coinService = new CoinService(req.user.db);
-        try {
-            const transactions = await coinService.getFTTransactions(req.query);
-            let response = new Response(200, transactions, null)
-            res.json(response)
-        } catch (err) {
-            let response = new Response(500, null, {message: err.message})
-            res.status(500).json(response)
-            next(err);
-        }
-    }
-
-
+/**
+ * This function returns all the Coins transactions
+ * req.query = { pageNo: 1, limit: 5}
+ * @param {*} req
+ * @param {*} res
+ */
+const getFTTransactions = async (req, res, next) => {
+  const coinService = new CoinService(req.user.db);
+  try {
+    const transactions = await coinService.getFTTransactions(req.query);
+    const response = new Response(200, transactions, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
 // private fungible tokens
-    /**
+/**
      * This function is used to add a coin to the db.
      * req.body {
             A: '0x00000000000000000000000000000002',
@@ -91,50 +65,47 @@ exports.init = router => {
      * @param {*} req
      * @param {*} res
      */
-    let addCoinHandler = async function (req, res, next) {
-        try {
-            const coinService = new CoinService(req.user.db);
+const addCoinHandler = async (req, res, next) => {
+  try {
+    const coinService = new CoinService(req.user.db);
 
-            let toSave = req.body.toSave;
-            if(toSave ==='receiverSide'){
-                await coinService.addNewCoinOnReceiverSide(req.body);
-            }else{
-                await coinService.addNewCoin(req.body);
-            }
-
-            let response = new Response(200, { message: "inserted" }, null)
-            res.json(response)
-
-        } catch (err) {
-            let response = new Response(500, null, {message: err.message})
-            res.status(500).json(response)
-            next(err)
-        }
+    const { toSave } = req.body;
+    if (toSave === 'receiverSide') {
+      await coinService.addNewCoinOnReceiverSide(req.body);
+    } else {
+      await coinService.addNewCoin(req.body);
     }
 
+    const response = new Response(200, { message: 'inserted' }, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
-    /**
-     * This function is used to get coins associated with an public account
-     * @param {*} req
-     * @param {*} res
-     */
-    let getCoinHandler = async function (req, res, next) {
-        try {
-            const coinService = new CoinService(req.user.db);
+/**
+ * This function is used to get coins associated with an public account
+ * @param {*} req
+ * @param {*} res
+ */
+const getCoinHandler = async (req, res, next) => {
+  try {
+    const coinService = new CoinService(req.user.db);
 
-            const coins = await coinService.getCoinByAccount();
+    const coins = await coinService.getCoinByAccount();
 
-            let response = new Response(200, coins, null)
-            res.json(response)
-        }  catch (err) {
-            let response = new Response(500, null, {message: err.message})
-            res.status(500).json(response)
-            next(err)
-        }
-    }
+    const response = new Response(200, coins, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
-
-    /**
+/**
      * This function will update the coin transaction once it is transferred.
      * req.body {
             C: '0x00000000000000000000000000000003',
@@ -162,28 +133,24 @@ exports.init = router => {
      * @param {*} req
      * @param {*} res
      */
-    let updateCoinHandler = async function (req, res, next) {
-        try {
+const updateCoinHandler = async (req, res, next) => {
+  try {
+    const coinService = new CoinService(req.user.db);
+    await coinService.updateCoins(req.body);
+    await coinService.addReturnCoins({
+      ...req.body,
+    });
+    const response = new Response(200, { message: 'updated' }, null);
+    res.json(response);
+  } catch (err) {
+    console.log(err);
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
-            const coinService = new CoinService(req.user.db);
-            await coinService.updateCoins(req.body);
-            await coinService.addReturnCoins(
-              {
-                ...req.body
-              }
-            )
-            let response = new Response(200, { message: "updated" }, null)
-            res.json(response)
-        } catch (err) {
-            console.log(err);
-            let response = new Response(500, null, {message: err.message})
-            res.status(500).json(response)
-            next(err);
-        }
-    }
-
-
-    /**
+/**
      * This function will update the burned coin in db
      * req.body {
             A: '0x00000000000000000000000000000002',
@@ -200,22 +167,21 @@ exports.init = router => {
      * @param {*} req
      * @param {*} res
      */
-    let burnCoinHandler = async function (req, res, next) {
-        try {
-            const coinService = new CoinService(req.user.db);
-            await coinService.updateBurnedCoin(req.body);
-            let response = new Response(200, { message: "updated" }, null)
-            res.json(response)
-        } catch (err) {
-            console.log('error response burnCoinHandler', err);
-            let response = new Response(500, null, {message: err.message})
-            res.status(500).json(response)
-            next(err)
-        }
-    }
+const burnCoinHandler = async (req, res, next) => {
+  try {
+    const coinService = new CoinService(req.user.db);
+    await coinService.updateBurnedCoin(req.body);
+    const response = new Response(200, { message: 'updated' }, null);
+    res.json(response);
+  } catch (err) {
+    console.log('error response burnCoinHandler', err);
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
 
-
-    /**
+/**
      * This function returns all the coins transactions for a particular account
      * req.query {
             pageNo: 1,
@@ -224,15 +190,35 @@ exports.init = router => {
      * @param {*} req
      * @param {*} res
      */
-    let getPrivateCoinTransactions = async function (req, res, next) {
-        try {
-            const coinService = new CoinService(req.user.db);
-            const transactions = await coinService.getPrivateCoinTransactions(req.query);
-            let response = new Response(200, transactions, null)
-            res.json(response)
-        } catch (err) {
-            let response = new Response(500, null, {message: err.message})
-            res.status(500).json(response)
-            next(err)
-        }
-    }
+const getPrivateCoinTransactions = async (req, res, next) => {
+  try {
+    const coinService = new CoinService(req.user.db);
+    const transactions = await coinService.getPrivateCoinTransactions(req.query);
+    const response = new Response(200, transactions, null);
+    res.json(response);
+  } catch (err) {
+    const response = new Response(500, null, { message: err.message });
+    res.status(500).json(response);
+    next(err);
+  }
+};
+
+// initializing routes
+exports.init = router => {
+  // public fungible tokens
+  router
+    .route('/ft/transaction')
+    .post(addFTTransaction)
+    .get(getFTTransactions);
+
+  // private fungible tokens
+  router
+    .route('/coin')
+    .post(addCoinHandler)
+    .get(getCoinHandler)
+    .patch(updateCoinHandler);
+
+  router.route('/coin/burn').patch(burnCoinHandler);
+
+  router.route('/coin/transaction').get(getPrivateCoinTransactions);
+};

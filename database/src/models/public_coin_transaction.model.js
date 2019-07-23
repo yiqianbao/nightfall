@@ -1,30 +1,36 @@
-const mongoose = require('mongoose')
-const Schema = mongoose.Schema
+/* eslint-disable camelcase */
+/* eslint-disable import/no-commonjs */
 
-const FTTokenTransactionSchema = new Schema({
+import mongoose from 'mongoose';
+
+const { Schema } = mongoose;
+
+const FTTokenTransactionSchema = new Schema(
+  {
     type: {
-        type: String,
-        enum: ['minted', 'transferred', 'received', 'burned'],
-        required: true
+      type: String,
+      enum: ['minted', 'transferred', 'received', 'burned'],
+      required: true,
     },
     amount: {
-    	type: String,
-        required: true
+      type: String,
+      required: true,
     },
     shield_contract_address: {
-        type: String,
-        index: true
+      type: String,
+      index: true,
     },
 
     // transferee info
     transferee: String,
     transferee_address: String,
 
-    //transferor info
+    // transferor info
     transferor: String,
-    transferor_address: String
-
-},{timestamps:{createdAt: 'created_at', updatedAt: 'updated_at'}});
+    transferor_address: String,
+  },
+  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
+);
 
 mongoose.set('debug', true);
 module.exports = FTTokenTransactionSchema;
