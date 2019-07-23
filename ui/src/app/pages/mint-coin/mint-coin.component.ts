@@ -79,22 +79,19 @@ export class MintCoinsComponent implements OnInit {
    */
   mintCoin() {
     const coinToMint = this.mintCoinForm.controls['A'].value;
-    if (!coinToMint) return;
+    if (!coinToMint) { return; }
     if (coinToMint > this.coinCount) {
       return this.toastr.error('You do not have enough ERC-20 tokens');
     }
     this.isRequesting = true;
-    var hexValue = coinToMint.toString(16);
-
-    var hexString = '0x' + hexValue.padStart(32, '0');
+    const hexValue = (this.mintCoinForm.controls['A'].value).toString(16);
+    const hexString = '0x' + hexValue.padStart(32, '0');
     console.log('Hexstring::', hexString);
-    this.coinApiService.mintCoin(hexString, localStorage.getItem('publickey')).subscribe(
-      tokenDetails => {
-        this.isRequesting = false;
-        this.toastr.success('Coin Minted is ' + tokenDetails['data']['coin']);
-        this.router.navigate(['/coin/list']);
-      },
-      error => {
+    this.coinApiService.mintCoin(hexString, localStorage.getItem('publickey')).subscribe(tokenDetails => {
+      this.isRequesting = false;
+      this.toastr.success('Coin Minted is ' + tokenDetails['data']['coin']);
+      this.router.navigate(['/overview'], { queryParams: { selectedTab: 'coins' } });
+    }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');
       },
