@@ -1,5 +1,6 @@
 import Utils from 'zkp-utils';
-import { getEthAccounts } from '../src/accounts';
+import AccountUtils from '../src/account-utils/account-utils';
+
 import controller from '../src/f-token-controller';
 
 const utils = Utils('/app/config/stats.json');
@@ -42,7 +43,7 @@ describe('f-token-controller.js tests', () => {
 
   test('Should create 10000 tokens in accounts[0] and accounts[1]', async () => {
     // fund some accounts with FToken
-    const accounts = await getEthAccounts();
+    const accounts = await AccountUtils.getEthAccounts();
     const AMOUNT = 10000;
     const bal1 = await controller.getBalance(accounts[0]);
     await controller.buyFToken(AMOUNT, accounts[0]);
@@ -53,7 +54,7 @@ describe('f-token-controller.js tests', () => {
 
   test('Should move 1 ERC-20 token from accounts[0] to accounts[1]', async () => {
     const AMOUNT = 1;
-    const accounts = await getEthAccounts();
+    const accounts = await AccountUtils.getEthAccounts();
     const bal1 = await controller.getBalance(accounts[0]);
     const bal3 = await controller.getBalance(accounts[1]);
     await controller.transferFToken(AMOUNT, accounts[0], accounts[1]);
@@ -65,7 +66,7 @@ describe('f-token-controller.js tests', () => {
 
   test('Should burn 1 ERC-20 from accounts[1]', async () => {
     const AMOUNT = 1;
-    const accounts = await getEthAccounts();
+    const accounts = await AccountUtils.getEthAccounts();
     const bal1 = await controller.getBalance(accounts[1]);
     await controller.burnFToken(AMOUNT, accounts[1]);
     const bal2 = await controller.getBalance(accounts[1]);
@@ -73,14 +74,14 @@ describe('f-token-controller.js tests', () => {
   });
 
   test('Should get the ERC-20 metadata', async () => {
-    const accounts = await getEthAccounts();
+    const accounts = await AccountUtils.getEthAccounts();
     const { symbol, name } = await controller.getTokenInfo(accounts[0]);
     expect('OPS').toEqual(symbol);
     expect('EY OpsCoin').toEqual(name);
   });
 
   test('Should mint an ERC-20 commitment Z_A_C for Alice for asset C', async () => {
-    const accounts = await getEthAccounts();
+    const accounts = await AccountUtils.getEthAccounts();
     console.log('Alices account ', (await controller.getBalance(accounts[0])).toNumber());
     const [zTest, zIndex] = await controller.mint(C, pkA, S_A_C, accounts[0]);
 
@@ -90,7 +91,7 @@ describe('f-token-controller.js tests', () => {
   });
 
   test('Should mint another ERC-20 commitment Z_A_D for Alice for asset D', async () => {
-    const accounts = await getEthAccounts();
+    const accounts = await AccountUtils.getEthAccounts();
     const [zTest, zIndex] = await controller.mint(D, pkA, S_A_D, accounts[0]);
 
     expect(Z_A_D).toEqual(zTest);
@@ -100,7 +101,7 @@ describe('f-token-controller.js tests', () => {
 
   test('Should transfer a ERC-20 commitment to Bob (two coins get nullified, two created; one coin goes to Bob, the other goes back to Alice as change)', async () => {
     // E becomes Bob's, F is change returned to Alice
-    const accounts = await getEthAccounts();
+    const accounts = await AccountUtils.getEthAccounts();
     await controller.transfer(
       C,
       D,
@@ -122,7 +123,7 @@ describe('f-token-controller.js tests', () => {
   });
 
   test('Should mint another ERC-20 commitment Z_B_G for Bob for asset G', async () => {
-    const accounts = await getEthAccounts();
+    const accounts = await AccountUtils.getEthAccounts();
     const [zTest, zIndex] = await controller.mint(G, pkB, S_B_G, accounts[1]);
 
     expect(Z_B_G).toEqual(zTest);
@@ -131,7 +132,7 @@ describe('f-token-controller.js tests', () => {
 
   test('Should transfer an ERC-20 commitment to Eve', async () => {
     // H becomes Eve's, I is change returned to Bob
-    const accounts = await getEthAccounts();
+    const accounts = await AccountUtils.getEthAccounts();
     await controller.transfer(
       E,
       G,
@@ -152,7 +153,7 @@ describe('f-token-controller.js tests', () => {
   });
 
   test("Should burn Alice's remaining ERC-20 commitment", async () => {
-    const accounts = await getEthAccounts();
+    const accounts = await AccountUtils.getEthAccounts();
     const bal1 = await controller.getBalance(accounts[3]);
     const bal = await controller.getBalance(accounts[0]);
     console.log('accounts[3]', bal1.toNumber());

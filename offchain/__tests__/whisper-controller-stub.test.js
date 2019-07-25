@@ -1,4 +1,4 @@
-import { getEthAccounts } from '../src/accounts';
+import AccountUtils from '../src/account-utils/account-utils';
 
 import {
   generateWhisperKeys,
@@ -12,7 +12,7 @@ const bob = {};
 
 describe('Whisper-controller-stub tests', () => {
   test('Generate & retrieve a Whisper key-pair', async () => {
-    const accounts = await getEthAccounts();
+    const accounts = await AccountUtils.getEthAccounts();
     // eslint-disable-next-line prefer-destructuring
     alice.address = accounts[0];
     // eslint-disable-next-line prefer-destructuring
