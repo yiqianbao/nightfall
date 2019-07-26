@@ -61,8 +61,6 @@ The Nightfall demonstration requires the following software to run:
     `brew link --overwrite node@10 --force`
 - Xcode Command line tools:
   - If running macOS, install Xcode then run `xcode-select --install` to install command line tools.
-- dotdocker
-  - <https://github.com/aj-may/dotdocker/>
 
 ### Starting servers
 
@@ -123,7 +121,7 @@ and wait until you see the message `Compiled successfully` in the console.
 This brings up each microservice using docker-compose and finally builds a UI running on a local
 Angular server.
 
-Navigate your web browser to <http://nightfall.docker> to start using Nightfall (give everything
+Navigate your web browser to <http://localhost:8000> to start using Nightfall (give everything
 enough time to start up). There are instructions on how to use the application in the
 [UI.md](./UI.md) file.
 
@@ -144,6 +142,16 @@ volumes, and images created by up, using
 ```sh
 docker-compose down -v
 ```
+
+## Developing Nightfall
+
+Making changes to Nightfall, and some testing tasks, will require additional prerequesites and more explanaton.
+
+### Development prerequesites
+
+**dotdocker** will allow you to easily connect to individual modules within the Nightfall application when they are run from Docker. Note: when running commands from inside Docker (e.g. `docker-compose up`) the modules are able to communicate with each other using unqualified hostnames like `api-gateway`. If you will be running code directly on your development machine rather than using Docker then you will be responsible for connecting services to each other and there may be contention for ports (since you can't run three web servers on port 80 on the same development machine).
+
+- <https://github.com/aj-may/dotdocker/>
 
 ### To run zkp service unit tests
 
