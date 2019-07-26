@@ -7,5 +7,5 @@
  */
 export const environment = {
   production: false,
-  url: 'api-gateway'
+  url: 'http://localhost:8001/'
 };

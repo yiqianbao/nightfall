@@ -23,6 +23,8 @@ services:
     volumes:
       - ./api-gateway/src:/app/src
       - ./api-gateway/.babelrc:/app/.babelrc
+    ports:
+      - "8001:80"
     environment:
       VIRTUAL_HOST: api.nightfall.docker
 
@@ -76,6 +78,8 @@ services:
       - ./ui/src:/app/src
       - ./ui/angular.json:/app/angular.json
       - ./ui/tsconfig.json:/app/tsconfig.json
+    ports:
+      - "8000:80"
     environment:
       VIRTUAL_HOST: nightfall.docker
 
