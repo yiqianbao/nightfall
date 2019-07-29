@@ -161,6 +161,12 @@ depth row  width  st#     end#
 
     require(_vkId == transferVkId, "Incorrect vkId");
 
+    //checks to prevent a ZoKrates overflow attack
+    require(_inputs[0]<zokratesPrime, "Input too large - possible overflow attack");
+    require(_inputs[1]<zokratesPrime, "Input too large - possible overflow attack");
+    require(_inputs[2]<zokratesPrime, "Input too large - possible overflow attack");
+    require(_inputs[3]<zokratesPrime, "Input too large - possible overflow attack");
+
     // verify the proof
     bool result = verifier.verify(_proof, _inputs, _vkId);
     require(result, "The proof has not been verified by the contract");
@@ -170,12 +176,6 @@ depth row  width  st#     end#
     bytes27 ze = packedToBytes27(_inputs[5], _inputs[4]);
     bytes27 zf = packedToBytes27(_inputs[7], _inputs[6]);
     bytes27 inputRoot = packedToBytes27(_inputs[9],_inputs[8]);
-
-    //checks to prevent a ZoKrates overflow attack
-    require(_inputs[0]<zokratesPrime, "Input too large - possible overflow attack");
-    require(_inputs[1]<zokratesPrime, "Input too large - possible overflow attack");
-    require(_inputs[2]<zokratesPrime, "Input too large - possible overflow attack");
-    require(_inputs[3]<zokratesPrime, "Input too large - possible overflow attack");
 
     require(roots[inputRoot] == inputRoot, "The input root has never been the root of the Merkle Tree");
     require(nc != nd, "The nullifiers nc and nd must be different!");
@@ -209,6 +209,10 @@ depth row  width  st#     end#
 
     require(_vkId == burnVkId, "Incorrect vkId");
 
+    //checks to prevent a ZoKrates overflow attack
+    require(_inputs[3]<zokratesPrime, "Input too large - possible overflow attack");
+    require(_inputs[4]<zokratesPrime, "Input too large - possible overflow attack");
+
     // verify the proof
     bool result = verifier.verify(_proof, _inputs, _vkId);
     require(result, "The proof has not been verified by the contract");
@@ -218,10 +222,6 @@ depth row  width  st#     end#
     uint256 value = _inputs[2]; //the coin value being cashed-out
     bytes27 nc = packedToBytes27(_inputs[4], _inputs[3]); //recover the nullifier
     bytes27 inputRoot = packedToBytes27(_inputs[6], _inputs[5]); //recover the root
-
-    //checks to prevent a ZoKrates overflow attack
-    require(_inputs[3]<zokratesPrime, "Input too large - possible overflow attack");
-    require(_inputs[4]<zokratesPrime, "Input too large - possible overflow attack");
 
     require(roots[inputRoot] == inputRoot, "The input root has never been the root of the Merkle Tree");
     require(ns[nc]==0, "The token has already been nullified!");

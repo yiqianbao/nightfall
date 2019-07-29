@@ -173,6 +173,10 @@ depth row  width  st#     end#
 
         require(_vkId == transferVkId, "Incorrect vkId");
 
+        //checks to prevent a ZoKrates overflow attack
+        require(_inputs[0]<zokratesPrime, "Input too large - possible overflow attack");
+        require(_inputs[1]<zokratesPrime, "Input too large - possible overflow attack");
+
         // verify the proof
         bool result = verifier.verify(_proof, _inputs, _vkId);
         require(result, "The proof has not been verified by the contract");
@@ -180,10 +184,6 @@ depth row  width  st#     end#
         bytes27 n = packedToBytes27(_inputs[1],_inputs[0]);
         bytes27 inputRoot = packedToBytes27(_inputs[3],_inputs[2]);
         bytes27 z = packedToBytes27(_inputs[5],_inputs[4]);
-
-        //checks to prevent a ZoKrates overflow attack
-        require(_inputs[0]<zokratesPrime, "Input too large - possible overflow attack");
-        require(_inputs[1]<zokratesPrime, "Input too large - possible overflow attack");
 
         require(ns[n] == 0, "The token has already not been nullified!");
         require(roots[inputRoot] == inputRoot, "The input root has never been the root of the Merkle Tree");
@@ -208,6 +208,10 @@ depth row  width  st#     end#
 
       require(_vkId == burnVkId, "Incorrect vkId");
 
+      //checks to prevent a ZoKrates overflow attack
+      require(_inputs[4]<zokratesPrime, "Input too large - possible overflow attack");
+      require(_inputs[5]<zokratesPrime, "Input too large - possible overflow attack");
+
       // verify the proof
       bool result = verifier.verify(_proof, _inputs, _vkId);
       require(result, "The proof has not been verified by the contract");
@@ -217,10 +221,6 @@ depth row  width  st#     end#
       uint256 tokenId = combineUint256(_inputs[3], _inputs[2]); //recover the tokenId
       bytes27 na = packedToBytes27(_inputs[5], _inputs[4]); //recover the nullifier
       bytes27 inputRoot = packedToBytes27(_inputs[7], _inputs[6]); //recover the root
-
-      //checks to prevent a ZoKrates overflow attack
-      require(_inputs[4]<zokratesPrime, "Input too large - possible overflow attack");
-      require(_inputs[5]<zokratesPrime, "Input too large - possible overflow attack");
 
       require(roots[inputRoot] == inputRoot, "The input root has never been the root of the Merkle Tree");
       require(ns[na]==0, "The token has already been nullified!");
