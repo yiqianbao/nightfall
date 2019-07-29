@@ -51,8 +51,8 @@ depth row  width  st#     end#
 
   uint constant merkleWidth = 4294967296; //2^32
   uint constant merkleDepth = 33; //33
-
   uint private balance = 0;
+  uint256 constant zokratesPrime = 21888242871839275222246405745257275088548364400416034343698204186575808495617;
 
   mapping(bytes27 => bytes27) public ns; //store nullifiers of spent commitments
   mapping(bytes27 => bytes27) public zs; //array holding the commitments.  Basically the bottom row of the merkle tree
@@ -171,6 +171,11 @@ depth row  width  st#     end#
     bytes27 zf = packedToBytes27(_inputs[7], _inputs[6]);
     bytes27 inputRoot = packedToBytes27(_inputs[9],_inputs[8]);
 
+    //checks to prevent a ZoKrates overflow attack
+    require(_inputs[0]<zokratesPrime, "Input too large - possible overflow attack");
+    require(_inputs[1]<zokratesPrime, "Input too large - possible overflow attack");
+    require(_inputs[2]<zokratesPrime, "Input too large - possible overflow attack");
+    require(_inputs[3]<zokratesPrime, "Input too large - possible overflow attack");
 
     require(roots[inputRoot] == inputRoot, "The input root has never been the root of the Merkle Tree");
     require(nc != nd, "The nullifiers nc and nd must be different!");
@@ -213,6 +218,10 @@ depth row  width  st#     end#
     uint256 value = _inputs[2]; //the coin value being cashed-out
     bytes27 nc = packedToBytes27(_inputs[4], _inputs[3]); //recover the nullifier
     bytes27 inputRoot = packedToBytes27(_inputs[6], _inputs[5]); //recover the root
+
+    //checks to prevent a ZoKrates overflow attack
+    require(_inputs[3]<zokratesPrime, "Input too large - possible overflow attack");
+    require(_inputs[4]<zokratesPrime, "Input too large - possible overflow attack");
 
     require(roots[inputRoot] == inputRoot, "The input root has never been the root of the Merkle Tree");
     require(ns[nc]==0, "The token has already been nullified!");
