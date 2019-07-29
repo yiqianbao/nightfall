@@ -52,6 +52,7 @@ depth row  width  st#     end#
 
     uint constant merkleWidth = 4294967296; //2^32
     uint constant merkleDepth = 33; //33
+    uint256 constant zokratesPrime = 21888242871839275222246405745257275088548364400416034343698204186575808495617;
 
     mapping(bytes27 => bytes27) public ns; //store nullifiers of spent commitments
     mapping(bytes27 => bytes27) public zs; //array holding the commitments.  Basically the bottom row of the merkle tree
@@ -172,6 +173,10 @@ depth row  width  st#     end#
 
         require(_vkId == transferVkId, "Incorrect vkId");
 
+        //checks to prevent a ZoKrates overflow attack
+        require(_inputs[0]<zokratesPrime, "Input too large - possible overflow attack");
+        require(_inputs[1]<zokratesPrime, "Input too large - possible overflow attack");
+
         // verify the proof
         bool result = verifier.verify(_proof, _inputs, _vkId);
         require(result, "The proof has not been verified by the contract");
@@ -202,6 +207,10 @@ depth row  width  st#     end#
     function burn(uint256[] memory _proof, uint256[] memory _inputs, bytes32 _vkId) public {
 
       require(_vkId == burnVkId, "Incorrect vkId");
+
+      //checks to prevent a ZoKrates overflow attack
+      require(_inputs[4]<zokratesPrime, "Input too large - possible overflow attack");
+      require(_inputs[5]<zokratesPrime, "Input too large - possible overflow attack");
 
       // verify the proof
       bool result = verifier.verify(_proof, _inputs, _vkId);

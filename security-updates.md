@@ -40,3 +40,14 @@ Critical security updates will be listed here (ordered newest to oldest). If you
 `docker-compose build zkp`  
 
 ---
+
+
+**date**: 2019-07-29  
+**description**: Check for overflow of nullifiers  
+**tag \#**: n/a  
+**PR \#**: [#96](https://github.com/EYBlockchain/nightfall/pull/96)  
+**issue \#**: [#95](https://github.com/EYBlockchain/nightfall/issues/95)  
+**re-installation**:  
+`docker-compose build zkp`  
+
+---
