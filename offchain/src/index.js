@@ -2,7 +2,6 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { pkdRouter, whisperRouter } from './routes';
 
-
 const app = express();
 
 app.use((req, res, next) => {

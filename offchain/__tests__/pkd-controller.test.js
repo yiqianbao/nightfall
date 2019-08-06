@@ -21,7 +21,7 @@ import {
   setPublicKeys,
 } from '../src/pkd-controller';
 
-import AccountUtils from '../src/account-utils/account-utils';
+import AccountUtils from '../src/account-utils/account-utils'; // eslint-disable-line
 
 const utils = Utils('/app/config/stats.json');
 
