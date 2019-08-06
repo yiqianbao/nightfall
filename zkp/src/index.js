@@ -10,10 +10,8 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import Response from '../response/response'; // class for creating response object
 import nfController from './nf-token-controller';
-import fController from './f-token-controller';
 import vkController from './vk-controller';
 import fTokenController from './f-token-controller';
-
 
 const utils = require('zkp-utils')('/app/config/stats.json');
 
@@ -69,7 +67,7 @@ app.route('/token/mint').post(async (req, res) => {
     response.data = {
       z_A,
       z_A_index,
-      S_A
+      S_A,
     };
     res.json(response);
   } catch (err) {
@@ -102,7 +100,7 @@ app.route('/token/transfer').post(async (req, res) => {
       z_B,
       z_B_index,
       txObj,
-      S_B
+      S_B,
     };
     res.json(response);
   } catch (err) {
@@ -174,8 +172,8 @@ app
     const response = new Response();
 
     try {
-      await fController.setShield(coinShield, address);
-      await fController.getBalance(address);
+      await fTokenController.setShield(coinShield, address);
+      await fTokenController.getBalance(address);
       response.statusCode = 200;
       response.data = {
         message: 'CoinShield Address Set.',
@@ -183,7 +181,7 @@ app
       res.json(response);
     } catch (err) {
       console.log('/coin/shield', err);
-      fController.unSetShield(address);
+      fTokenController.unSetShield(address);
       response.statusCode = 500;
       response.data = err;
       res.status(500).json(response);
@@ -195,7 +193,7 @@ app
     const response = new Response();
 
     try {
-      fController.unSetShield(address);
+      fTokenController.unSetShield(address);
       response.statusCode = 200;
       response.data = {
         message: 'CoinShield Address Unset.',
@@ -213,8 +211,8 @@ app
     const response = new Response();
 
     try {
-      const shieldAddress = await fController.getShieldAddress(address);
-      const { name } = await fController.getTokenInfo(address);
+      const shieldAddress = await fTokenController.getShieldAddress(address);
+      const { name } = await fTokenController.getTokenInfo(address);
       response.statusCode = 200;
       response.data = {
         shieldAddress,
@@ -236,12 +234,12 @@ app.route('/coin/mint').post(async (req, res) => {
   const response = new Response();
 
   try {
-    const [coin, coin_index] = await fController.mint(A, pk_A, S_A, address);
+    const [coin, coin_index] = await fTokenController.mint(A, pk_A, S_A, address);
     response.statusCode = 200;
     response.data = {
       coin,
       coin_index,
-      S_A
+      S_A,
     };
     res.json(response);
   } catch (err) {
@@ -255,11 +253,11 @@ app.route('/coin/mint').post(async (req, res) => {
 app.route('/coin/transfer').post(async (req, res) => {
   const { address } = req.headers;
   const { C, D, E, F, pk_B, S_C, S_D, sk_A, z_C, z_C_index, z_D, z_D_index } = req.body;
-  const S_E =  await utils.rndHex(27);
-  const S_F =  await utils.rndHex(27);
+  const S_E = await utils.rndHex(27);
+  const S_F = await utils.rndHex(27);
   const response = new Response();
   try {
-    const { z_E, z_E_index, z_F, z_F_index, txObj } = await fController.transfer(
+    const { z_E, z_E_index, z_F, z_F_index, txObj } = await fTokenController.transfer(
       C,
       D,
       E,
@@ -284,7 +282,7 @@ app.route('/coin/transfer').post(async (req, res) => {
       z_F_index,
       txObj,
       S_E,
-      S_F
+      S_F,
     };
     res.json(response);
   } catch (err) {
@@ -301,7 +299,7 @@ app.route('/coin/burn').post(async (req, res) => {
 
   const response = new Response();
   try {
-    await fController.burn(A, sk_A, S_A, z_A, z_A_index, address, payTo);
+    await fTokenController.burn(A, sk_A, S_A, z_A, z_A_index, address, payTo);
     response.statusCode = 200;
     response.data = {
       z_C: z_A,
@@ -326,7 +324,7 @@ app.route('/coin/checkCorrectness').post(async (req, res) => {
     console.log('BODY', req.body);
     const { E, pk, S_E, z_E, z_E_index } = req.body;
 
-    const results = await fController.checkCorrectness(E, pk, S_E, z_E, z_E_index, address);
+    const results = await fTokenController.checkCorrectness(E, pk, S_E, z_E, z_E_index, address);
 
     console.log('\nzkp/src/restapi', '\n/coin/checkCorrectness', '\nresults', results);
 
@@ -347,7 +345,7 @@ app.route('/ft/mint').post(async (req, res) => {
   const response = new Response();
 
   try {
-    const status = await fController.buyFToken(amount, address);
+    const status = await fTokenController.buyFToken(amount, address);
     response.statusCode = 200;
     response.data = status;
     res.json(response);
@@ -365,7 +363,7 @@ app.route('/ft/transfer').post(async (req, res) => {
   const response = new Response();
 
   try {
-    const status = await fController.transferFToken(amount, address, toAddress);
+    const status = await fTokenController.transferFToken(amount, address, toAddress);
     response.statusCode = 200;
     response.data = status;
     res.json(response);
@@ -383,7 +381,7 @@ app.route('/ft/burn').post(async (req, res) => {
   const response = new Response();
 
   try {
-    const status = await fController.burnFToken(amount, address);
+    const status = await fTokenController.burnFToken(amount, address);
     response.statusCode = 200;
     response.data = status;
     res.json(response);
@@ -400,8 +398,8 @@ app.route('/address/coin').get(async (req, res) => {
   const response = new Response();
 
   try {
-    const balance = await fController.getBalance(address);
-    const { symbol, name } = await fController.getTokenInfo(address);
+    const balance = await fTokenController.getBalance(address);
+    const { symbol, name } = await fTokenController.getTokenInfo(address);
     response.statusCode = 200;
     response.data = {
       balance,
@@ -581,7 +579,7 @@ app.route('/nft/address').get(async (req, res) => {
     const nftAddress = await nfController.getNFTAddress(address);
     response.statusCode = 200;
     response.data = {
-      nftAddress
+      nftAddress,
     };
     res.json(response);
   } catch (err) {
@@ -600,7 +598,7 @@ app.route('/ft/address').get(async (req, res) => {
     const ftAddress = await fTokenController.getFTAddress(address);
     response.statusCode = 200;
     response.data = {
-      ftAddress
+      ftAddress,
     };
     res.json(response);
   } catch (err) {
