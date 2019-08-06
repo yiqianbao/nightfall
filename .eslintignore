@@ -1,0 +1,9 @@
+
+node_modules
+mochawesome-report
+zkp/src/vkIds.json
+zkp/migrations
+zkp/code
+zkp-utils/node_modules
+offchain/migrations
+ui
