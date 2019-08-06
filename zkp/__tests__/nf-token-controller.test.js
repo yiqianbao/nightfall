@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unresolved */
 
 import Utils from 'zkp-utils';
-import AccountUtils from '../src/account-utils/account-utils';
+import AccountUtils from '../src/account-utils/account-utils'; // eslint-disable-line
 import Config from '../src/config';
 import controller from '../src/nf-token-controller';
 
