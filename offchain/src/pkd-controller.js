@@ -16,7 +16,9 @@ const bytes32 = name => utils.utf8StringToHex(name, 32);
 const stringify = hex => utils.hexToUtf8String(hex);
 
 const config = Config.getProps();
-const provider = new Web3.providers.HttpProvider(`${config.offchain.rpc.host}:${config.offchain.rpc.port}`);
+const provider = new Web3.providers.HttpProvider(
+  `${config.offchain.rpc.host}:${config.offchain.rpc.port}`,
+);
 const PKD = tc(jsonfile.readFileSync('/app/build/contracts/PKD.json'));
 PKD.setProvider(provider);
 

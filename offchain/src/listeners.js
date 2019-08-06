@@ -2,9 +2,9 @@ import apiGateway from './rest/api-gateway';
 
 const addFToken = async (data, userData) => {
   try {
-    console.log('\noffchain/src/listeners.js', '\addFToken', '\ndata', data);
+    console.log('\noffchain/src/listeners.js', 'addFToken', '\ndata', data);
 
-    await apiGateway.addFTokenToDB( 
+    await apiGateway.addFTokenToDB(
       {
         authorization: userData.jwtToken,
       },
@@ -14,7 +14,7 @@ const addFToken = async (data, userData) => {
         transferor: data.transferor,
         transferor_address: data.transferor_address,
         is_received: true,
-      }
+      },
     );
   } catch (err) {
     console.log(err);
@@ -23,7 +23,7 @@ const addFToken = async (data, userData) => {
 
 const addNFToken = async (data, userData) => {
   try {
-    console.log('\noffchain/src/listeners.js', '\addNFToken', '\ndata', data);
+    console.log('\noffchain/src/listeners.js', 'addNFToken', '\ndata', data);
 
     await apiGateway.addNFTokenToDB(
       {
@@ -36,7 +36,7 @@ const addNFToken = async (data, userData) => {
         transferor: data.transferor,
         transferor_address: data.transferor_address,
         is_received: true,
-      }
+      },
     );
   } catch (err) {
     console.log(err);
@@ -45,7 +45,14 @@ const addNFToken = async (data, userData) => {
 
 const addTokenCommitment = async (data, userData) => {
   try {
-    console.log('\noffchain/src/listeners.js', '\naddTokenCommitment', '\ndata', data, '\nuserData', userData);
+    console.log(
+      '\noffchain/src/listeners.js',
+      '\naddTokenCommitment',
+      '\ndata',
+      data,
+      '\nuserData',
+      userData,
+    );
 
     const correctnessChecks = await apiGateway.checkCorrectnessToken(
       {
@@ -70,7 +77,7 @@ const addTokenCommitment = async (data, userData) => {
     await apiGateway.addTokenCommitmentToDB(
       {
         authorization: userData.jwtToken,
-      }, 
+      },
       {
         tokenUri: data.tokenUri,
         A: data.A,
@@ -80,7 +87,7 @@ const addTokenCommitment = async (data, userData) => {
         z_A_index: data.z_A_index,
         is_received: true,
         ...correctnessChecks.data,
-      }
+      },
     );
   } catch (err) {
     console.log(err);
@@ -89,7 +96,14 @@ const addTokenCommitment = async (data, userData) => {
 
 const addCoinCommitment = async (data, userData) => {
   try {
-    console.log('\noffchain/src/listeners.js', '\naddCoinCommitment', '\ndata', data, '\nuserData', userData);
+    console.log(
+      '\noffchain/src/listeners.js',
+      '\naddCoinCommitment',
+      '\ndata',
+      data,
+      '\nuserData',
+      userData,
+    );
 
     const correctnessChecks = await apiGateway.checkCorrectnessCoin(
       {
@@ -125,7 +139,7 @@ const addCoinCommitment = async (data, userData) => {
         action_type: 'received',
         toSave: 'receiverSide',
         ...correctnessChecks.data,
-      }
+      },
     );
   } catch (err) {
     console.log(err);

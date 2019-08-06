@@ -66,10 +66,7 @@ router
   });
 
 router.post('/set-all-publickey', async (req, res) => {
-  const {
-    pk,
-    whisper_pk: whisperPk
-  } = req.body;
+  const { pk, whisper_pk: whisperPk } = req.body;
   const { address } = req.headers;
   const response = Response();
 
