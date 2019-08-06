@@ -6,4 +6,11 @@ zkp/migrations
 zkp/code
 zkp-utils/node_modules
 offchain/migrations
+account-utils
 ui
+API-Gateway
+database
+offchain
+zkp
+integration-test
+docker-entrypoint-initdb.d
