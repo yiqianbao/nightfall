@@ -35,7 +35,4 @@ printf "${GREEN}*** Deploying all contracts ***${NC}\n"
 make truffle-migrate
 
 printf "${GREEN}*** Launching containerized microservices ***${NC}\n"
-docker-compose up -d
-
-printf "${GREEN}*** Tailing Logs ***${NC}\n"
-docker-compose logs -f
+docker-compose up
