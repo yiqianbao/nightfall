@@ -10,9 +10,9 @@ const coinMapper = ({
   coin,
   coin_index,
   burnedCoin,
-	burnedCoin_index,
+  burnedCoin_index,
   action_type,
-  receiver_name
+  receiver_name,
 }) => {
   return {
     account: (account || '').toLowerCase(),
@@ -20,11 +20,14 @@ const coinMapper = ({
     public_key: (pk_A || '').toLowerCase(),
     salt: (S_A || '').toLowerCase(),
     coin_commitment: (coin || burnedCoin || '').toLowerCase(),
-		coin_commitment_index: (coin_index || coin_index===0)? coin_index : (burnedCoin_index || burnedCoin_index===0)? burnedCoin_index : '',
+    [coin_index || coin_index === 0 ? 'coin_commitment_index' : undefined]: coin_index,
+    [burnedCoin_index || burnedCoin_index === 0
+      ? 'coin_commitment_index'
+      : undefined]: burnedCoin_index,
     type: (action_type || '').toLowerCase(),
     receiver_name,
-  }
-}
+  };
+};
 
 const coinTransferOrReceiverMapper = ({
   pk_A,
