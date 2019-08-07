@@ -23,7 +23,7 @@ This screen has four columns. Reading from left to right, they deal with: conven
 ERC&#x2011;721 transactions; hidden ERC&#x2011;721 transactions; conventional ERC-20 transactions
 and hidden ERC&#x2011;20 transactions.
 
-If you used the `./zkp-demo` startup script, ERC&#x2011;20 and ERC&#x2011;721 token contracts will
+If you used the `./nightfall` startup script, ERC&#x2011;20 and ERC&#x2011;721 token contracts will
 have been deployed for you. The name of the ERC&#x2011;20 token (EY OpsCoin in this case) has been
 read from the ERC&#x2011;20 contract. These will allow you to freely create (mint), transfer and
 burn (destroy) conventional tokens for demonstration purposes. In a real application you would
@@ -82,7 +82,7 @@ by clicking the black column-header in the Private EY OpsCoin screen:
 These mints take a minute or so to complete. This is due to the time it takes to compute the minting
 proof. We know it's possible to improve the constraint system and do it faster but we're mainly
 focussed on the on-chain verification costs at present. The terminal screen from which you launched
-`./zkp-demo` will show you what is happening.
+`./nightfall` will show you what is happening.
 
 Once we have the coins minted, we can transfer them using the transfer button
 `TRANSFER EY OPSCOIN COMMITMENT`. This will open up a page where we select two coins, an amount to

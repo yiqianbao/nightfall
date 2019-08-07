@@ -36,4 +36,3 @@ make truffle-migrate
 
 printf "${GREEN}*** Launching containerized microservices ***${NC}\n"
 docker-compose up
-
