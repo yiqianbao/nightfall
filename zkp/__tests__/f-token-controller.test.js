@@ -1,5 +1,7 @@
+/* eslint-disable import/no-unresolved */
+
 import Utils from 'zkp-utils';
-import AccountUtils from '../src/account-utils/account-utils'; // eslint-disable-line
+import AccountUtils from '../src/account-utils/account-utils';
 
 import controller from '../src/f-token-controller';
 
