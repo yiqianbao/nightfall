@@ -226,7 +226,7 @@ async function getUserByName(req, res, next) {
 
 /**
  * This function will create a user(public ethereum account)
- * req.body = { 
+ * req.body = {
  *  name: 'a',
  *  email: 'a',
  *  address: '0xE237b19f7a9f2E92018a68f4fB07C451F578fa26' => Ethereum account
@@ -249,7 +249,7 @@ async function createAccountHandler(req, res, next) {
 
 /**
  * This function is used to create private account for a user
- * req.body = { 
+ * req.body = {
  *  address: '0x256140f466b2e56E3ae0055551591FE46664976d', // this is the newly created private account
  *  password: '1535612512928', // and password used to create private account
  * }
