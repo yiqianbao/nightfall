@@ -1,6 +1,6 @@
 import apiGateway from './rest/api-gateway';
 
-const addFToken = async (data, userData) => {
+async function addFToken(data, userData) {
   try {
     console.log('\noffchain/src/listeners.js', 'addFToken', '\ndata', data);
 
@@ -19,9 +19,9 @@ const addFToken = async (data, userData) => {
   } catch (err) {
     console.log(err);
   }
-};
+}
 
-const addNFToken = async (data, userData) => {
+async function addNFToken(data, userData) {
   try {
     console.log('\noffchain/src/listeners.js', 'addNFToken', '\ndata', data);
 
@@ -41,13 +41,13 @@ const addNFToken = async (data, userData) => {
   } catch (err) {
     console.log(err);
   }
-};
+}
 
-const addTokenCommitment = async (data, userData) => {
+async function addTokenCommitment(data, userData) {
   try {
     console.log(
       '\noffchain/src/listeners.js',
-      '\naddTokenCommitment',
+      '\naddToken',
       '\ndata',
       data,
       '\nuserData',
@@ -92,9 +92,9 @@ const addTokenCommitment = async (data, userData) => {
   } catch (err) {
     console.log(err);
   }
-};
+}
 
-const addCoinCommitment = async (data, userData) => {
+async function addCoinCommitment(data, userData) {
   try {
     console.log(
       '\noffchain/src/listeners.js',
@@ -144,28 +144,24 @@ const addCoinCommitment = async (data, userData) => {
   } catch (err) {
     console.log(err);
   }
-};
+}
 
-const listeners = async (data, userData) => {
+function listeners(data, userData) {
   console.log('\noffchain/src/listeners.js', '\nlisteners', '\ndata', data, '\nuserData', userData);
 
   const actualPayload = data.payload;
   switch (actualPayload.for) {
     case 'coin':
-      await addCoinCommitment(actualPayload, userData);
-      break;
+      return addCoinCommitment(actualPayload, userData);
     case 'token':
-      await addTokenCommitment(actualPayload, userData);
-      break;
+      return addTokenCommitment(actualPayload, userData);
     case 'NFTToken':
-      await addNFToken(actualPayload, userData);
-      break;
+      return addNFToken(actualPayload, userData);
     case 'FToken':
-      await addFToken(actualPayload, userData);
-      break;
+      return addFToken(actualPayload, userData);
     default:
       throw Error('payload.for is invalid');
   }
-};
+}
 
 export default listeners;
