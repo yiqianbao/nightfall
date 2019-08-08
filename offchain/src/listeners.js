@@ -59,11 +59,11 @@ async function addTokenCommitment(data, userData) {
         authorization: userData.jwtToken,
       },
       {
-        A: data.A,
-        pk: data.pk,
-        S_A: data.S_A,
-        z_A: data.z_A,
-        z_A_index: data.z_A_index,
+        A: data.tokenId,
+        pk: data.transfereePublicKey,
+        S_A: data.salt,
+        z_A: data.commitment,
+        z_A_index: data.commitmentIndex,
       },
     );
 
@@ -110,11 +110,11 @@ async function addCoinCommitment(data, userData) {
         authorization: userData.jwtToken,
       },
       {
-        E: data.E,
-        S_E: data.S_E,
+        E: data.amount,
+        S_E: data.salt,
         pk: data.pk,
-        z_E: data.z_E,
-        z_E_index: data.z_E_index,
+        z_E: data.commitment,
+        z_E_index: data.commitmentIndex,
       },
     );
 
