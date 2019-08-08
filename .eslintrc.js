@@ -12,7 +12,6 @@ module.exports = {
       'anonymous': 'never',
       'named': 'never'
     }],
-    'radix': 'off',
     'func-names': ['error', 'as-needed'],
     'quotes': ['error', 'single', { 'allowTemplateLiterals': true }],
     'comma-dangle': ['error', 'always-multiline'],

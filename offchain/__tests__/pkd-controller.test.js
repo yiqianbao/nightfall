@@ -1,3 +1,5 @@
+/* eslint-disable import/no-unresolved */
+
 /*
 Authors:
 */
@@ -21,7 +23,7 @@ import {
   setPublicKeys,
 } from '../src/pkd-controller';
 
-import AccountUtils from '../src/account-utils/account-utils'; // eslint-disable-line
+import AccountUtils from '../src/account-utils/account-utils';
 
 const utils = Utils('/app/config/stats.json');
 
