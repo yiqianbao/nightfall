@@ -156,14 +156,15 @@ export async function addContract(req, res, next) {
     const type = await setShieldContract(req.user, req.body.contractAddress);
     if (type === 'coin')
       await db.addCoinShieldContractAddress(req.user, {
-        contract_name: req.body.contractName,
-        contract_address: req.body.contractAddress,
+        contractAddress,
+        contractName,
       });
     if (type === 'token')
       await db.addTokenShieldContractAddress(req.user, {
-        contract_name: req.body.contractName,
-        contract_address: req.body.contractAddress,
+        contractAddress,
+        contractName,
       });
+
     response.statusCode = 200;
     response.data = { message: `Added of type ${type}` };
     res.json(response);
@@ -202,32 +203,42 @@ export async function updateContract(req, res, next) {
   try {
     const user = await db.fetchUser(req.user);
 
+    // if update coinShield data
     if (coinShield) {
+      const { contractName, contractAddress, isSelected } = coinShield;
+
       const isCoinShieldPreviousSelected =
         user.selected_coin_shield_contract === coinShield.contractAddress;
+
       await db.updateCoinShieldContractAddress(req.user, {
-        contract_name: coinShield.contractName,
-        contract_address: coinShield.contractAddress,
-        isSelected: coinShield.isSelected,
+        contractName,
+        contractAddress,
+        isSelected,
         isCoinShieldPreviousSelected,
       });
-      if (coinShield.isSelected)
-        await zkp.setCoinShield(req.user, { coinShield: coinShield.contractAddress });
+
+      if (isSelected) await zkp.setCoinShield(req.user, { coinShield: contractAddress });
       else if (isCoinShieldPreviousSelected) await zkp.unSetCoinShield(req.user);
     }
+
+    // if update tokenShield data
     if (tokenShield) {
+      const { contractName, contractAddress, isSelected } = tokenShield;
+
       const isTokenShieldPreviousSelected =
         user.selected_token_shield_contract === tokenShield.contractAddress;
+
       await db.updateTokenShieldContractAddress(req.user, {
-        contract_name: tokenShield.contractName,
-        contract_address: tokenShield.contractAddress,
-        isSelected: tokenShield.isSelected,
+        contractName,
+        contractAddress,
+        isSelected,
         isTokenShieldPreviousSelected,
       });
-      if (tokenShield.isSelected)
-        await zkp.setTokenShield(req.user, { tokenShield: tokenShield.contractAddress });
+
+      if (isSelected) await zkp.setTokenShield(req.user, { tokenShield: contractAddress });
       else if (isTokenShieldPreviousSelected) await zkp.unSetTokenShield(req.user);
     }
+
     response.statusCode = 200;
     response.data = { message: 'Contract Address updated' };
     res.json(response);
@@ -257,13 +268,13 @@ export async function deleteContract(req, res, next) {
   try {
     if (coin_shield) {
       const { data } = await db.deleteCoinShieldContractAddress(req.user, {
-        contract_address: coin_shield,
+        contractAddress: coin_shield,
       });
       if (data.status) await zkp.unSetCoinShield(req.user);
     }
     if (token_shield) {
       const { data } = await db.deleteTokenShieldContractAddress(req.user, {
-        contract_address: token_shield,
+        contractAddress: token_shield,
       });
       if (data.status) await zkp.unSetTokenShield(req.user);
     }

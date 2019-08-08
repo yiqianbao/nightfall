@@ -76,13 +76,14 @@ const updateToken = ({name}, body) => {
   })
 }
 
-const addCoin = (details) => {
+const addCoin = ({name}, body) => {
   return new Promise((resolve, reject) => {
     let options = {
       url : host + '/coin',
       method : 'POST',
       json: true,
-      body: details
+      headers: {name},
+      body
     }
 
     request(options, (err, res, body) => {
@@ -413,6 +414,23 @@ const getNFTokens = ({name}, qs) => {
   });
 }
 
+const addCoinTransaction = ({ name }, body) => {
+  return new Promise((resolve, reject) => {
+    const options = {
+      url: `${host}/coin/transaction`,
+      method: 'POST',
+      json: true,
+      headers: { name },
+      body,
+    };
+    request(options, (err, res, body) => {
+      if(err)
+        reject(err)
+      resolve(body.data)
+    });
+  });
+};
+
 
 function convertObjToQueryString (object) {
   let str = "";
@@ -448,5 +466,6 @@ module.exports = {
   deleteTokenShieldContractAddress,
   getNFToken,
   addFTTransaction,
-  getNFTokens
+  getNFTokens,
+  addCoinTransaction,
 };
