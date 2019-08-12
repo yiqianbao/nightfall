@@ -41,7 +41,7 @@ module.exports = class TokenService {
       {
         token_id,
         is_transferred: { $exists: false },
-        is_shielded: false
+        is_shielded: false,
       },
       { $set: data },
     );

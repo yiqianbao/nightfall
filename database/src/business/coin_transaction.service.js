@@ -30,31 +30,31 @@ module.exports = class CoinTransactionService {
     return this.db.saveData(COLLECTIONS.COIN_TRANSACTION, coinTransaction);
   }
 
- 	mintOrBurnData(data) {
-		const {
-			account,
-			coin_value,
-			type,
-			public_key,
-			salt,
-			coin_commitment,
-			coin_commitment_index,
-			receiver_name
-		}= coinMapper(data);
+  mintOrBurnData(data) {
+    const {
+      account,
+      coin_value,
+      type,
+      public_key,
+      salt,
+      coin_commitment,
+      coin_commitment_index,
+      receiver_name,
+    } = coinMapper(data);
 
-		let coinTransaction = {
-			account,
-			coin_value,
-			public_key,
-			salt,
-			coin_commitment,
-			coin_commitment_index,
-			type,
-			timestamp: new Date(),
-			[receiver_name ? 'receiver_name' : undefined] : receiver_name,
-		}
-		return coinTransaction;
-	}
+    const coinTransaction = {
+      account,
+      coin_value,
+      public_key,
+      salt,
+      coin_commitment,
+      coin_commitment_index,
+      type,
+      timestamp: new Date(),
+      [receiver_name ? 'receiver_name' : undefined]: receiver_name,
+    };
+    return coinTransaction;
+  }
 
   transferOrReceiveData(data) {
     const {
