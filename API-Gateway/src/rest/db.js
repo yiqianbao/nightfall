@@ -402,23 +402,6 @@ const addCoinTransaction = ({ name }, body) => {
   });
 };
 
-const addCoinTransaction = ({ name }, body) => {
-  return new Promise((resolve, reject) => {
-    const options = {
-      url: `${host}/coin/transaction`,
-      method: 'POST',
-      json: true,
-      headers: { name },
-      body,
-    };
-    request(options, (err, res, body) => {
-      if(err)
-        reject(err)
-      resolve(body.data)
-    });
-  });
-};
-
 module.exports = {
   addToken, // '/token', POST
   updateToken, // '/token', PATCH
