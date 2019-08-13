@@ -115,7 +115,7 @@ docker-compose build
 :night_with_stars: We're ready to go! Be sure to be in the main directory and run the demo:
 
 ```sh
-./zkp-demo
+./nightfall
 ```
 
 and wait until you see the message `Compiled successfully` in the console.
@@ -127,7 +127,7 @@ Navigate your web browser to <http://nightfall.docker> to start using Nightfall 
 enough time to start up). There are instructions on how to use the application in the
 [UI.md](./UI.md) file.
 
-Note that ./zkp-demo has deployed an ERC-20 and ERC-721 contract for you (specifically FToken.sol
+Note that ./nightfall has deployed an ERC-20 and ERC-721 contract for you (specifically FToken.sol
 and NFTokenMetada.sol). These are designed to allow anyone to mint tokens for demonstration
 purposes. You will probably want to curtail this behaviour in anything but a demonstration.
 
@@ -136,7 +136,7 @@ EY OpsCoin for the ERC-20 and EY Token for ERC-721.
 
 Note that it can take up to 10 mins to compute a transfer proof (depending on your machine) and the
 demonstration UI is intentionally modal while this happens (even though the action returns a
-promise). You can see what's happening if you look at the terminal where you ran `./zkp-demo`.
+promise). You can see what's happening if you look at the terminal where you ran `./nightfall`.
 
 If you want to close the application, make sure to stop containers and remove containers, networks,
 volumes, and images created by up, using
@@ -182,7 +182,7 @@ Note that, the zkp service tests take a while to run (approx. 2 hours)
 Be sure to be in the main directory and then open terminal and run
 
 ```sh
-./zkp-demo-test
+./nightfall-test
 ```
 -  Mac 
   - Test suites will open a terminal, where you can see test container's log. And, this terminal will get close
