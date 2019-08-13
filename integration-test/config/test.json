@@ -1,4 +1,4 @@
 {
-	"apiServerURL": "http://api-gateway-test",
+	"apiServerURL": "http://api-gateway-test.nightfall.docker",
   "HASHLENGTH": 27
 }
