@@ -17,7 +17,7 @@ services:
 
   api-gateway:
     build:
-      context: ./API-Gateway
+      context: ./api-gateway
       dockerfile: Dockerfile
     restart: on-failure
     volumes:
