@@ -1,27 +1,36 @@
-const request = require('request');
+import request from 'request';
+import { getProps } from '../config/config';
 
-const Config = require('../config/config').getProps();
+const { offchain } = getProps();
+const host = `${offchain.host}:${offchain.port}`;
 
-const host = `${Config.offchain.host}:${Config.offchain.port}`;
-
-const isNameInUse = name => {
-  return new Promise((resolve, reject) => {
-    const url = `${host}/pkd/name/exists?name=${name}`;
-    const options = {
-      url,
-      method: 'GET',
-      json: true,
-    };
-
-    request(options, (err, res, body) => {
-      if (err) reject(err);
-      resolve(body);
+const requestWrapper = options =>
+  new Promise(function promiseHandler(resolve, reject) {
+    request(options, function responseHandler(err, res, body) {
+      if (err || res.statusCode === 500) {
+        return reject(err || res.body);
+      }
+      return resolve(body);
     });
   });
-};
 
-const setName = (address, name) => {
-  return new Promise((resolve, reject) => {
+/*
+ * rest calls to offchain microservice
+ */
+export default {
+  // check, is name already used
+  isNameInUse(name) {
+    const options = {
+      url: `${host}/pkd/name/exists`,
+      method: 'POST',
+      json: true,
+      qs: { name },
+    };
+    return requestWrapper(options);
+  },
+
+  // associate name to geth account
+  setName(address, name) {
     const options = {
       url: `${host}/pkd/name`,
       method: 'POST',
@@ -29,16 +38,11 @@ const setName = (address, name) => {
       headers: { address },
       body: { name },
     };
+    return requestWrapper(options);
+  },
 
-    request(options, (err, res, body) => {
-      if (err) reject(err);
-      resolve(body);
-    });
-  });
-};
-
-const setZkpPublicKey = (address, body) => {
-  return new Promise((resolve, reject) => {
+  // associate zkp publickey to geth account
+  setZkpPublicKey(address, body) {
     const options = {
       url: `${host}/pkd/zkp-publickey`,
       method: 'POST',
@@ -46,63 +50,44 @@ const setZkpPublicKey = (address, body) => {
       headers: { address },
       body,
     };
+    return requestWrapper(options);
+  },
 
-    request(options, (err, res, data) => {
-      if (err) reject(err);
-      resolve(data);
-    });
-  });
-};
-
-const getAddressFromName = name => {
-  return new Promise((resolve, reject) => {
-    const url = `${host}/pkd/address?name=${name}`;
+  // get associated Address for a name
+  getAddressFromName(name) {
     const options = {
-      url,
+      url: `${host}/pkd/address`,
       method: 'GET',
       json: true,
+      qs: { name },
     };
+    return requestWrapper(options);
+  },
 
-    request(options, (err, res, body) => {
-      if (err) reject(err);
-      resolve(body);
-    });
-  });
-};
-
-const getWhisperPK = name => {
-  return new Promise((resolve, reject) => {
-    const url = `${host}/pkd/whisperkey?name=${name}`;
+  // get associated whisper for a name
+  getWhisperPK(name) {
     const options = {
-      url,
+      url: `${host}/pkd/whisperkey`,
       method: 'GET',
       json: true,
+      qs: { name },
     };
+    return requestWrapper(options);
+  },
 
-    request(options, (err, res, body) => {
-      if (err) reject(err);
-      resolve(body);
-    });
-  });
-};
-
-const getZkpPublicKeyFromName = name => {
-  return new Promise((resolve, reject) => {
-    const url = `${host}/pkd/zkp-publickey?name=${name}`;
+  // get associated zkp publickey for a name
+  getZkpPublicKeyFromName(name) {
     const options = {
-      url,
+      url: `${host}/pkd/zkp-publickey`,
       method: 'GET',
       json: true,
+      qs: { name },
     };
-    request(options, (err, res, body) => {
-      if (err) reject(err);
-      resolve(body);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-const setWhisperPK = ({ address }, whisperPk) => {
-  return new Promise((resolve, reject) => {
+  // associate whisper key to geth account
+  setWhisperPK({ address }, whisperPk) {
     const options = {
       url: `${host}/pkd/whisperkey`,
       method: 'POST',
@@ -110,89 +95,50 @@ const setWhisperPK = ({ address }, whisperPk) => {
       headers: { address },
       body: { whisper_pk: whisperPk },
     };
+    return requestWrapper(options);
+  },
 
-    request(options, (err, res, body) => {
-      if (err) reject(err);
-      resolve(body);
-    });
-  });
-};
-
-const generateShhIdentity = details => {
-  return new Promise((resolve, reject) => {
+  // generate whisper identity for user.
+  generateShhIdentity(body) {
     const options = {
       url: `${host}/whisper/generateShhIdentity`,
       method: 'POST',
       json: true,
-      body: details,
+      body,
     };
+    return requestWrapper(options);
+  },
 
-    request(options, (err, res, body) => {
-      if (err) reject(err);
-      resolve(body);
-    });
-  });
-};
-
-const getWhisperPublicKey = qs => {
-  return new Promise((resolve, reject) => {
+  // get whisper identity
+  getWhisperPublicKey(qs) {
     const options = {
       url: `${host}/whisper/getWhisperPublicKey`,
       method: 'GET',
       json: true,
       qs,
     };
+    return requestWrapper(options);
+  },
 
-    request(options, (err, res, body) => {
-      if (err) reject(err);
-      resolve(body);
-    });
-  });
-};
-
-const subscribe = details => {
-  return new Promise((resolve, reject) => {
-    console.log(`${host}/whisper/subscribe`);
+  // subcribe to a topic
+  subscribe(body) {
     const options = {
       url: `${host}/whisper/subscribe`,
       method: 'POST',
       json: true,
-      body: details,
+      body,
     };
+    return requestWrapper(options);
+  },
 
-    request(options, (err, res, body) => {
-      if (err) reject(err);
-      resolve(body);
-    });
-  });
-};
-
-const sendMessage = details => {
-  return new Promise((resolve, reject) => {
+  // send whisper message to recipient
+  sendMessage(body) {
     const options = {
       url: `${host}/whisper/sendMessage`,
       method: 'POST',
       json: true,
-      body: details,
+      body,
     };
-
-    request(options, (err, res, body) => {
-      if (err) reject(err);
-      resolve(body);
-    });
-  });
-};
-
-module.exports = {
-  isNameInUse,
-  setName,
-  setZkpPublicKey,
-  getAddressFromName,
-  setWhisperPK,
-  getWhisperPK,
-  generateShhIdentity,
-  getWhisperPublicKey,
-  subscribe,
-  getZkpPublicKeyFromName,
-  sendMessage,
+    return requestWrapper(options);
+  },
 };

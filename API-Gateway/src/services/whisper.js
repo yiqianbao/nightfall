@@ -1,5 +1,4 @@
-const db = require('../rest/db');
-const offchain = require('../rest/offchain');
+import { db, offchain } from '../rest';
 
 const topicForCoinToken = '0xeca7945f';
 
@@ -12,12 +11,12 @@ export async function whisperTransaction(req, dataToSend) {
   // getIdentity from local db
   const receiverName = req.body.receiver_name || req.body.payTo;
 
-  const senderShhIdentity = await db.getWhisperIdentity(req.user);
+  const { shhIdentity } = await db.getWhisperIdentity(req.user);
   // PKD to get the whisperPK using name "eg: bob"
   const shhPKRes = await offchain.getWhisperPK(receiverName);
   const details = {
     message: dataToSend,
-    shhIdentity: senderShhIdentity.data.shhIdentity,
+    shhIdentity,
     shhPkRecipient: shhPKRes.user_whisper_pk,
   };
   await offchain.sendMessage(details);

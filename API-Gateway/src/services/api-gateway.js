@@ -1,34 +1,26 @@
 import { setWhisperIdentityAndSubscribe } from './whisper';
-
-const zkp = require('../rest/zkp');
-const db = require('../rest/db');
-const Response = require('../routes/response/response');
-const accounts = require('../rest/accounts');
-const offchain = require('../rest/offchain');
-const {
-  createToken,
-} = require('../middlewares/authMiddleware'); /* Authorization filter used to verify Role of the user */
+import { accounts, db, offchain, zkp } from '../rest';
+import Response from '../routes/response/response';
+import { createToken } from '../middlewares/authMiddleware'; /* Authorization filter used to verify Role of the user */
 
 /**
-	 * This function is used to login to the application
-	 * req.body {
-			"name": "x",
-			"password": "x"
-		}
-	 * @param {*} req
-	 * @param {*} res
-	 */
+ * This function is used to login to the application
+ * req.body {
+    "name": "x",
+    "password": "x"
+  }
+ * @param {*} req
+ * @param {*} res
+ */
 export async function loginHandler(req, res) {
   const response = new Response();
 
   const { name, password } = req.body;
 
   try {
-    const data = await db.login(name, password);
+    const data = await db.login({ name, password });
     if (!data) throw new Error('User does not exist');
-
     await accounts.unlockAccount({ address: data.address, password });
-
     // get jwt token
     const token = createToken(data, password);
 
@@ -38,9 +30,7 @@ export async function loginHandler(req, res) {
       jwtToken: token,
       sk_A: data.secretkey,
     };
-
     await setWhisperIdentityAndSubscribe(userData);
-
     response.statusCode = 200;
     response.data = { ...data, token };
     res.status(200).json(response);
@@ -52,15 +42,15 @@ export async function loginHandler(req, res) {
 }
 
 /**
-	 * This function will create an account
-	 * req.body {
-	 		name: 'bob',
-			email: 'bob@email.com',
-			password: 'bobsPassword'
-		}
-	 * @param {*} req
-	 * @param {*} res
-	 */
+ * This function will create an account
+ * req.body {
+     name: 'bob',
+    email: 'bob@email.com',
+    password: 'bobsPassword'
+  }
+ * @param {*} req
+ * @param {*} res
+ */
 export async function createAccountHandler(req, res, next) {
   const response = new Response();
 
@@ -73,7 +63,7 @@ export async function createAccountHandler(req, res, next) {
     const address = (await accounts.createAccount(password)).data;
     const shhIdentity = '';
 
-    const { data } = await db.createAccount({
+    const data = await db.createAccount({
       ...req.body,
       address,
       shhIdentity,
@@ -132,28 +122,29 @@ function setShieldContract(user, contractAddress) {
     zkp
       .setTokenShield(user, { tokenShield: contractAddress })
       .then(() => resolve('token'))
-      .catch(() => console.log("Don't do anything token"));
+      .catch(() => console.log(`Don't do anything token`));
     zkp
       .setCoinShield(user, { coinShield: contractAddress })
       .then(() => resolve('coin'))
-      .catch(() => console.log("Don't do anything coin"));
+      .catch(() => console.log(`Don't do anything coin`));
   });
 }
 
 /**
-	 * This function add Sheild contract inforamtion to User.
-	 * req.body {
-			"contractAddress": "0x674eD18709c896dD74a8CA3378BBF37333faC345",
-			"contractName": "tokenShield"
-	  	}
-	 * @param {*} req
-	 * @param {*} res
-	*/
+ * This function add Sheild contract inforamtion to User.
+ * req.body {
+    "contractAddress": "0x674eD18709c896dD74a8CA3378BBF37333faC345",
+    "contractName": "tokenShield"
+    }
+ * @param {*} req
+ * @param {*} res
+*/
 export async function addContract(req, res, next) {
   const response = new Response();
+  const { contractAddress, contractName } = req.body;
 
   try {
-    const type = await setShieldContract(req.user, req.body.contractAddress);
+    const type = await setShieldContract(req.user, contractAddress);
     if (type === 'coin')
       await db.addCoinShieldContractAddress(req.user, {
         contractAddress,
@@ -177,25 +168,25 @@ export async function addContract(req, res, next) {
 }
 
 /**
-	 * This function will update sheild contract information
-	   will change primary selected contract for user of both
-	   ERC-20 and ERC-721.
-	 * in body "tokenShield" and "coinShield" object are optional.
-	 * req.body {
-			"tokenShield": {
-				"contractAddress": "0x88B8d386BA803423482f325Be664607AE1Db6E1F",
-				"contractName": "tokenShield1",
-				"isSelected": true
-			},
-			"coinShield": {
-				"contractAddress": "0x3BBa2cdBb2376F07017421878540c424aAB61294",
-				"contractName": "coinShield0",
-				"isSelected": false
-			}
-		}
-	 * @param {*} req
-	 * @param {*} res
-	*/
+ * This function will update sheild contract information
+   will change primary selected contract for user of both
+   ERC-20 and ERC-721.
+ * in body "tokenShield" and "coinShield" object are optional.
+ * req.body {
+    "tokenShield": {
+      "contractAddress": "0x88B8d386BA803423482f325Be664607AE1Db6E1F",
+      "contractName": "tokenShield1",
+      "isSelected": true
+    },
+    "coinShield": {
+      "contractAddress": "0x3BBa2cdBb2376F07017421878540c424aAB61294",
+      "contractName": "coinShield0",
+      "isSelected": false
+    }
+  }
+ * @param {*} req
+ * @param {*} res
+*/
 export async function updateContract(req, res, next) {
   const response = new Response();
   const { tokenShield, coinShield } = req.body;
@@ -251,16 +242,16 @@ export async function updateContract(req, res, next) {
 }
 
 /**
-	 * This function will delete add contract information, and
-	   will also remove contract from zkp is set as primary.
-	 * in params "token_shield" and "coin_shield" keys are optional.
-	 * req.params {
-			coin_shield: "0x3BBa2cdBb2376F07017421878540c424aAB61294",
-			token_shield: "0x3BBa2cdBb2376F07017421878540c424aAB61294"
-		}
-	 * @param {*} req
-	 * @param {*} res
-	*/
+ * This function will delete add contract information, and
+   will also remove contract from zkp is set as primary.
+ * in params "token_shield" and "coin_shield" keys are optional.
+ * req.params {
+    coin_shield: "0x3BBa2cdBb2376F07017421878540c424aAB61294",
+    token_shield: "0x3BBa2cdBb2376F07017421878540c424aAB61294"
+  }
+ * @param {*} req
+ * @param {*} res
+*/
 export async function deleteContract(req, res, next) {
   const response = new Response();
   const { query } = req;

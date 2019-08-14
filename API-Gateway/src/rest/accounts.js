@@ -1,43 +1,42 @@
-const request = require('request');
+import request from 'request';
+import { getProps } from '../config/config';
 
-const Config = require('../config/config').getProps();
+const { accounts } = getProps();
+const host = `${accounts.host}:${accounts.port}`;
 
-const host = `${Config.accounts.host}:${Config.accounts.port}`;
+const requestWrapper = options =>
+  new Promise(function promiseHandler(resolve, reject) {
+    request(options, function responseHandler(err, res, body) {
+      if (err || res.statusCode === 500) {
+        return reject(err || res.body);
+      }
+      return resolve(body);
+    });
+  });
 
-const createAccount = password => {
-  return new Promise((resolve, reject) => {
+/*
+ * rest calls to accounts microservice
+ */
+export default {
+  // create geth account.
+  createAccount(password) {
     const options = {
       url: `${host}/account/new`,
       method: 'POST',
       json: true,
       body: { password },
     };
-    request(options, (err, res, body) => {
-      if (err) reject(err);
-      resolve(body);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-const unlockAccount = body => {
-  return new Promise((resolve, reject) => {
+  // unlock a geth account.
+  unlockAccount(body) {
     const options = {
       url: `${host}/accounts/unlock`,
       method: 'POST',
       json: true,
       body,
     };
-    request(options, (err, res, data) => {
-      if (err) reject(err);
-      if (data.statusCode !== 200) {
-        return reject(data.err);
-      }
-      return resolve(body);
-    });
-  });
-};
-
-module.exports = {
-  createAccount,
-  unlockAccount,
+    return requestWrapper(options);
+  },
 };

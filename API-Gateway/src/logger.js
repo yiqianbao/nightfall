@@ -1,25 +1,23 @@
-const { createLogger, format, transports } = require('winston');
-const fs = require('fs');
-require('winston-daily-rotate-file');
+import { createLogger, format, transports } from 'winston';
+import { getProps } from './config/config';
 
-const { isLoggerEnable } = require('./config/config').getProps();
+const { isLoggerEnable } = getProps();
 
-const logDir = 'logs';
+const consoleLogger = {
+  info: message => console.log(message),
+  error: message => console.error(message),
+};
 
-// Create the log directory if it does not exist
-if (!fs.existsSync(logDir)) {
-  fs.mkdirSync(logDir);
+let winstonLogger;
+
+if (isLoggerEnable) {
+  winstonLogger = createLogger({
+    level: 'debug',
+    format: format.combine(format.colorize(), format.simple()),
+    transports: [new transports.Console()],
+  });
 }
 
-module.exports = createLogger({
-  level: 'debug',
-  format: format.combine(format.colorize(), format.simple()),
-  transports: [new transports.Console()],
-});
+const logger = winstonLogger || consoleLogger;
 
-if (!isLoggerEnable) {
-  module.exports = {
-    info: message => console.log(message),
-    error: message => console.error(message),
-  };
-}
+export default logger;

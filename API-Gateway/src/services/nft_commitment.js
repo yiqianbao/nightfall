@@ -1,10 +1,6 @@
 import { whisperTransaction } from './whisper';
-
-const zkp = require('../rest/zkp');
-const db = require('../rest/db');
-const Response = require('../routes/response/response');
-const accounts = require('../rest/accounts');
-const offchain = require('../rest/offchain');
+import { accounts, db, offchain, zkp } from '../rest';
+import Response from '../routes/response/response';
 
 // check correctness
 export async function checkCorrectnessToken(req, res, next) {
@@ -25,21 +21,21 @@ export async function checkCorrectnessToken(req, res, next) {
 }
 
 /**
-	 * This function will mint a token and add a transaction in db
-	 * req.user {
-			address: '0x04b95c76d5075620a655b707a7901462aea8656d',
-		 	name: 'alice',
-		 	pk_A: '0x4c45963a12f0dfa530285fde66ac235c8f8ddf8d178098cdb292ac',
-		 	password: 'alicesPassword'
-	 }
-	 * req.body {
-		 	S_A: '0xE9A313C89C449AF6E630C25AB3ACC0FC3BAB821638E0D55599B518',
-		 	uri: 'unique token name',
-		 	tokenID: '0x1448d8ab4e0d610000000000000000000000000000000000000000000000000'
-		}
-	 * @param {*} req
-	 * @param {*} res
-	 */
+   * This function will mint a token and add a transaction in db
+   * req.user {
+      address: '0x04b95c76d5075620a655b707a7901462aea8656d',
+       name: 'alice',
+       pk_A: '0x4c45963a12f0dfa530285fde66ac235c8f8ddf8d178098cdb292ac',
+       password: 'alicesPassword'
+   }
+   * req.body {
+       S_A: '0xE9A313C89C449AF6E630C25AB3ACC0FC3BAB821638E0D55599B518',
+       uri: 'unique token name',
+       tokenID: '0x1448d8ab4e0d610000000000000000000000000000000000000000000000000'
+    }
+   * @param {*} req
+   * @param {*} res
+   */
 export async function mintToken(req, res, next) {
   const response = new Response();
   try {
@@ -202,7 +198,7 @@ export async function burnToken(req, res, next) {
       isBurned: true,
     });
 
-    const user = await db.getNFToken(req.user, req.body.A);
+    const user = await db.getNFTokenByTokenId(req.user, req.body.A);
 
     if (req.body.payTo) {
       // Send details of the token to the transferee via Whisper

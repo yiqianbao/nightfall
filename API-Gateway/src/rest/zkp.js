@@ -1,32 +1,40 @@
-const request = require('request');
+import request from 'request';
+import { getProps } from '../config/config';
 
-const Config = require('../config/config').getProps();
+const { zkp } = getProps();
+const host = `${zkp.host}:${zkp.port}`;
 
-const host = `${Config.zkp.host}:${Config.zkp.port}`;
+const requestWrapper = options =>
+  new Promise(function promiseHandler(resolve, reject) {
+    request(options, function responseHandler(err, res, body) {
+      if (err || res.statusCode === 500) {
+        return reject(err || res.body);
+      }
+      return resolve(body);
+    });
+  });
 
-const loadVks = (details, headers) => {
-  return new Promise((resolve, reject) => {
+/*
+ * rest calls to zkp microservice
+ */
+export default {
+  // load new vk
+  loadVks(body, headers) {
     const options = {
       url: `${host}/vk`,
       method: 'POST',
       json: true,
       headers: {
-        'Content-Type': 'application/json; charset=utf-8',
         address: headers.address,
         password: headers.password,
       },
-      body: details,
+      body,
     };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-const mintToken = ({ address }, body) => {
-  return new Promise((resolve, reject) => {
+  // mint non-fungible token commitment
+  mintToken({ address }, body) {
     const options = {
       url: `${host}/token/mint`,
       method: 'POST',
@@ -34,16 +42,11 @@ const mintToken = ({ address }, body) => {
       headers: { address },
       body,
     };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-const spendToken = ({ address }, body) => {
-  return new Promise((resolve, reject) => {
+  // transfer non-fungible token commitment
+  spendToken({ address }, body) {
     const options = {
       url: `${host}/token/transfer`,
       method: 'POST',
@@ -51,16 +54,11 @@ const spendToken = ({ address }, body) => {
       headers: { address },
       body,
     };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-const burnToken = ({ address }, body) => {
-  return new Promise((resolve, reject) => {
+  // burn non-fungible token commitment
+  burnToken({ address }, body) {
     const options = {
       url: `${host}/token/burn`,
       method: 'POST',
@@ -68,16 +66,11 @@ const burnToken = ({ address }, body) => {
       headers: { address },
       body,
     };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-const mintCoin = ({ address }, body) => {
-  return new Promise((resolve, reject) => {
+  // mint fungible token commitment
+  mintCoin({ address }, body) {
     const options = {
       url: `${host}/coin/mint`,
       method: 'POST',
@@ -85,16 +78,11 @@ const mintCoin = ({ address }, body) => {
       headers: { address },
       body,
     };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-const transferCoin = ({ address }, body) => {
-  return new Promise((resolve, reject) => {
+  // transfer fungible token commitment
+  transferCoin({ address }, body) {
     const options = {
       url: `${host}/coin/transfer`,
       method: 'POST',
@@ -102,33 +90,23 @@ const transferCoin = ({ address }, body) => {
       headers: { address },
       body,
     };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-const burnCoin = (details, { address }) => {
-  return new Promise((resolve, reject) => {
+  // burn fungible token commitment
+  burnCoin(body, { address }) {
     const options = {
       url: `${host}/coin/burn`,
       method: 'POST',
       json: true,
       headers: { address },
-      body: details,
+      body,
     };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-const mintNFToken = ({ address }, body) => {
-  return new Promise((resolve, reject) => {
+  // mint non-fungible token
+  mintNFToken({ address }, body) {
     const options = {
       url: `${host}/nft/mint`,
       method: 'POST',
@@ -136,16 +114,11 @@ const mintNFToken = ({ address }, body) => {
       headers: { address },
       body,
     };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-const transferNFToken = ({ address }, body) => {
-  return new Promise((resolve, reject) => {
+  // transfer non-fungible token
+  transferNFToken({ address }, body) {
     const options = {
       url: `${host}/nft/transfer`,
       method: 'POST',
@@ -153,16 +126,11 @@ const transferNFToken = ({ address }, body) => {
       headers: { address },
       body,
     };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-const burnNFToken = ({ address }, body) => {
-  return new Promise((resolve, reject) => {
+  // burn non-fungible token
+  burnNFToken({ address }, body) {
     const options = {
       url: `${host}/nft/burn`,
       method: 'POST',
@@ -170,99 +138,11 @@ const burnNFToken = ({ address }, body) => {
       headers: { address },
       body,
     };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-const transferFToken = ({ address }, body) => {
-  return new Promise((resolve, reject) => {
-    const options = {
-      url: `${host}/ft/transfer`,
-      method: 'POST',
-      json: true,
-      headers: { address },
-      body,
-    };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
-
-const setTokenShield = ({ address }, body) => {
-  return new Promise((resolve, reject) => {
-    const options = {
-      url: `${host}/token/shield`,
-      method: 'POST',
-      json: true,
-      headers: { address },
-      body,
-    };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
-
-const setCoinShield = ({ address }, body) => {
-  return new Promise((resolve, reject) => {
-    const options = {
-      url: `${host}/coin/shield`,
-      method: 'POST',
-      json: true,
-      headers: { address },
-      body,
-    };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
-
-const unSetCoinShield = ({ address }) => {
-  return new Promise((resolve, reject) => {
-    const options = {
-      url: `${host}/coin/shield`,
-      method: 'DELETE',
-      json: true,
-      headers: { address },
-    };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
-
-const unSetTokenShield = ({ address }) => {
-  return new Promise((resolve, reject) => {
-    const options = {
-      url: `${host}/token/shield`,
-      method: 'DELETE',
-      json: true,
-      headers: { address },
-    };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
-
-const mintFToken = ({ address }, body) => {
-  return new Promise((resolve, reject) => {
+  // mint fungible token
+  mintFToken({ address }, body) {
     const options = {
       url: `${host}/ft/mint`,
       method: 'POST',
@@ -270,16 +150,23 @@ const mintFToken = ({ address }, body) => {
       headers: { address },
       body,
     };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-const burnFToken = ({ address }, body) => {
-  return new Promise((resolve, reject) => {
+  // transfer fungible token
+  transferFToken({ address }, body) {
+    const options = {
+      url: `${host}/ft/transfer`,
+      method: 'POST',
+      json: true,
+      headers: { address },
+      body,
+    };
+    return requestWrapper(options);
+  },
+
+  // burn fungible token
+  burnFToken({ address }, body) {
     const options = {
       url: `${host}/ft/burn`,
       method: 'POST',
@@ -287,16 +174,11 @@ const burnFToken = ({ address }, body) => {
       headers: { address },
       body,
     };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-const checkCorrectnessToken = (headers, body) => {
-  return new Promise((resolve, reject) => {
+  // check correctness for non-fungible token commitment once received by whisper listener of bob.
+  checkCorrectnessToken(headers, body) {
     const options = {
       url: `${host}/token/checkCorrectness`,
       method: 'POST',
@@ -304,16 +186,11 @@ const checkCorrectnessToken = (headers, body) => {
       headers,
       body,
     };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-const checkCorrectnessCoin = (headers, body) => {
-  return new Promise((resolve, reject) => {
+  // check correctness for fungible token commitment once received by whisper listener of bob.
+  checkCorrectnessCoin(headers, body) {
     const options = {
       url: `${host}/coin/checkCorrectness`,
       method: 'POST',
@@ -321,66 +198,73 @@ const checkCorrectnessCoin = (headers, body) => {
       headers,
       body,
     };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-const getCoinShield = ({ address }) => {
-  return new Promise((resolve, reject) => {
+  // set new non-fungible commitment token shield for user address
+  setTokenShield({ address }, body) {
     const options = {
-      url: `${host}/coin/shield`,
-      method: 'GET',
+      url: `${host}/token/shield`,
+      method: 'POST',
       json: true,
       headers: { address },
+      body,
     };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-const getTokenShield = ({ address }) => {
-  return new Promise((resolve, reject) => {
+  // get non-fungible commitment token shield address for user address
+  getTokenShield({ address }) {
     const options = {
       url: `${host}/token/shield`,
       method: 'GET',
       json: true,
       headers: { address },
     };
-    request(options, (err, res, data) => {
-      if (err) return reject(err);
-      if (data.statusCode !== 200) return reject(data);
-      return resolve(data);
-    });
-  });
-};
+    return requestWrapper(options);
+  },
 
-module.exports = {
-  loadVks,
-  mintToken,
-  spendToken,
-  mintCoin,
-  transferCoin,
-  burnToken,
-  burnCoin,
-  mintNFToken,
-  transferNFToken,
-  burnNFToken,
-  transferFToken,
-  setTokenShield,
-  setCoinShield,
-  unSetCoinShield,
-  unSetTokenShield,
-  mintFToken,
-  burnFToken,
-  checkCorrectnessToken,
-  checkCorrectnessCoin,
-  getCoinShield,
-  getTokenShield,
+  // remove non-fungible commitment token shield address for user address
+  unSetTokenShield({ address }) {
+    const options = {
+      url: `${host}/token/shield`,
+      method: 'DELETE',
+      json: true,
+      headers: { address },
+    };
+    return requestWrapper(options);
+  },
+  // set new fungible commitment token shield for user address
+  setCoinShield({ address }, body) {
+    const options = {
+      url: `${host}/coin/shield`,
+      method: 'POST',
+      json: true,
+      headers: { address },
+      body,
+    };
+    return requestWrapper(options);
+  },
+
+  // get ungible commitment token shield address for user address
+  getCoinShield({ address }) {
+    const options = {
+      url: `${host}/coin/shield`,
+      method: 'GET',
+      json: true,
+      headers: { address },
+    };
+    return requestWrapper(options);
+  },
+
+  // remove ungible commitment token shield address for user address
+  unSetCoinShield({ address }) {
+    const options = {
+      url: `${host}/coin/shield`,
+      method: 'DELETE',
+      json: true,
+      headers: { address },
+    };
+    return requestWrapper(options);
+  },
 };
