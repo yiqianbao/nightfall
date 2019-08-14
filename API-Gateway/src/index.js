@@ -11,17 +11,16 @@ import proxy from 'express-http-proxy';
 import cors from 'cors';
 import * as Config from './config/config';
 import logger from './logger';
-
-import rootRouter from './routes/api-gateway';
-import nftCommitmentRoutes from './routes/nft_commitment';
-import ftCommitmentRoutes from './routes/ft_commitment';
-import ftRoutes from './routes/ft';
-import nftRoutes from './routes/nft';
-import userRoutes from './routes/user';
-import shieldRoutes from './routes/shield';
-
-import { authentication } from './middlewares/authMiddleware'; /* Authorization filter used to verify Role of the user */
-import { unlockAccount } from './middlewares/passwordMiddleware';
+import {
+  rootRouter,
+  nftCommitmentRoutes,
+  ftCommitmentRoutes,
+  ftRoutes,
+  nftRoutes,
+  userRoutes,
+  shieldRoutes,
+} from './routes';
+import { authentication, unlockAccount } from './middlewares';
 
 const app = express();
 const router = Router();

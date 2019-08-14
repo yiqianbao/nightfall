@@ -1,7 +1,7 @@
 import { setWhisperIdentityAndSubscribe } from './whisper';
 import { accounts, db, offchain, zkp } from '../rest';
 import Response from '../routes/response/response';
-import { createToken } from '../middlewares/authMiddleware'; /* Authorization filter used to verify Role of the user */
+import { createToken } from '../middlewares'; /* Authorization filter used to verify Role of the user */
 
 /**
  * This function is used to login to the application

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { encryptPassword, decryptPassword } from './passwordMiddleware';
+import { encryptPassword, decryptPassword } from './password';
 import Response from '../routes/response/response';
 
 const response = new Response();
