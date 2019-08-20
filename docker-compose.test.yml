@@ -27,7 +27,8 @@ services:
       - ./api-gateway/.babelrc:/app/.babelrc
     environment:
       - NODE_ENV=test
-      - VIRTUAL_HOST=api-gateway-test.nightfall.docker
+    ports:
+      - "8001:80"
     networks: 
       - test_net
 
