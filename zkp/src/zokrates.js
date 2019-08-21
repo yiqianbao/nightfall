@@ -69,9 +69,7 @@ async function runContainerMounted(_hostDirPath) {
   // We mount from the safe_dir, to avoid accidental deletion or overwriting of the oringinal files that sit in config.ZOKRATES_HOST_CODE_DIRPATH_REL.
   // We mount to a new 'code' folder in the container. We can't mount to the 'outputs' folder, because we'll overwrite the zokrates app.
   console.log(
-    `Running the container; mounted: ${hostDirPath}:${
-      config.ZOKRATES_CONTAINER_CODE_DIRPATH_ABS
-    }:cached`,
+    `Running the container; mounted: ${hostDirPath}:${config.ZOKRATES_CONTAINER_CODE_DIRPATH_ABS}:cached`,
   );
   // var config = Config.getProps() //defaults to local if setEnv not called
 
@@ -161,7 +159,7 @@ async function setup(container, b = config.ZOKRATES_BACKEND) {
 /* TODO - the new zokrates outputs the Proof into a proof.json file, so we won't need the below Regex code to extract the proof.
  */
 /**
-@param {string} b - OPTIONAL argument, for the tools-trusted-setup to specify the backend. For regular ./zkp-demo runs, the backend defaults to config.ZOKRATES_BACKEND, so the b parameter won't get used.
+@param {string} b - OPTIONAL argument, for the tools-trusted-setup to specify the backend. For regular ./nightfall runs, the backend defaults to config.ZOKRATES_BACKEND, so the b parameter won't get used.
 */
 async function generateProof(container, b = config.ZOKRATES_BACKEND, zkpPath) {
   console.log('\nGenerating Proof := P(pk,w,x)');
@@ -206,7 +204,7 @@ async function generateProof(container, b = config.ZOKRATES_BACKEND, zkpPath) {
       reject(chunk);
     });
     stream.on('end', () => {
-      console.log("\nExtracting the Proof from the container's console");
+      console.log(`\nExtracting the Proof from the container's console`);
 
       // need to extract the proof from data
       const lines = data.split(os.EOL); // separate the lines
