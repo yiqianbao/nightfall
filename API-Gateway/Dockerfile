@@ -1,6 +1,5 @@
 FROM node:11.15
 
-RUN mkdir /app
 WORKDIR /app
 
 COPY ./package.json ./package-lock.json ./

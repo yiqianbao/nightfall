@@ -37,6 +37,10 @@ ZoKrates github so that changes to ZoKrates do not break this code. However this
 improvements and bugfixes that the ZoKrates team implement will not automatically carry through into
 this code.
 
+## Oudated ZoKrates release
+
+Our image from ZoKrates is from January 2019 and is already outdated. It might include security bugs which have since been fixed over in the ZoKrates repository. The syntax of the ZoKrates DSL has also changed considerably since January 2019, and therefore the `.pcode` files of Nightfall are written in outdated syntax.
+
 ## No batching or aggregation of proofs
 
 We currently treat each ZKP transaction as a separate event. In the future we expect to aggregate
