@@ -143,16 +143,6 @@ volumes, and images created by up, using
 docker-compose down -v
 ```
 
-## Developing Nightfall
-
-Making changes to Nightfall, and some testing tasks, will require additional prerequesites and more explanaton.
-
-### Development prerequesites
-
-**dotdocker** will allow you to easily connect to individual modules within the Nightfall application when they are run from Docker. Note: when running commands from inside Docker (e.g. `docker-compose up`) the modules are able to communicate with each other using unqualified hostnames like `api-gateway`. If you will be running code directly on your development machine rather than using Docker then you will be responsible for connecting services to each other and there may be contention for ports (since you can't run three web servers on port 80 on the same development machine).
-
-- <https://github.com/aj-may/dotdocker/>
-
 ### To run zkp service unit tests
 
 After following the steps from 'Installing Nightfall' section,
