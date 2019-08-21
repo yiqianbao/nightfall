@@ -18,7 +18,7 @@ const {
 	 * @param {*} req
 	 * @param {*} res
 	 */
-export async function loginHandler(req, res, next) {
+export async function loginHandler(req, res) {
   const response = new Response();
 
   const { name, password } = req.body;
@@ -128,14 +128,14 @@ export async function loadVks(req, res, next) {
  * @param {String} contractAddress
  */
 function setShieldContract(user, contractAddress) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function setShieldDetails(resolve) {
     zkp
       .setTokenShield(user, { tokenShield: contractAddress })
-      .then(data => resolve('token'))
+      .then(() => resolve('token'))
       .catch(() => console.log("Don't do anything token"));
     zkp
       .setCoinShield(user, { coinShield: contractAddress })
-      .then(data => resolve('coin'))
+      .then(() => resolve('coin'))
       .catch(() => console.log("Don't do anything coin"));
   });
 }
@@ -263,18 +263,18 @@ export async function updateContract(req, res, next) {
 	*/
 export async function deleteContract(req, res, next) {
   const response = new Response();
-  const { token_shield, coin_shield } = req.query;
+  const { query } = req;
 
   try {
-    if (coin_shield) {
+    if (query.coin_shield) {
       const { data } = await db.deleteCoinShieldContractAddress(req.user, {
-        contractAddress: coin_shield,
+        contractAddress: query.coin_shield,
       });
       if (data.status) await zkp.unSetCoinShield(req.user);
     }
-    if (token_shield) {
+    if (query.token_shield) {
       const { data } = await db.deleteTokenShieldContractAddress(req.user, {
-        contractAddress: token_shield,
+        contractAddress: query.token_shield,
       });
       if (data.status) await zkp.unSetTokenShield(req.user);
     }

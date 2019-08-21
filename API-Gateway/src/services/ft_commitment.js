@@ -45,7 +45,7 @@ export async function mintCoin(req, res, next) {
   try {
     const { data } = await zkp.mintCoin(req.user, {
       A: req.body.A,
-      pk_A: req.user.pk_A
+      pk_A: req.user.pk_A,
     });
 
     data.coin_index = parseInt(data.coin_index, 16);

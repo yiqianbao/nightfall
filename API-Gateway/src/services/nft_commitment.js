@@ -1,12 +1,10 @@
 import { whisperTransaction } from './whisper';
 
-const _ = require('underscore');
 const zkp = require('../rest/zkp');
 const db = require('../rest/db');
 const Response = require('../routes/response/response');
 const accounts = require('../rest/accounts');
 const offchain = require('../rest/offchain');
-
 
 // check correctness
 export async function checkCorrectnessToken(req, res, next) {
@@ -48,7 +46,7 @@ export async function mintToken(req, res, next) {
     // mint a private 'token commitment' within the shield contract to represent the public NFToken with the specified tokenID
     const { data } = await zkp.mintToken(req.user, {
       A: req.body.tokenID,
-      pk_A: req.user.pk_A
+      pk_A: req.user.pk_A,
     });
 
     // add the new token commitment (and details of its hash preimage) to the token db.
@@ -180,7 +178,8 @@ export async function transferToken(req, res, next) {
 export async function burnToken(req, res, next) {
   const response = new Response();
   try {
-    const payToAddress = (await offchain.getAddressFromName(req.body.payTo || req.user.name)).address;
+    const payToAddress = (await offchain.getAddressFromName(req.body.payTo || req.user.name))
+      .address;
     // Release the public token from escrow:
     // Nullify the burnor's 'token commitment' within the shield contract.
     // Transfer the public token from the shield contract to the owner.
