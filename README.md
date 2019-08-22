@@ -68,10 +68,6 @@ Start Docker:
 
 - On Mac, open Docker.app.
 
-Start dotdocker:
-
-- `dotdocker start`
-
 ### Installing Nightfall
 
 Clone the Nightfall repository and use a terminal to enter the directory.
