@@ -15,8 +15,6 @@ app.use('/account', account);
 app.use('/accounts', accounts);
 
 // handle bad calls
-app.use((req, res) => {
-  res.status(404).send({ url: `${req.originalUrl} not found` });
-});
+app.use((req, res) => res.sendStatus(404));
 
 export default app;

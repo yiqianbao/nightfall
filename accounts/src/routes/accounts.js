@@ -1,10 +1,12 @@
+/* eslint-disable func-names */
+
 import express from 'express';
 import Response from './response/response';
 import { unlockAccount } from '../services/accounts';
 
 const router = express.Router({ mergeParams: true });
 
-router.post('/unlock', async (req, res) => {
+router.post('/unlock', async function(req, res) {
   const { address, password } = req.body;
 
   try {
