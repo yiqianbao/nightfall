@@ -1,5 +1,5 @@
 import express from 'express';
-import { mintCoin, transferCoin, burnCoin, checkCorrectnessCoin } from '../services/ft_commitment';
+import { mintCoin, transferCoin, burnCoin, checkCorrectnessCoin } from '../services/ft-commitment';
 
 const router = express.Router();
 

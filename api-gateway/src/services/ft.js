@@ -1,19 +1,16 @@
 import { whisperTransaction } from './whisper';
-
-const zkp = require('../rest/zkp');
-const db = require('../rest/db');
-const Response = require('../routes/response/response');
-const offchain = require('../rest/offchain');
+import { db, offchain, zkp } from '../rest';
+import Response from '../routes/response/response';
 
 // ERC-20 token
 /**
-	 * This function will mint a fungible token
-	 * req.body { 
-			amount : 200 
-		}
-	 * @param {*} req
-	 * @param {*} res
-	*/
+ * This function will mint a fungible token
+ * req.body { 
+		amount : 200 
+	}
+ * @param {*} req
+ * @param {*} res
+*/
 export async function mintFToken(req, res, next) {
   const response = new Response();
 
@@ -42,14 +39,14 @@ export async function mintFToken(req, res, next) {
 }
 
 /**
-     * This function will transfer fungible token to a transferee
-     * req.body { 
-        amount : 200,
-        receiver_name: "Bob"
-       }
-     * @param {*} req
-     * @param {*} res
-    */
+ * This function will transfer fungible token to a transferee
+ * req.body { 
+    amount : 200,
+    receiver_name: "Bob"
+   }
+ * @param {*} req
+ * @param {*} res
+*/
 export async function transferFToken(req, res, next) {
   const response = new Response();
 
@@ -92,13 +89,13 @@ export async function transferFToken(req, res, next) {
 }
 
 /**
-     * This function will burn a fungible token.
-     * req.body { 
-         amount : 200
-      }
-     * @param {*} req
-     * @param {*} res
-    */
+ * This function will burn a fungible token.
+ * req.body { 
+     amount : 200
+  }
+ * @param {*} req
+ * @param {*} res
+*/
 export async function burnFToken(req, res, next) {
   const response = new Response();
 

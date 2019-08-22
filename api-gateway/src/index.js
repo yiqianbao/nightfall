@@ -5,42 +5,38 @@
 
 **************************************************************************** */
 
-import rootRouter from './routes/api-gateway';
-import nftCommitmentRoutes from './routes/nft_commitment';
-import ftCommitmentRoutes from './routes/ft_commitment';
-import ftRoutes from './routes/ft';
-import nftRoutes from './routes/nft';
-import userRoutes from './routes/user';
-import shieldRoutes from './routes/shield';
-
-const express = require('express');
-const cors = require('cors'); // cors is used to allow cross origin requests
+import express, { Router } from 'express';
+import bodyParser from 'body-parser';
+import proxy from 'express-http-proxy';
+import cors from 'cors';
+import * as Config from './config/config';
+import logger from './logger';
+import {
+  rootRouter,
+  nftCommitmentRoutes,
+  ftCommitmentRoutes,
+  ftRoutes,
+  nftRoutes,
+  userRoutes,
+  shieldRoutes,
+} from './routes';
+import { authentication, unlockAccount } from './middlewares';
 
 const app = express();
-const router = express.Router();
-const bodyParser = require('body-parser');
-const proxy = require('express-http-proxy');
-
-const Config = require('./config/config').getProps(); // get the properties of environment
-
-const logger = require('./logger');
-
-const {
-  authentication,
-} = require('./middlewares/authMiddleware'); /* Authorization filter used to verify Role of the user */
-const { unlockAccount } = require('./middlewares/passwordMiddleware');
+const router = Router();
+const config = Config.getProps(); // get the properties of environment
 
 app.use(bodyParser.json()); // set up a filter to parse JSON
 
 app.use(cors()); // cross origin filter
 app.use(authentication);
 
-app.use('/zkp', unlockAccount, proxy(`${Config.zkp.host}:${Config.zkp.port}`));
-app.use('/database', proxy(`${Config.database.host}:${Config.database.port}`));
+app.use('/zkp', unlockAccount, proxy(`${config.zkp.host}:${config.zkp.port}`));
+app.use('/database', proxy(`${config.database.host}:${config.database.port}`));
 app.use(
   '/offchain-service',
   unlockAccount,
-  proxy(`${Config.offchain.host}:${Config.offchain.port}`),
+  proxy(`${config.offchain.host}:${config.offchain.port}`),
 );
 app.use('/', unlockAccount, router);
 app.use('/', rootRouter);

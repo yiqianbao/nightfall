@@ -4,7 +4,7 @@ import {
   mintToken,
   transferToken,
   burnToken,
-} from '../services/nft_commitment';
+} from '../services/nft-commitment';
 
 const router = express.Router();
 

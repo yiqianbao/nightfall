@@ -1,25 +1,22 @@
 import { whisperTransaction } from './whisper';
-
-const zkp = require('../rest/zkp');
-const db = require('../rest/db');
-const Response = require('../routes/response/response');
-const offchain = require('../rest/offchain');
+import { db, offchain, zkp } from '../rest';
+import Response from '../routes/response/response';
 
 // ERC-721 token
 /**
-	 * This function will mint a non-fungible token
-	 * req.user {
-	 		address: '0x432038accaf756a8936a7f067a8223c2d929d58f',
-			name: 'alice',
-			pk_A: '0xd68df96f6cddd786290b57fcead37ea670dfe94634f553afeedfef',
-			password: 'alicesPassword'
-		}
-	 * req.body {
-	 		tokenURI: 'unique token URI'
-		}
-	 * @param {*} req
-	 * @param {*} res
-	*/
+ * This function will mint a non-fungible token
+ * req.user {
+ 		address: '0x432038accaf756a8936a7f067a8223c2d929d58f',
+		name: 'alice',
+		pk_A: '0xd68df96f6cddd786290b57fcead37ea670dfe94634f553afeedfef',
+		password: 'alicesPassword'
+	}
+ * req.body {
+ 		tokenURI: 'unique token URI'
+	}
+ * @param {*} req
+ * @param {*} res
+*/
 export async function mintNFToken(req, res, next) {
   const response = new Response();
   const reqBody = {
@@ -52,22 +49,22 @@ export async function mintNFToken(req, res, next) {
 }
 
 /**
-     * This function will tranasfer non-fungible token to a transfree.
-     * req.user {
-        address: '0x432038accaf756a8936a7f067a8223c2d929d58f',
-        name: 'alice',
-        pk_A: '0xd68df96f6cddd786290b57fcead37ea670dfe94634f553afeedfef',
-        password: 'alicesPassword'
-      }
-     * req.body {
-        tokenID: '0xc3b53ccd640c680000000000000000000000000000000000000000000000000',
-        uri: 'unique token name',
-        receiver_name: 'bob'.
-        contractAddress: 'Oxad23..' // optional
-      }
-     * @param {*} req
-     * @param {*} res
-    */
+ * This function will tranasfer non-fungible token to a transfree.
+ * req.user {
+    address: '0x432038accaf756a8936a7f067a8223c2d929d58f',
+    name: 'alice',
+    pk_A: '0xd68df96f6cddd786290b57fcead37ea670dfe94634f553afeedfef',
+    password: 'alicesPassword'
+  }
+ * req.body {
+    tokenID: '0xc3b53ccd640c680000000000000000000000000000000000000000000000000',
+    uri: 'unique token name',
+    receiver_name: 'bob'.
+    contractAddress: 'Oxad23..' // optional
+  }
+ * @param {*} req
+ * @param {*} res
+*/
 export async function transferNFToken(req, res, next) {
   const response = new Response();
 
@@ -112,21 +109,21 @@ export async function transferNFToken(req, res, next) {
 }
 
 /**
-     * This function will burn fungible token 
-     * req.user {
-        address: '0x432038accaf756a8936a7f067a8223c2d929d58f',
-        name: 'alice',
-        pk_A: '0xd68df96f6cddd786290b57fcead37ea670dfe94634f553afeedfef',
-        password: 'alicesPassword'
-      }
-     * req.body {
-        tokenID: '0xc3b53ccd640c680000000000000000000000000000000000000000000000000',
-        uri: 'unique token name',
-        contractAddress: 'Oxad23..' // optional
-      }
-     * @param {*} req
-     * @param {*} res
-    */
+ * This function will burn fungible token 
+ * req.user {
+    address: '0x432038accaf756a8936a7f067a8223c2d929d58f',
+    name: 'alice',
+    pk_A: '0xd68df96f6cddd786290b57fcead37ea670dfe94634f553afeedfef',
+    password: 'alicesPassword'
+  }
+ * req.body {
+    tokenID: '0xc3b53ccd640c680000000000000000000000000000000000000000000000000',
+    uri: 'unique token name',
+    contractAddress: 'Oxad23..' // optional
+  }
+ * @param {*} req
+ * @param {*} res
+*/
 export async function burnNFToken(req, res, next) {
   const response = new Response();
 
@@ -154,14 +151,14 @@ export async function burnNFToken(req, res, next) {
 }
 
 /**
-     * This function will fetch all non-fungible token from database.
-     * req.query {
-        limit: 5, // optionial
-        pageNo: 1 // optionial
-       }
-     * @param {*} req
-     * @param {*} res
-    */
+ * This function will fetch all non-fungible token from database.
+ * req.query {
+    limit: 5, // optionial
+    pageNo: 1 // optionial
+   }
+ * @param {*} req
+ * @param {*} res
+*/
 export async function getNFTokens(req, res, next) {
   const response = new Response();
 
