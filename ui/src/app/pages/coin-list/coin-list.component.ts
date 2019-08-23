@@ -28,8 +28,8 @@ export class CoinListComponent implements OnInit {
   /**
    * Fungeble Token name , read from ERC-20 contract.
    */
-  ftName:string;
-  
+  ftName: string;
+
   constructor(
     private toastr: ToastrService,
     private coinApiService: CoinApiService,
@@ -41,7 +41,7 @@ export class CoinListComponent implements OnInit {
     this.fetchCoins();
   }
 
-  
+
   /**
    * Method list down all ERC-20 commitments.
    */
@@ -51,7 +51,7 @@ export class CoinListComponent implements OnInit {
     this.coinApiService.fetchCoins(localStorage.getItem('address'))
       .subscribe( data => {
         this.isRequesting = false;
-        if (data && 
+        if (data &&
           data['data']) {
           this.transactions = data['data'].map((tx, indx) => {
             tx.selected = false;
@@ -60,11 +60,11 @@ export class CoinListComponent implements OnInit {
           });
         } else {
           this.noCoin = true;
-          //this.toastr.error('No Coin found.');
+          // this.toastr.error('No Coin found.');
         }
       }, error => {
-        this.isRequesting = false;  
-      })
+        this.isRequesting = false;
+      });
   }
 
 
