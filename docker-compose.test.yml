@@ -17,7 +17,7 @@ services:
     networks: 
       - test_net
 
-  api-gateway_test:
+  api-gateway-test:
     build:
       context: ./api-gateway
       dockerfile: Dockerfile
@@ -27,7 +27,8 @@ services:
       - ./api-gateway/.babelrc:/app/.babelrc
     environment:
       - NODE_ENV=test
-      - VIRTUAL_HOST=api-test.nightfall.docker
+    ports:
+      - "8001:80"
     networks: 
       - test_net
 
