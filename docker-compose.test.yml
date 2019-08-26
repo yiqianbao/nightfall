@@ -61,12 +61,10 @@ services:
       - ganache_test
     volumes:
       - ./zkp/src:/app/src
-      - ./zkp/response:/app/response
       - ./zkp/build-test:/app/build
       - ./zkp/code:/app/code
       - ./zkp/.babelrc:/app/.babelrc
       - ./zkp-utils:/app/node_modules/zkp-utils
-      - ./zkp/__tests__:/app/__tests__
       - ./config:/app/config
       - /var/run/docker.sock:/var/run/docker.sock
     environment:

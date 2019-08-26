@@ -50,7 +50,6 @@ services:
       - ganache
     volumes:
       - ./zkp/src:/app/src
-      - ./zkp/response:/app/response
       - ./zkp/build:/app/build
       - ./zkp/code:/app/code
       - ./zkp/.babelrc:/app/.babelrc
