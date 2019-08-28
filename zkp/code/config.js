@@ -88,12 +88,12 @@ const props = {
     GASPRICE: 20000000000,
     zkp: {
       app: {
-        host: 'http://zkp',
-        port: '80',
+        host: process.env.ZKP_HOST,
+        port: process.env.ZKP_PORT,
       },
       rpc: {
-        host: 'http://ganache',
-        port: '8545',
+        host: process.env.BLOCKCHAIN_HOST,
+        port: process.env.BLOCKCHAIN_PORT,
       },
     },
   },
