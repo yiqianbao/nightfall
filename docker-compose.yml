@@ -13,18 +13,28 @@ services:
       - ./accounts/config:/app/config
       - ./accounts/.babelrc:/app/.babelrc
     environment:
-      VIRTUAL_HOST: accounts.nightfall.docker
+      BLOCKCHAIN_HOST: http://ganache
+      BLOCKCHAIN_PORT: 8545
 
   api-gateway:
     build:
-      context: ./API-Gateway
+      context: ./api-gateway
       dockerfile: Dockerfile
     restart: on-failure
     volumes:
       - ./api-gateway/src:/app/src
       - ./api-gateway/.babelrc:/app/.babelrc
+    ports:
+      - '8001:80'
     environment:
-      VIRTUAL_HOST: api.nightfall.docker
+      ACCOUNTS_HOST: http://accounts
+      ACCOUNTS_PORT: 80
+      ZKP_HOST: http://zkp
+      ZKP_PORT: 80
+      DATABASE_HOST: http://database
+      DATABASE_PORT: 80
+      OFFCHAIN_HOST: http://offchain
+      OFFCHAIN_PORT: 80
 
   offchain:
     build:
@@ -43,7 +53,14 @@ services:
       - ./account-utils:/app/src/account-utils
       - ./config:/app/config
     environment:
-      VIRTUAL_HOST: offchain.nightfall.docker
+      AUTHENTICATION_API_HOST: http://api-gateway
+      AUTHENTICATION_API_PORT: 80
+      BLOCKCHAIN_HOST: http://ganache
+      BLOCKCHAIN_PORT: 8545
+      DATABASE_HOST: http://database
+      DATABASE_PORT: 80
+      OFFCHAIN_HOST: http://offchain
+      OFFCHAIN_PORT: 80
 
   zkp:
     build:
@@ -54,7 +71,6 @@ services:
       - ganache
     volumes:
       - ./zkp/src:/app/src
-      - ./zkp/response:/app/response
       - ./zkp/build:/app/build
       - ./zkp/code:/app/code
       - ./zkp/.babelrc:/app/.babelrc
@@ -64,8 +80,10 @@ services:
       - ./config:/app/config
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - VIRTUAL_HOST=zkp.nightfall.docker
-      - NODE_ENV=docker
+      BLOCKCHAIN_HOST: http://ganache
+      BLOCKCHAIN_PORT: 8545
+      ZKP_HOST: http://zkp
+      ZKP_PORT: 80
 
   ui:
     build:
@@ -76,8 +94,8 @@ services:
       - ./ui/src:/app/src
       - ./ui/angular.json:/app/angular.json
       - ./ui/tsconfig.json:/app/tsconfig.json
-    environment:
-      VIRTUAL_HOST: nightfall.docker
+    ports:
+      - '8000:80'
 
   ganache:
     image: trufflesuite/ganache-cli:latest
@@ -94,13 +112,10 @@ services:
       - mongo
     volumes:
       - ./database/src:/app/src
-      - ./database/response:/app/response
       - ./database/.babelrc:/app/.babelrc
       - ./zkp-utils:/app/node_modules/zkp-utils
       - ./config:/app/config
-      - ./database/script_to_configure_roles.js:/app/script_to_configure_roles.js
-    environment:
-      VIRTUAL_HOST: database.nightfall.docker
+      - ./database/setup-mongo-acl-for-new-users.js:/app/setup-mongo-acl-for-new-users.js
 
   mongo:
     image: mongo

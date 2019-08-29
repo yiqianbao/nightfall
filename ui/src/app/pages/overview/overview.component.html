@@ -112,7 +112,7 @@
     <div class="row   mb-3">
       <div class="col-sm-12">
         <h3 class="mb-2">Transactions History</h3>
-        <ngb-tabset activeId="{{selectedTab}}">
+        <ngb-tabset activeId="{{ selectedTab }}">
           <ngb-tab id="publictokens">
             <ng-template ngbTabTitle>
               <div (click)="getTransactions('publictokens')">
@@ -193,7 +193,13 @@
                     </td>
                     <td>{{ transaction.token_uri }}</td>
                     <td>{{ transaction.created_at | date: 'dd/MM/yyyy hh:mm:ss a' }}</td>
-                    <td>{{ transaction.transferee || transaction.receiver_name ? (transaction.transferee || transaction.receiver_name) : '' }}</td>
+                    <td>
+                      {{
+                        transaction.transferee || transaction.receiver_name
+                          ? transaction.transferee || transaction.receiver_name
+                          : ''
+                      }}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -276,37 +282,43 @@
                     <td>
                       {{ ftSymbol + ' ' + utilService.convertToNumber(transaction.coin_value) }}
                     </td>
-                    <td [title]="transaction.coin_commitment">{{ transaction.coin_commitment.slice(0, 20) }}...</td>
+                    <td [title]="transaction.coin_commitment">
+                      {{ transaction.coin_commitment.slice(0, 20) }}...
+                    </td>
 
                     <td *ngIf="transaction.type === 'transferred'">
                       {{
-                        transaction.coin_list.length
+                        transaction.used_coin_commitments.length
                           ? ftSymbol +
                             ' ' +
-                            utilService.convertToNumber(transaction.coin_list[0].coin_value)
+                            utilService.convertToNumber(
+                              transaction.used_coin_commitments[0].coin_value
+                            )
                           : ''
                       }}
                     </td>
                     <td *ngIf="transaction.type === 'transferred'">
                       {{
-                        transaction.coin_list.length
-                          ? transaction.coin_list[0].coin_commitment.slice(0, 20)
+                        transaction.used_coin_commitments.length
+                          ? transaction.used_coin_commitments[0].coin_commitment.slice(0, 20)
                           : ''
                       }}...
                     </td>
                     <td *ngIf="transaction.type === 'transferred'">
                       {{
-                        transaction.coin_list.length
+                        transaction.used_coin_commitments.length
                           ? ftSymbol +
                             ' ' +
-                            utilService.convertToNumber(transaction.coin_list[1].coin_value)
+                            utilService.convertToNumber(
+                              transaction.used_coin_commitments[1].coin_value
+                            )
                           : ''
                       }}
                     </td>
                     <td *ngIf="transaction.type === 'transferred'">
                       {{
-                        transaction.coin_list.length
-                          ? transaction.coin_list[1].coin_commitment.slice(0, 20)
+                        transaction.used_coin_commitments.length
+                          ? transaction.used_coin_commitments[1].coin_commitment.slice(0, 20)
                           : ''
                       }}...
                     </td>
@@ -316,9 +328,9 @@
                     <td *ngIf="transaction.type !== 'transferred'"></td>
                     <td *ngIf="transaction.type !== 'transferred'"></td>
 
-                    <td>{{ transaction.timestamp | date: 'dd/MM/yyyy hh:mm:ss a' }}</td>
+                    <td>{{ transaction.created_at | date: 'dd/MM/yyyy hh:mm:ss a' }}</td>
                     <td *ngIf="transaction.type === 'transferred' || transaction.type === 'burned'">
-                      {{ transaction.receiver_name ? transaction.receiver_name : '' }}
+                      {{ transaction.transferee ? transaction.transferee : '' }}
                     </td>
                     <td *ngIf="transaction.type !== 'transferred'"></td>
                   </tr>

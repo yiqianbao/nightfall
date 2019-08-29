@@ -23,7 +23,7 @@ DIRNAME_PARENTPATH - path to inside the parent directory of a directory. E.g. fo
 FILENAME_PARENTPATH - path to inside the parent directory of a file's containing folder.
 E.g. for .../parentDir/dirName/filename.extension, FILENAME_PARENTPATH is .../parentDir/
 
-REL - relative path (relative from process.env.PWD, which in our repo is from path-to-/nightfall/zkp/) (the zkp-demo shell script executes all of this zkp node code from within path-to/zkp/)
+REL - relative path (relative from process.env.PWD, which in our repo is from path-to-/nightfall/zkp/) (the ./nightfall shell script executes all of this zkp node code from within path-to/zkp/)
 i.e. DIRNAME_DIRPATH_REL: "/dirName/" is a relative path which (on the host machine) points to: path-to-/nightfall/zkp/dirName/
 
 ABS - absolute path
@@ -121,19 +121,17 @@ const props = {
  * Set the environment
  * @param { string } environment - environment of app
  */
-const setEnv = environment => {
+function setEnv(environment) {
   if (props[environment]) {
     env = environment;
   }
-};
+}
 setEnv(process.env.NODE_ENV);
 
 /**
  * get the appropriate environment config
  */
-const getProps = () => {
-  return props[env];
-};
+const getProps = () => props[env];
 
 export default {
   setEnv,
