@@ -1,19 +1,16 @@
 import { whisperTransaction } from './whisper';
 import { db, offchain, zkp } from '../rest';
-import Response from '../routes/response/response';
 
 // ERC-20 token
 /**
  * This function will mint a fungible token
  * req.body { 
-		amount : 200 
-	}
+    amount : 200 
+  }
  * @param {*} req
  * @param {*} res
 */
 export async function mintFToken(req, res, next) {
-  const response = new Response();
-
   try {
     await zkp.mintFToken(req.user, {
       amount: req.body.amount,
@@ -27,13 +24,9 @@ export async function mintFToken(req, res, next) {
       isMinted: true,
     });
 
-    response.statusCode = 200;
-    response.data = { message: 'Mint Successful' };
-    res.json(response);
+    res.data = { message: 'Mint Successful' };
+    next();
   } catch (err) {
-    response.statusCode = 500;
-    response.data = err;
-    res.status(500).json(response);
     next(err);
   }
 }
@@ -48,8 +41,6 @@ export async function mintFToken(req, res, next) {
  * @param {*} res
 */
 export async function transferFToken(req, res, next) {
-  const response = new Response();
-
   try {
     const transfereeAddress = await offchain.getAddressFromName(req.body.receiver_name);
 
@@ -77,13 +68,9 @@ export async function transferFToken(req, res, next) {
       for: 'FToken',
     }); // send ft token data to BOB side
 
-    response.statusCode = 200;
-    response.data = { message: 'transfer Successful' };
-    res.json(response);
+    res.data = { message: 'transfer Successful' };
+    next();
   } catch (err) {
-    response.statusCode = 500;
-    response.data = err;
-    res.status(500).json(response);
     next(err);
   }
 }
@@ -97,8 +84,6 @@ export async function transferFToken(req, res, next) {
  * @param {*} res
 */
 export async function burnFToken(req, res, next) {
-  const response = new Response();
-
   try {
     await zkp.burnFToken(req.user, {
       amount: req.body.amount,
@@ -112,13 +97,9 @@ export async function burnFToken(req, res, next) {
       isBurned: true,
     });
 
-    response.statusCode = 200;
-    response.data = { message: 'Burn Successful' };
-    res.json(response);
+    res.data = { message: 'Burn Successful' };
+    next();
   } catch (err) {
-    response.statusCode = 500;
-    response.data = err;
-    res.status(500).json(response);
     next(err);
   }
 }
