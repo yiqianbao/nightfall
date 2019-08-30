@@ -33,7 +33,7 @@ export class SpendTokenComponent implements OnInit, AfterContentInit {
   selectedToken: any;
 
   /**
-   * Name of the transferee
+   * Name of the receiver
    */
   receiverName: string;
 

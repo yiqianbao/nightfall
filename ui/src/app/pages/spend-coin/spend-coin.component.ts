@@ -49,7 +49,7 @@ export class SpendCoinComponent implements OnInit , AfterContentInit {
   users: any;
 
   /**
-   * Name of the transferee
+   * Name of the receiver
    */
   receiverName: string;
 

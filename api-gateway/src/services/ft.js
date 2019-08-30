@@ -39,7 +39,7 @@ export async function mintFToken(req, res, next) {
 }
 
 /**
- * This function will transfer fungible token to a transferee
+ * This function will transfer fungible token to a receiver
  * req.body { 
     amount : 200,
     receiver_name: "Bob"
@@ -63,17 +63,17 @@ export async function transferFToken(req, res, next) {
     await db.addFTTransaction(req.user, {
       amount: req.body.amount,
       shieldContractAddress: user.selected_coin_shield_contract,
-      transferee: req.body.receiver_name,
-      transfereeAddress: address,
+      receiver: req.body.receiver_name,
+      receiverAddress: address,
       isTransferred: true,
     });
 
     await whisperTransaction(req, {
       amount: req.body.amount,
       shieldContractAddress: user.selected_coin_shield_contract,
-      transferee: req.body.receiver_name,
-      transferor: req.user.name,
-      transferorAddress: req.user.address,
+      receiver: req.body.receiver_name,
+      sender: req.user.name,
+      senderAddress: req.user.address,
       for: 'FToken',
     }); // send ft token data to BOB side
 

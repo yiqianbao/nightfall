@@ -84,16 +84,16 @@ export async function transferNFToken(req, res, next) {
 
     await db.updateNFToken(req.user, {
       ...nftToken,
-      transferee: req.body.receiver_name,
-      transfereeAddress: address,
+      receiver: req.body.receiver_name,
+      receiverAddress: address,
       isTransferred: true,
     });
 
     await whisperTransaction(req, {
       ...nftToken,
-      transferee: req.body.receiver_name,
-      transferor: req.user.name,
-      transferorAddress: req.user.address,
+      receiver: req.body.receiver_name,
+      sender: req.user.name,
+      senderAddress: req.user.address,
       for: 'NFTToken',
     }); // send nft token data to BOB side
 
