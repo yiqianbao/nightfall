@@ -22,7 +22,7 @@ export default {
   isNameInUse(name) {
     const options = {
       url: `${host}/pkd/name/exists`,
-      method: 'POST',
+      method: 'GET',
       json: true,
       qs: { name },
     };
