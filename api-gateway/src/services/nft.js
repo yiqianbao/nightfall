@@ -69,11 +69,11 @@ export async function transferNFToken(req, res, next) {
   const response = new Response();
 
   try {
-    const { address } = await offchain.getAddressFromName(req.body.receiver_name);
+    const receiverAddress = await offchain.getAddressFromName(req.body.receiver_name);
 
     const { data } = await zkp.transferNFToken(req.user, {
       tokenID: req.body.tokenID,
-      to: address,
+      to: receiverAddress,
     });
 
     const nftToken = {
