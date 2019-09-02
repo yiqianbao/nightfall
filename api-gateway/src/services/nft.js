@@ -85,7 +85,7 @@ export async function transferNFToken(req, res, next) {
     await db.updateNFToken(req.user, {
       ...nftToken,
       receiver: req.body.receiver_name,
-      receiverAddress: address,
+      receiverAddress,
       isTransferred: true,
     });
 
