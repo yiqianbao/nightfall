@@ -43,6 +43,8 @@ make offchain-test-migrate
 printf "${GREEN}*** Launching containerized microservices ***${NC}\n"
 docker-compose -f docker-compose.test.yml up -d
 
+printf "${GREEN}*** Saving the test logs to nightfall_test.log ***${NC}\n"
+docker-compose -f docker-compose.test.yml logs -f >> nightfall_test.log
 
 # Create a child Terminal to see docker log, while running testcases.
 if [ "${machine}" == "Mac" ]; then
@@ -52,11 +54,6 @@ if [ "${machine}" == "Mac" ]; then
 	    delay 2
 	    do script \"docker-compose -f docker-compose.test.yml logs -f\" in currentTab
 	  end tell")
-fi
-
-# Create a child Terminal to see docker log, while running testcases in ubuntu.
-if [ "${machine}" == "Linux" ]; then
-  docker-compose -f docker-compose.test.yml logs -f >> nightfall_setup.log
 fi
 
 # delay needed to ensure all container are in running state.
