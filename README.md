@@ -36,9 +36,9 @@ These instructions give the most direct path to a working Nightfall setup. The a
 compute-intensive and so a high-end processor is preferred. Depending on your machine, setup can
 take one to several hours.
 
-#### Note: 
-
-- If you are familiar with [Truffle](https://github.com/trufflesuite/truffle#readme) and would like a Truffle-specific way to get started, check out the [Nightfall Truffle Box](https://github.com/truffle-box/nightfall-box#nightfall-truffle-box).
+If you are familiar with [Truffle](https://github.com/trufflesuite/truffle#readme) and would like a
+Truffle-specific way to get started, check out the
+[Nightfall Truffle Box](https://github.com/truffle-box/nightfall-box#nightfall-truffle-box).
 
 ### Supported hardware & prerequisites
 
@@ -75,7 +75,7 @@ Clone the Nightfall repository and use a terminal to enter the directory.
 Next pull a compatible Docker image of ZoKrates
 
 ```sh
-docker pull michaelconnor/zok:2Jan2019
+docker pull zokrates/zokrates:0.4.11
 ```
 
 Next we have to generate the keys and constraint files for Zero Knowledge Proofs
@@ -104,6 +104,13 @@ If you have pulled new changes from the repo, then first run
 
 ```sh
 docker-compose build
+```
+
+If any of the `.pcode` or `.code` files have been modified by new changes then, before anything
+else, you will need to re-run
+
+```sh
+npm run setupAll
 ```
 
 :night_with_stars: We're ready to go! Be sure to be in the main directory and run the demo:
@@ -170,7 +177,6 @@ directories.
 
 Note that, the zkp service tests take a while to run (approx. 2 hours)
 
-
 ### To run Nightfall integration test
 
 Be sure to be in the main directory and then open terminal and run
@@ -178,9 +184,10 @@ Be sure to be in the main directory and then open terminal and run
 ```sh
 ./nightfall-test
 ```
--  Mac 
-  - Test suites will open a terminal, where you can see test container's log. And, this terminal will get close
-    automatically.
+
+- Mac
+  - Test suites will open a terminal, where you can see test container's log. And, this terminal
+    will get close automatically.
   - configure `Teminal.app` to close window when shell exists `exit`.
 
 ## Using other ERC-20 and ERC-721 contracts
