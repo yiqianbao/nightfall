@@ -54,6 +54,11 @@ if [ "${machine}" == "Mac" ]; then
 	  end tell")
 fi
 
+# Create a child Terminal to see docker log, while running testcases in ubuntu.
+if [ "${machine}" == "Linux" ]; then
+  docker-compose -f docker-compose.test.yml logs -f >> nightfall_setup.logs
+fi
+
 # delay needed to ensure all container are in running state.
 sleep 30
 
