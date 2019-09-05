@@ -1,5 +1,3 @@
-/* eslint-disable func-names */
-
 import jwt from 'jsonwebtoken';
 import { encryptPassword, decryptPassword } from './password';
 
@@ -19,7 +17,7 @@ export function authentication(req, res, next) {
   const token = req.headers.authorization;
   if (token) {
     try {
-      return jwt.verify(token, JWT_SECRET, function(err, decoded) {
+      return jwt.verify(token, JWT_SECRET, function callback(err, decoded) {
         if (err) {
           return next(err);
         }
