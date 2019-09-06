@@ -187,8 +187,8 @@ Be sure to be in the main directory and then open terminal and run
 
 - Mac
   - Test suites will open a terminal, where you can see test container's log. And, this terminal
-    will get close automatically.
-  - configure `Teminal.app` to close window when shell exists `exit`.
+    will close automatically.
+  - configure `Terminal.app` to close window when shell exits `exit`.
 
 ## Using other ERC-20 and ERC-721 contracts
 
