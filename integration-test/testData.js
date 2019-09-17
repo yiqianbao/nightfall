@@ -128,7 +128,7 @@ export default {
   },
 
   /*
-   *  a function which will configure dependent test data.
+   *  This function will configure dependent test data.
    */
   async configureDependentTestData() {
     this.erc721Commitment = await this.erc721Commitment();

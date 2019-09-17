@@ -24,11 +24,11 @@ describe('****** Integration Test ******\n', function() {
   });
   /*
    *  Step 1.
-   *  This Suite will create Alice and Bob.
+   *  This step will create accounts for Alice and Bob.
    */
   describe('*** Create Users ***', async function() {
     /*
-     * Create account for Alice.
+     * Create an account for Alice.
      */
     it(`Sign up ${alice.name}`, function(done) {
       request
@@ -43,7 +43,7 @@ describe('****** Integration Test ******\n', function() {
         });
     });
     /*
-     * Create account for bob.
+     * Create an account for Bob.
      */
     it(`Sign up ${bob.name}`, function(done) {
       request
@@ -60,7 +60,7 @@ describe('****** Integration Test ******\n', function() {
   });
   /*
    * Step 2.
-   * This Suite will login Alice and Bob/
+   * This step will log in Alice and Bob.
    */
   describe('*** Login Users ***', function() {
     /*
@@ -102,13 +102,11 @@ describe('****** Integration Test ******\n', function() {
   });
   /*
    * Step 3 to 8.
-   * This Suite will test ERC-721 & ERC-721 commitment
-   * Mint, Transfer and Burn features.
-   * Story line:
-   *  Alice minted a ERC-721 token. She then Shield(mint ERC-721 commitment) that token
-   *  and transfer to Bob. He then burns received ERC-721 commitment,
-   *  and then transferred resultant ERC-721 token to Alice.
-   * finally, Alice burns received ERC-721 token
+   *  These steps will test the creation of ERC-721 tokens and ERC-721 token commitments, as well as the transfer and burning of these tokens and their commitments.
+   *  Alice mints an ERC-721 token. She then shields that token by minting an ERC-721 commitment 
+   *  and transfers that commitment to Bob. Bob then burns the received ERC-721 commitment 
+   *  and transfers the resulting ERC-721 token to Alice. 
+   *  Finally, Alice burns the received ERC-721 token.
    */
   describe('*** ERC-721 and ERC-721 Commitment ***', function() {
     context(`${alice.name} tasks: `, function() {
@@ -190,8 +188,7 @@ describe('****** Integration Test ******\n', function() {
     });
     context(`${bob.name} tasks: `, function() {
       /*
-       * This act as a delay.
-       * Which is needed, presuming till then transfree Whisper will able receive transferred data.
+       * This acts as a delay, which is needed to ensure that the recipient will be able to receive transferred data through Whisper.
        */
       before(done => setTimeout(done, 10000));
       /*
@@ -245,8 +242,7 @@ describe('****** Integration Test ******\n', function() {
     });
     context(`${alice.name} tasks: `, function() {
       /*
-       * This act as a delay.
-       * Which is needed, presuming till then transfree Whisper will able receive transferred data.
+       * This acts as a delay, which is needed to ensure that the recipient will be able to receive transferred data through Whisper.
        */
       before(done => setTimeout(done, 10000));
       /*
@@ -274,13 +270,12 @@ describe('****** Integration Test ******\n', function() {
   });
   /*
    * Step 9 to 16.
-   * This Suite will test ERC-20 & ERC-20 commitment
-   * Mint, Transfer and Burn features.
+   * These steps will test the creation of ERC-20 tokens and ERC-20 token commitments, as well as the transfer and burning of these tokens and their commitments.
    * Story line:
-   *  Alice minted a 5 ERC-20 token. She then Shield(mint ERC-20 commitment) two token with value 2 and 3
-   *  and transfer 4 token to Bob. He then burns received ERC-20 commitment,
-   *  and then transferred resultant  4 ERC-20 token to Alice.
-   * finally, Alice burns her received and change, 5 ERC-20 token
+   *  Alice mints 5 ERC-20 tokens. She then shields these tokens by creating 2 ERC-20 commitments with values of 2 and 3 tokens. 
+   *  Alice then transfers 4 ERC-20 tokens in commitments to Bob. 
+   *  Bob burns the received ERC-20 commitment and transfers the resulting 4 ERC-20 tokens to Alice. 
+   *  Finally, Alice burns her received ERC-20 tokens and her remaining ERC-20 token commitment.
    */
   describe('*** ERC-20 and ERC-20 Commitment ***', function() {
     context(`${alice.name} tasks: `, function() {
@@ -429,8 +424,7 @@ describe('****** Integration Test ******\n', function() {
     });
     context(`${bob.name} tasks: `, function() {
       /*
-       * This act as a delay.
-       * Which is needed, presuming till then transfree Whisper will able receive transferred data.
+       * This acts as a delay, which is needed to ensure that the recipient will be able to receive transferred data through Whisper.
        */
       before(done => setTimeout(done, 10000));
       /*
@@ -483,8 +477,7 @@ describe('****** Integration Test ******\n', function() {
     });
     context(`${alice.name} tasks: `, function() {
       /*
-       * This act as a delay.
-       * Which is needed, presuming till then transfree Whisper will able receive transferred data.
+       * This acts as a delay, which is needed to ensure that the recipient will be able to receive transferred data through Whisper.
        */
       before(done => setTimeout(done, 10000));
       /*
