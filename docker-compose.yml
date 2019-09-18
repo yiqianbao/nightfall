@@ -113,7 +113,7 @@ services:
       - ./database/src:/app/src
       - ./database/.babelrc:/app/.babelrc
       - ./zkp-utils:/app/node_modules/zkp-utils
-      - ./config:/app/config
+      - ./database/config:/app/config
       - ./database/setup-mongo-acl-for-new-users.js:/app/setup-mongo-acl-for-new-users.js
 
   mongo:
