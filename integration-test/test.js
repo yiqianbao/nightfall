@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies, no-undef */
 /* eslint-disable camelcase, func-names */
 
 import { expect } from 'chai';
@@ -103,9 +102,9 @@ describe('****** Integration Test ******\n', function() {
   /*
    * Step 3 to 8.
    *  These steps will test the creation of ERC-721 tokens and ERC-721 token commitments, as well as the transfer and burning of these tokens and their commitments.
-   *  Alice mints an ERC-721 token. She then shields that token by minting an ERC-721 commitment 
-   *  and transfers that commitment to Bob. Bob then burns the received ERC-721 commitment 
-   *  and transfers the resulting ERC-721 token to Alice. 
+   *  Alice mints an ERC-721 token. She then shields that token by minting an ERC-721 commitment
+   *  and transfers that commitment to Bob. Bob then burns the received ERC-721 commitment
+   *  and transfers the resulting ERC-721 token to Alice.
    *  Finally, Alice burns the received ERC-721 token.
    */
   describe('*** ERC-721 and ERC-721 Commitment ***', function() {
@@ -272,9 +271,9 @@ describe('****** Integration Test ******\n', function() {
    * Step 9 to 16.
    * These steps will test the creation of ERC-20 tokens and ERC-20 token commitments, as well as the transfer and burning of these tokens and their commitments.
    * Story line:
-   *  Alice mints 5 ERC-20 tokens. She then shields these tokens by creating 2 ERC-20 commitments with values of 2 and 3 tokens. 
-   *  Alice then transfers 4 ERC-20 tokens in commitments to Bob. 
-   *  Bob burns the received ERC-20 commitment and transfers the resulting 4 ERC-20 tokens to Alice. 
+   *  Alice mints 5 ERC-20 tokens. She then shields these tokens by creating 2 ERC-20 commitments with values of 2 and 3 tokens.
+   *  Alice then transfers 4 ERC-20 tokens in commitments to Bob.
+   *  Bob burns the received ERC-20 commitment and transfers the resulting 4 ERC-20 tokens to Alice.
    *  Finally, Alice burns her received ERC-20 tokens and her remaining ERC-20 token commitment.
    */
   describe('*** ERC-20 and ERC-20 Commitment ***', function() {

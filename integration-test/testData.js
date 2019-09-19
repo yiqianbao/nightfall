@@ -1,5 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-
 import config from 'config';
 import Utils from '../zkp-utils';
 
