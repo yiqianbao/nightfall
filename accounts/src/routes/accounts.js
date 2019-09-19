@@ -1,7 +1,39 @@
 import express from 'express';
-import { unlockAccount } from '../services/accounts';
+import { newAccount, sendEtherToAccount, getBalance, pay, unlockAccount } from '../services/accounts';
 
 const router = express.Router({ mergeParams: true });
+
+async function createAccount(req, res, next) {
+  const { password } = req.body;
+  try {
+    const address = await newAccount(password);
+    if (password) {
+      await sendEtherToAccount(address);
+    }
+    res.data = address;
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getAccountBalance(req, res, next) {
+  const { address } = req.params;
+  const balance = await getBalance(address);
+  res.data = balance;
+  next();
+}
+
+async function transferEther(req, res, next) {
+  const { from, amount, address } = req.body;
+  try {
+    const txHash = await pay(address, from, amount);
+    res.data = txHash;
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
 
 async function unlockUserAccount(req, res, next) {
   const { address, password } = req.body;
@@ -15,6 +47,10 @@ async function unlockUserAccount(req, res, next) {
   }
 }
 
-router.post('/unlock', unlockUserAccount);
+router.post('/createAccount', createAccount);
+router.post('/anonymous', createAccount);
+router.get('/:address', getAccountBalance);
+router.post('/unlockAccount', unlockUserAccount);
+router.put('/transfer', transferEther);
 
 export default router;
