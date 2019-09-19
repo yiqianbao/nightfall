@@ -1,8 +1,6 @@
-/* eslint-disable no-undef, eqeqeq */
-
-if (db == 'nightfall_test') {
+if (this.db.getName() === 'nightfall_test') {
   // user created for integration testing.
-  db.createUser({
+  this.db.createUser({
     user: 'admin',
     pwd: 'admin',
     roles: [
@@ -12,7 +10,7 @@ if (db == 'nightfall_test') {
     ],
   });
 } else {
-  db.createUser({
+  this.db.createUser({
     user: 'admin',
     pwd: 'admin',
     roles: [
