@@ -18,8 +18,8 @@ async function createAccount(req, res, next) {
 }
 
 async function getAccountBalance(req, res, next) {
-  const { address } = req.params;
-  const balance = await getBalance(address);
+  const { accountAddress } = req.query;
+  const balance = await getBalance(accountAddress);
   res.data = balance;
   next();
 }
@@ -48,9 +48,8 @@ async function unlockUserAccount(req, res, next) {
 }
 
 router.post('/createAccount', createAccount);
-router.post('/anonymous', createAccount);
-router.get('/:address', getAccountBalance);
+router.get('/getAccountBalance', getAccountBalance);
 router.post('/unlockAccount', unlockUserAccount);
-router.put('/transfer', transferEther);
+router.post('/transferEther', transferEther);
 
 export default router;
