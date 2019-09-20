@@ -81,14 +81,14 @@ services:
       - ./zkp/code:/app/code
       - ./zkp/.babelrc:/app/.babelrc
       - ./zkp-utils:/app/node_modules/zkp-utils
-      - ./config:/app/config
+      - ./config:/app/stats-config
+      - ./zkp/config:/app/config
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       NODE_ENV: test
       BLOCKCHAIN_HOST: http://ganache_test
       BLOCKCHAIN_PORT: 8545
-      ZKP_HOST: http://zkp_test
-      ZKP_PORT: 80
+      ZKP_CODE_VOLUME: nightfall_zkp_code_test
     networks:
       - test_net
 
