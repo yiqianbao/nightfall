@@ -7,4 +7,4 @@ module.exports = {
     adminPassword: 'admin',
   },
   isLoggerEnable: true,
-}
+};
