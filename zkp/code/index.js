@@ -10,7 +10,7 @@ import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import inquirer from 'inquirer';
-import conifg from 'config';
+import config from 'config';
 
 import codePreProp from './tools-code-preprop';
 import keyExtractor from './tools-key-extractor';
