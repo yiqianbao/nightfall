@@ -1,7 +1,7 @@
 import request from 'request';
 import config from 'config';
 
-const url = config.get('authenticationApi').url;
+const url = config.get('authenticationApi.url');
 
 const requestWrapper = options =>
   new Promise(function promiseHandler(resolve, reject) {

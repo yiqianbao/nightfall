@@ -12,5 +12,5 @@ module.exports = {
     url: defer(function getauthenticationApiURL() {
       return `${this.authenticationApi.host}:${this.authenticationApi.port}`;
     }),
-  }
+  },
 };
