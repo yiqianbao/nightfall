@@ -72,6 +72,13 @@ Start Docker:
 
 Clone the Nightfall repository and use a terminal to enter the directory.
 
+For Linux users:
+
+- Change permission for the directory
+    `sudo chmod 777 -R zkp/code/`
+- Add the Linux user to docker group to run Docker commands without sudo. Then log out and enter again.  
+    `sudo usermod -a -G docker <username>`
+
 Next pull a compatible Docker image of ZoKrates
 
 ```sh
