@@ -72,6 +72,13 @@ Start Docker:
 
 Clone the Nightfall repository and use a terminal to enter the directory.
 
+For Linux users:
+
+- Change permission for the directory
+    `sudo chmod 777 -R zkp/code/`
+- Add the Linux user to docker group to run Docker commands without sudo. Then log out and enter again.  
+    `sudo usermod -a -G docker <username>`
+
 Next pull a compatible Docker image of ZoKrates
 
 ```sh
@@ -187,8 +194,8 @@ Be sure to be in the main directory and then open terminal and run
 
 - Mac
   - Test suites will open a terminal, where you can see test container's log. And, this terminal
-    will get close automatically.
-  - configure `Teminal.app` to close window when shell exists `exit`.
+    will close automatically.
+  - configure `Terminal.app` to close window when shell exits `exit`.
 
 ## Using other ERC-20 and ERC-721 contracts
 
