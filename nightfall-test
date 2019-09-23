@@ -88,3 +88,7 @@ if [ "${machine}" == "Mac" ] && [ "${isTestPassed}" == "true" ]; then
 	    do script \"exit\" in $childTab
 	  end tell"
 fi
+
+if [ "${isTestPassed}" == "false" ]; then
+  exit 1
+fi
