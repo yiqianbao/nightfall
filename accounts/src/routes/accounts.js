@@ -1,5 +1,11 @@
 import express from 'express';
-import { newAccount, sendEtherToAccount, getBalance, pay, unlockAccount } from '../services/accounts';
+import {
+  newAccount,
+  sendEtherToAccount,
+  getBalance,
+  pay,
+  unlockAccount,
+} from '../services/accounts';
 
 const router = express.Router({ mergeParams: true });
 
