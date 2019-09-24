@@ -11,7 +11,7 @@ the same node server though (nothing gets passed through the blockchain).
 import Utils from 'zkp-utils';
 import EventEmitter from 'events';
 
-const utils = Utils('/app/config/stats.json');
+const utils = Utils('/app/stats-config/stats.json');
 
 class MyEmitter extends EventEmitter {}
 const em = new MyEmitter();
