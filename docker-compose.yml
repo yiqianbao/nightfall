@@ -73,13 +73,13 @@ services:
       - ./zkp-utils:/app/node_modules/zkp-utils
       - ./account-utils:/app/src/account-utils
       - ./zkp/__tests__:/app/__tests__
-      - ./config:/app/config
+      - ./config:/app/stats-config
+      - ./zkp/config:/app/config
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       BLOCKCHAIN_HOST: http://ganache
       BLOCKCHAIN_PORT: 8545
-      ZKP_HOST: http://zkp
-      ZKP_PORT: 80
+      ZKP_CODE_VOLUME: nightfall_zkp-code
 
   ui:
     build:
