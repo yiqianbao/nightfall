@@ -1,20 +1,12 @@
 import { whisperTransaction } from './whisper';
 import { accounts, db, offchain, zkp } from '../rest';
-import Response from '../routes/response/response';
 
 export async function checkCorrectnessCoin(req, res, next) {
-  const response = new Response();
-
   try {
     const { data } = await zkp.checkCorrectnessCoin(req.headers, req.body);
-
-    response.statusCode = 200;
-    response.data = data;
-    res.json(response);
+    res.data = data;
+    next();
   } catch (err) {
-    response.statusCode = 500;
-    response.data = err;
-    res.status(500).json(response);
     next(err);
   }
 }
@@ -23,20 +15,18 @@ export async function checkCorrectnessCoin(req, res, next) {
 /**
  * This function will mint a coin and add transaction in db
  * req.user {
- 		address: '0x3bd5ae4b9ae233843d9ccd30b16d3dbc0acc5b7f',
-		name: 'alice',
-		pk_A: '0x70dd53411043c9ff4711ba6b6c779cec028bd43e6f525a25af36b8',
-		password: 'alicesPassword'
-	}
+    address: '0x3bd5ae4b9ae233843d9ccd30b16d3dbc0acc5b7f',
+    name: 'alice',
+    pk_A: '0x70dd53411043c9ff4711ba6b6c779cec028bd43e6f525a25af36b8',
+    password: 'alicesPassword'
+  }
  * req.body {
- 		A: '0x00000000000000000000000000002710',
-	}
+    A: '0x00000000000000000000000000002710',
+  }
  * @param {*} req
  * @param {*} res
  */
 export async function mintCoin(req, res, next) {
-  const response = new Response();
-
   try {
     const { data } = await zkp.mintCoin(req.user, {
       A: req.body.A,
@@ -44,7 +34,6 @@ export async function mintCoin(req, res, next) {
     });
 
     data.coin_index = parseInt(data.coin_index, 16);
-    data.action_type = 'minted';
 
     await db.addCoin(req.user, {
       amount: req.body.A,
@@ -54,13 +43,9 @@ export async function mintCoin(req, res, next) {
       isMinted: true,
     });
 
-    response.statusCode = 200;
-    response.data = data;
-    res.json(response);
+    res.data = data;
+    next();
   } catch (err) {
-    response.statusCode = 500;
-    response.data = err;
-    res.status(500).json(response);
     next(err);
   }
 }
@@ -95,8 +80,6 @@ export async function mintCoin(req, res, next) {
  * @param {*} res
  */
 export async function transferCoin(req, res, next) {
-  const response = new Response();
-
   try {
     // Generate a new one-time-use Ethereum address for the sender to use
     const password = (req.user.address + Date.now()).toString();
@@ -128,7 +111,7 @@ export async function transferCoin(req, res, next) {
       isTransferred: true,
     });
 
-    // update slected coin2 with tansferred data
+    // update slected coin with tansferred data
     await db.updateCoin(req.user, {
       amount: req.body.D,
       salt: req.body.S_D,
@@ -195,13 +178,9 @@ export async function transferCoin(req, res, next) {
       for: 'coin',
     });
 
-    response.statusCode = 200;
-    response.data = data;
-    res.json(response);
+    res.data = data;
+    next();
   } catch (err) {
-    response.statusCode = 500;
-    response.data = err;
-    res.status(500).json(response);
     next(err);
   }
 }
@@ -220,16 +199,14 @@ export async function transferCoin(req, res, next) {
  * @param {*} res
  */
 export async function burnCoin(req, res, next) {
-  const response = new Response();
-
   try {
     const payToAddress = req.body.payTo
-      ? (await offchain.getAddressFromName(req.body.payTo)).address
+      ? await offchain.getAddressFromName(req.body.payTo)
       : req.user.address;
 
     const { data } = await zkp.burnCoin({ ...req.body, payTo: payToAddress }, req.user);
 
-    // update slected coin with tansferred data
+    // update slected coin2 with tansferred data
     await db.updateCoin(req.user, {
       amount: req.body.A,
       salt: req.body.S_A,
@@ -261,14 +238,9 @@ export async function burnCoin(req, res, next) {
       });
     }
 
-    response.statusCode = 200;
-    response.data = data;
-    res.json(response);
+    res.data = data;
+    next();
   } catch (err) {
-    console.log('error response burnCoin', err);
-    response.statusCode = 500;
-    response.data = err;
-    res.status(500).json(response);
     next(err);
   }
 }
