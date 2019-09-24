@@ -131,7 +131,7 @@ export default {
     return requestWrapper(options);
   },
 
-  // send whisper message to recipient
+  // send whisper message to receiver
   sendMessage(body) {
     const options = {
       url: `${host}/whisper/sendMessage`,
