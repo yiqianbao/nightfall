@@ -99,21 +99,21 @@ export async function mintToken(req, res, next) {
 export async function transferToken(req, res, next) {
   const response = new Response();
   try {
-    // Generate a new one-time-use Ethereum address for the transferor to use
+    // Generate a new one-time-use Ethereum address for the sender to use
     const password = (req.user.address + Date.now()).toString();
     const address = (await accounts.createAccount(password)).data;
     await db.updateUserWithPrivateAccount(req.user, { address, password });
     await accounts.unlockAccount({ address, password });
 
-    // Fetch the transferee's pk from the PKD by passing their username
+    // Fetch the receiver's pk from the PKD by passing their username
     req.body.pk_B = await offchain.getZkpPublicKeyFromName(req.body.receiver_name);
 
     // Transfer the token under zero-knowledge:
-    // Nullify the transferor's 'token commitment' within the shield contract.
-    // Add a new token commitment to the shield contract to represent that the token is now owned by the transferee.
+    // Nullify the sender's 'token commitment' within the shield contract.
+    // Add a new token commitment to the shield contract to represent that the token is now owned by the receiver.
     const { data } = await zkp.spendToken({ address }, req.body);
 
-    // Update the transferor's token db.
+    // Update the sender's token db.
     await db.updateToken(req.user, {
       tokenId: req.body.A,
       tokenUri: req.body.uri,
@@ -123,19 +123,19 @@ export async function transferToken(req, res, next) {
       transferredSalt: data.S_B,
       transferredCommitment: data.z_B,
       transferredCommitmentIndex: parseInt(data.z_B_index, 16),
-      transferee: req.body.receiver_name,
+      receiver: req.body.receiver_name,
       isTransferred: true,
     });
 
-    // Send details of the newly-created token commitment to Bob (the transferee) via Whisper.
+    // Send details of the newly-created token commitment to Bob (the receiver) via Whisper.
     await whisperTransaction(req, {
       tokenUri: req.body.uri,
       tokenId: req.body.A,
       salt: data.S_B,
       commitment: data.z_B,
       commitmentIndex: parseInt(data.z_B_index, 16),
-      transferee: req.body.receiver_name,
-      transfereePublicKey: req.body.pk_B,
+      receiver: req.body.receiver_name,
+      receiverPublicKey: req.body.pk_B,
       for: 'token',
     });
 
@@ -192,21 +192,21 @@ export async function burnToken(req, res, next) {
       salt: req.body.S_A,
       commitment: req.body.z_A,
       commitmentIndex: req.body.z_A_index,
-      transferee: req.body.payTo || req.user.name,
+      receiver: req.body.payTo || req.user.name,
       isBurned: true,
     });
 
     const user = await db.getNFTokenByTokenId(req.user, req.body.A);
 
     if (req.body.payTo) {
-      // Send details of the token to the transferee via Whisper
+      // Send details of the token to the receiver via Whisper
       await whisperTransaction(req, {
         uri: req.body.uri,
         tokenId: req.body.A,
         shieldContractAddress: user.shield_contract_address,
-        transferee: req.body.payTo, // this will change when payTo will be a user other than burner himself.
-        transferor: req.user.name,
-        transferorAddress: req.user.address,
+        receiver: req.body.payTo, // this will change when payTo will be a user other than burner himself.
+        sender: req.user.name,
+        senderAddress: req.user.address,
         for: 'NFTToken',
       });
     } else {
@@ -214,8 +214,8 @@ export async function burnToken(req, res, next) {
         uri: req.body.uri,
         tokenId: req.body.A,
         shieldContractAddress: user.shield_contract_address,
-        transferor: req.user.name,
-        transferorAddress: req.user.address,
+        sender: req.user.name,
+        senderAddress: req.user.address,
         isReceived: true,
       });
     }

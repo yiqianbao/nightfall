@@ -98,7 +98,7 @@ export async function transferCoin(req, res, next) {
   const response = new Response();
 
   try {
-    // Generate a new one-time-use Ethereum address for the transferor to use
+    // Generate a new one-time-use Ethereum address for the sender to use
     const password = (req.user.address + Date.now()).toString();
     const address = (await accounts.createAccount(password)).data;
     await db.updateUserWithPrivateAccount(req.user, { address, password });
@@ -124,7 +124,7 @@ export async function transferCoin(req, res, next) {
       changeSalt: data.S_F,
       changeCommitment: data.z_F,
       changeCommitmentIndex: data.z_F_index,
-      transferee: req.body.receiver_name,
+      receiver: req.body.receiver_name,
       isTransferred: true,
     });
 
@@ -142,7 +142,7 @@ export async function transferCoin(req, res, next) {
       changeSalt: data.S_F,
       changeCommitment: data.z_F,
       changeCommitmentIndex: data.z_F_index,
-      transferee: req.body.receiver_name,
+      receiver: req.body.receiver_name,
       isTransferred: true,
     });
 
@@ -157,7 +157,7 @@ export async function transferCoin(req, res, next) {
       changeSalt: data.S_F,
       changeCommitment: data.z_F,
       changeCommitmentIndex: data.z_F_index,
-      transferee: req.body.receiver_name,
+      receiver: req.body.receiver_name,
       isTransferred: true,
       usedCoins: [
         {
@@ -183,15 +183,15 @@ export async function transferCoin(req, res, next) {
     }
 
     // note:
-    // E is the value transferred to the transferee
-    // F is the value returned as 'change' to the transferor
+    // E is the value transferred to the receiver
+    // F is the value returned as 'change' to the sender
     await whisperTransaction(req, {
       amount: req.body.E,
       salt: data.S_E,
       pk: req.body.pk_B,
       commitment: data.z_E,
       commitmentIndex: data.z_E_index,
-      transferee: req.body.receiver_name,
+      receiver: req.body.receiver_name,
       for: 'coin',
     });
 
@@ -235,7 +235,7 @@ export async function burnCoin(req, res, next) {
       salt: req.body.S_A,
       commitment: req.body.z_A,
       commitmentIndex: req.body.z_A_index,
-      transferee: req.body.payTo || req.user.name,
+      receiver: req.body.payTo || req.user.name,
       isBurned: true,
     });
 
@@ -245,18 +245,18 @@ export async function burnCoin(req, res, next) {
       await whisperTransaction(req, {
         amount: Number(req.body.A),
         shieldContractAddress: user.selected_coin_shield_contract,
-        transferee: req.body.payTo,
-        transferor: req.user.name,
-        transferorAddress: req.user.address,
+        receiver: req.body.payTo,
+        sender: req.user.name,
+        senderAddress: req.user.address,
         for: 'FToken',
       }); // send ft token data to BOB side
     } else {
       await db.addFTTransaction(req.user, {
         amount: Number(req.body.A),
         shieldContractAddress: user.selected_coin_shield_contract,
-        transferee: req.body.payTo,
-        transferor: req.user.name,
-        transferorAddress: req.user.address,
+        receiver: req.body.payTo,
+        sender: req.user.name,
+        senderAddress: req.user.address,
         isReceived: true,
       });
     }

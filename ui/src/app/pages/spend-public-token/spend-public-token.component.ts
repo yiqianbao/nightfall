@@ -27,7 +27,7 @@ export class SpendPublicTokenComponent implements OnInit, AfterContentInit {
   users;
 
   /**
-   * Name of the transferee
+   * Name of the receiver
    */
   receiverName;
 

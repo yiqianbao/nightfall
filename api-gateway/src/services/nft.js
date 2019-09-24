@@ -69,11 +69,11 @@ export async function transferNFToken(req, res, next) {
   const response = new Response();
 
   try {
-    const transfereeAddress = await offchain.getAddressFromName(req.body.receiver_name);
+    const receiverAddress = await offchain.getAddressFromName(req.body.receiver_name);
 
     const { data } = await zkp.transferNFToken(req.user, {
       tokenID: req.body.tokenID,
-      to: transfereeAddress,
+      to: receiverAddress,
     });
 
     const nftToken = {
@@ -84,16 +84,16 @@ export async function transferNFToken(req, res, next) {
 
     await db.updateNFToken(req.user, {
       ...nftToken,
-      transferee: req.body.receiver_name,
-      transfereeAddress,
+      receiver: req.body.receiver_name,
+      receiverAddress,
       isTransferred: true,
     });
 
     await whisperTransaction(req, {
       ...nftToken,
-      transferee: req.body.receiver_name,
-      transferor: req.user.name,
-      transferorAddress: req.user.address,
+      receiver: req.body.receiver_name,
+      sender: req.user.name,
+      senderAddress: req.user.address,
       for: 'NFTToken',
     }); // send nft token data to BOB side
 
