@@ -1,8 +1,7 @@
 import request from 'request';
-import { getProps } from '../config/config';
+import config from 'config';
 
-const { accounts } = getProps();
-const host = `${accounts.host}:${accounts.port}`;
+const url = config.get('accounts.url');
 
 const requestWrapper = options =>
   new Promise(function promiseHandler(resolve, reject) {
@@ -21,7 +20,7 @@ export default {
   // create geth account.
   createAccount(password) {
     const options = {
-      url: `${host}/account/new`,
+      url: `${url}/account/new`,
       method: 'POST',
       json: true,
       body: { password },
@@ -32,7 +31,7 @@ export default {
   // unlock a geth account.
   unlockAccount(body) {
     const options = {
-      url: `${host}/accounts/unlock`,
+      url: `${url}/accounts/unlock`,
       method: 'POST',
       json: true,
       body,
