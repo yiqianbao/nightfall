@@ -20,35 +20,6 @@ export default class AccountService {
   }
 
   /**
-   * This function returns a user matching a public key
-   * @param {object} options - an object containing public key
-   * @returns {object} a user document matching the public key
-   */
-  getUser(options) {
-    return this.db.findOne(COLLECTIONS.USER, options);
-  }
-
-  /**
-   * This function will create a user document
-   * @param {object} data - data contains user details
-   * @returns {object} a user object
-   */
-  async createAccount(data) {
-    const mappedData = await userMapper(data);
-    await this.db.addUser(data.name, data.password);
-    await updateUserRole();
-    return this.db.saveData(COLLECTIONS.USER, mappedData);
-  }
-
-  /**
-   * This function will return all the user collection
-   * @returns {array} a user collection
-   */
-  async getUsers() {
-    return this.db.getData(COLLECTIONS.USER, {});
-  }
-
-  /**
    * This fucntion is used to add private ethereum accounts to a public account
    * @param {string} account - public accunt
    * @param {object} privateAccountDetails - contains ethereum private account and password

@@ -185,42 +185,6 @@ async function getCountHandler(req, res, next) {
 }
 
 /**
- * This function is used to fetch user by name (login purpose).
- * req.body = { name: 'a' }
- * @param {*} req
- * @param {*} res
- */
-async function getUserByName(req, res, next) {
-  const accountService = new AccountService(req.user.db);
-  try {
-    res.data = await accountService.getUser({ name: req.body.name });
-    next();
-  } catch (err) {
-    next(err);
-  }
-}
-
-/**
- * This function will create a user(public ethereum account)
- * req.body = {
- *  name: 'a',
- *  email: 'a',
- *  address: '0xE237b19f7a9f2E92018a68f4fB07C451F578fa26' => Ethereum account
- * }
- * @param {*} req
- * @param {*} res
- */
-async function createAccountHandler(req, res, next) {
-  const accountService = new AccountService(req.user.db);
-  try {
-    res.data = await accountService.createAccount(req.body);
-    next();
-  } catch (err) {
-    next(err);
-  }
-}
-
-/**
  * This function is used to create private account for a user
  * req.body = {
  *  address: '0x256140f466b2e56E3ae0055551591FE46664976d', // this is the newly created private account
@@ -258,11 +222,6 @@ async function getUserHandler(req, res, next) {
 
 // initializing routes
 export default function(router) {
-  // Route to get user by name, also use while login
-  router.route('/login').post(getUserByName);
-
-  // Route to create a public Account
-  router.route('/createAccount').post(createAccountHandler);
 
   // Route to create a private account & get private account
   router.route('/privateAccount').post(createPrivateAccountHandler);

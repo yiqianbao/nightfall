@@ -9,6 +9,7 @@ import {
   initializeNftCommitmentRoutes,
   initializeFtRoutes,
   initializeFtCommitmentRoutes,
+  initializeUserRoutes
 } from './routes';
 
 const app = express();
