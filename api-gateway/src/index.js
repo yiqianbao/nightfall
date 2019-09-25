@@ -39,11 +39,7 @@ app.use(authentication);
 
 app.use('/zkp', unlockAccount, proxy(`${config.zkp.host}:${config.zkp.port}`));
 app.use('/database', proxy(`${config.database.host}:${config.database.port}`));
-app.use(
-  '/offchain-service',
-  unlockAccount,
-  proxy(`${config.offchain.host}:${config.offchain.port}`),
-);
+app.use('/', unlockAccount, proxy(`${config.offchain.host}:${config.offchain.port}`));
 app.use('/', unlockAccount, router);
 app.use('/', rootRouter);
 app.use('/token', nftCommitmentRoutes);
