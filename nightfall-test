@@ -74,10 +74,14 @@ docker-compose -f docker-compose.test.yml down -v || {
   # nightfall_test_net network have no dependency left.
   sleep 3
 
-  networkID="$(docker network ls --filter name=nightfall_test_net --quiet)"
-  # removing network just in case docker-compose down haven't done the job.
-  printf "${GREEN}*** Remove test-net network if not removed ***${NC}\n"
-  [ -z "$networkID" ] && true || docker network rm nightfall_test_net
+  printf "${GREEN}*** Remove network ***${NC}\n"
+  docker network rm nightfall_test_net
+
+  printf "${GREEN}*** Remove mongo volume ***${NC}\n"
+  docker volume rm nightfall_mongo_volume_test
+
+  printf "${GREEN}*** Remove zkp-code volume ***${NC}\n"
+  docker volume rm nightfall_zkp_code_test
 }
 
 
