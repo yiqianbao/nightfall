@@ -3,7 +3,6 @@ import {
   newAccount,
   transferEtherToAccount,
   getBalance,
-  transferEther,
   unlockAccount,
 } from '../services/accounts';
 

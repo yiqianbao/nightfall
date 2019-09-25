@@ -43,7 +43,7 @@ export function unlockAccount(account, password) {
  */
 export async function transferEtherToAccount(to, from, amount) {
   const web3 = Web3.connection();
-  const coinbase = from || await web3.eth.getCoinbase();
+  const coinbase = from || (await web3.eth.getCoinbase());
   const value = amount || 2000000000000000000;
   return web3.eth.sendTransaction({
     from: coinbase,
