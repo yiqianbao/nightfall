@@ -1,9 +1,9 @@
 import express from 'express';
 import {
   newAccount,
-  sendEtherToAccount,
+  transferEtherToAccount,
   getBalance,
-  pay,
+  transferEther,
   unlockAccount,
 } from '../services/accounts';
 
@@ -14,7 +14,7 @@ async function createAccount(req, res, next) {
   try {
     const address = await newAccount(password);
     if (password) {
-      await sendEtherToAccount(address);
+      await transferEtherToAccount(address);
     }
     res.data = address;
     next();
@@ -33,7 +33,7 @@ async function getAccountBalance(req, res, next) {
 async function transferEther(req, res, next) {
   const { from, amount, address } = req.body;
   try {
-    const txHash = await pay(address, from, amount);
+    const txHash = await transferEtherToAccount(address, from, amount);
     res.data = txHash;
     next();
   } catch (err) {
