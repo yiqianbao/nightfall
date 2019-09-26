@@ -1,4 +1,5 @@
 import { UserService } from '../business';
+import { setDB } from '../middlewares';
 
 /**
  * This function will create a user(public ethereum account)
@@ -13,22 +14,32 @@ import { UserService } from '../business';
 async function createUser(req, res, next) {
   const userService = new UserService(req.user.db);
   try {
-    res.data = await userService.createAccount(req.body);
+    res.data = await userService.createUser(req.body);
     next();
   } catch (err) {
     next(err);
   }
 }
 
-/* This function is used to fetch user by name (login purpose).
- * req.params = { name: 'a' }
+/* This function is used to fetch user.
  * @param {*} req
  * @param {*} res
  */
-async function getUserByName(req, res, next) {
+async function getUser(req, res, next) {
   const userService = new UserService(req.user.db);
   try {
-    res.data = await userService.getUser({ name: req.params.name });
+    res.data = await userService.getUser();
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function configureDBconnection(req, res, next) {
+  const {name, password} = req.body;
+  try {
+    const connection = await UserService.setDBconnection(name, password);
+    req.user.connection = connection;
     next();
   } catch (err) {
     next(err);
@@ -36,7 +47,10 @@ async function getUserByName(req, res, next) {
 }
 
 export default function(router) {
-  router.post('/users', createUser);
-  router.get('/users/:name', getUserByName);
+  router.route('/users')
+    .post(createUser)
+    .get(getUser);
+
+  router.post('/dbConnection', configureDBconnection, setDB, getUser);
 }
 

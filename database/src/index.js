@@ -29,6 +29,7 @@ initializeNftRoutes(router);
 initializeNftCommitmentRoutes(router);
 initializeFtRoutes(router);
 initializeFtCommitmentRoutes(router);
+initializeUserRoutes(router);
 
 app.use(formatResponse);
 

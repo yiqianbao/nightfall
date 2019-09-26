@@ -1,18 +1,5 @@
-import { exec } from 'child_process';
-import config from 'config';
 import { COLLECTIONS } from '../common/constants';
 import { userMapper } from '../mappers';
-
-const mongo = config.get('mongo');
-
-function updateUserRole() {
-  return new Promise((resolve, reject) =>
-    exec(
-      `mongo ${mongo.databaseName} --host=${mongo.host} -u ${mongo.admin} -p ${mongo.adminPassword} setup-mongo-acl-for-new-users.js`,
-      err => (err ? reject(err) : resolve()),
-    ),
-  );
-}
 
 export default class AccountService {
   constructor(_db) {

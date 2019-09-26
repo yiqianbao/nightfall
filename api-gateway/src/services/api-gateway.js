@@ -15,8 +15,7 @@ export async function loginHandler(req, res, next) {
   const { name, password } = req.body;
 
   try {
-    const data = await db.login({ name, password });
-    if (!data) throw new Error('User does not exist');
+    const data = await db.configureDBconnection({ name, password });
     await accounts.unlockAccount({ address: data.address, password });
     // get jwt token
     const token = createToken(data, password);
@@ -55,11 +54,12 @@ export async function createAccountHandler(req, res, next) {
     const address = (await accounts.createAccount(password)).data;
     const shhIdentity = '';
 
-    const data = await db.createAccount({
+    const data = await db.createUser({
       ...req.body,
       address,
       shhIdentity,
     });
+
     await accounts.unlockAccount({ address, password });
 
     await offchain.setName(address, name);

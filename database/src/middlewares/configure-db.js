@@ -3,6 +3,9 @@ import DB from '../mongodb/db';
 const userDb = [];
 
 export default function(req, res, next) {
+
+  if (!req.user.connection) return next();
+
   try {
     const username = req.headers.name || req.body.name || req.query.name;
     if (!userDb[username]) {

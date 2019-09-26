@@ -204,30 +204,12 @@ async function createPrivateAccountHandler(req, res, next) {
   }
 }
 
-/**
- * This function is used to get the user using public key
- * req.query = { pk_B: "0x48741c46eada3492"}
- * @param {*} req
- * @param {*} res
- */
-async function getUserHandler(req, res, next) {
-  const accountService = new AccountService(req.user.db);
-  try {
-    res.data = await accountService.getUser();
-    next();
-  } catch (err) {
-    next(err);
-  }
-}
 
 // initializing routes
 export default function(router) {
 
   // Route to create a private account & get private account
   router.route('/privateAccount').post(createPrivateAccountHandler);
-
-  // Route to get a user
-  router.route('/user').get(getUserHandler);
 
   router.route('/count').get(getCountHandler);
 
