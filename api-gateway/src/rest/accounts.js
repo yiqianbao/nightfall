@@ -20,7 +20,7 @@ export default {
   // create geth account.
   createAccount(password) {
     const options = {
-      url: `${host}/createAccount`,
+      url: `${url}/createAccount`,
       method: 'POST',
       json: true,
       body: { password },
@@ -31,7 +31,7 @@ export default {
   // unlock a geth account.
   unlockAccount(body) {
     const options = {
-      url: `${host}/unlockAccount`,
+      url: `${url}/unlockAccount`,
       method: 'POST',
       json: true,
       body,
