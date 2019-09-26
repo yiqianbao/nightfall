@@ -6,8 +6,8 @@ const url = config.get('database.url');
 const requestWrapper = options =>
   new Promise(function promiseHandler(resolve, reject) {
     request(options, function responseHandler(err, res, body) {
-      if (err || res.statusCode === 500) {
-        return reject(err || res.body);
+      if (err || res.statusCode !== 200) {
+        return reject(err || res.body.error);
       }
       return resolve(body.data);
     });
@@ -18,7 +18,7 @@ const requestWrapper = options =>
  */
 export default {
   // insert user data intro user collection
-  createAccount(body) {
+  createUser(body) {
     const options = {
       url: `${url}/users`,
       method: 'POST',
@@ -28,24 +28,23 @@ export default {
     return requestWrapper(options);
   },
 
-  // verify password while fetching from user collection
-  login({name}) {
+  configureDBconnection(body) {
     const options = {
-      url: `${url}/users/${name}`,
-      method: 'GET',
+      url: `${url}/dbConnection`,
+      method: 'POST',
+      body,
       json: true,
     };
     return requestWrapper(options);
   },
 
   // fetch logged in user info from. user collection
-  fetchUser({ name }, qs) {
+  fetchUser({ name }) {
     const options = {
-      url: `${url}/user`,
+      url: `${url}/users`,
       method: 'GET',
       json: true,
       headers: { name },
-      qs,
     };
     return requestWrapper(options);
   },
