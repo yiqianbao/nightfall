@@ -222,7 +222,7 @@ async function setup(codeFile, outputDirPath, backend, a) {
             '-c',
             `cp ${
               config.ZOKRATES_OUTPUTS_DIRPATH_ABS
-            }{out,out.code,proving.key,verification.key,variables.inf,verifier.sol} ${
+            }{out,out.code,proving.key,verification.key,verifier.sol} ${
               config.ZOKRATES_CONTAINER_CODE_DIRPATH_ABS
             }`,
           ],
@@ -351,10 +351,9 @@ async function checkForOldFiles(dir) {
 }
 
 async function rmOldFiles(dir, files) {
-  for (let j = 1; j < files.length; j += 1) {
-    const filePrefix = files[j].substring(0, 3);
+  for (let j = 0; j < files.length; j += 1) {
     const fileExt = files[j].substring(files[j].lastIndexOf('.') + 1, files[j].length);
-    if (!(fileExt === 'code')) {
+    if ((files[j] === 'out.code')||(fileExt !== 'code')) {
       console.log('deleting', files[j]);
       fs.unlink(path.join(dir, files[j]), err => {
         if (err) throw err;

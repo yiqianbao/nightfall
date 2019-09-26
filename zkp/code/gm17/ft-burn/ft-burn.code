@@ -163,15 +163,15 @@ def main(field  payTo1, field  payTo0, field value, private field  secretKeyHigh
  	// First we construct a proof that the nullifier is correct
  	// Concatenate salt|secretKey.
 
- 	field[432] nullifierPreimageCheck = CONCAT216x216(saltBits[40..256], secretKeyBits[40..256])
- 	field[512] nullifierPreimageCheck = shaPad432To512(nullifierPreimageCheck)
- 	field[256] nullifierBitsCheck = sha256compression(nullifierPreimageCheck[0..256], nullifierPreimageCheck[256..512])
+ 	field[432] t = CONCAT216x216(saltBits[40..256], secretKeyBits[40..256])
+ 	field[512] u = shaPad432To512(t)
+ 	field[256] nullifierBitsCheck = sha256compression(u[0..256], u[256..512])
 
 
  	// *********next, calculate Alice's public key from her private key: publicKey = H(secretKey).  This will be useful later.
 
- 	field[512] publicKeyBitsPreimage = shaPad216To512(secretKeyBits[40..256])
- 	field[256] publicKeyBits = sha256compression(publicKeyBitsPreimage[0..256], publicKeyBitsPreimage[256..512])
+ 	u = shaPad216To512(secretKeyBits[40..256])
+ 	field[256] publicKeyBits = sha256compression(u[0..256], u[256..512])
 
 
  	//*************Prove that the commitment is in the Merkle tree
@@ -190,12 +190,12 @@ def main(field  payTo1, field  payTo0, field value, private field  secretKeyHigh
 
  	// Remaining 128 bits:
 
- 	field[512] u = shaPad128To512(p[0..128])
+ 	u = shaPad128To512(p[0..128])
  	field[256] v = sha256compression(u[0..256],u[256..512])
 
  	// Then concat the results msb first:
 
- 	field[432] t = CONCAT216x216(v[40..256], s[40..256])
+ 	t = CONCAT216x216(v[40..256], s[40..256])
 
  	// And hash the result:
 
