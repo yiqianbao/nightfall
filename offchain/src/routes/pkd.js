@@ -121,7 +121,7 @@ router.get('/getAllRegisteredAddresses', getAllRegisteredAddresses);
 router.get('/getAllRegisteredNames', getAllRegisteredNames);
 router.post('/setNameToAccount', assignNameToAccount);
 router.get('/getNameForAccount', getNameForAccount);
-router.post('/setZkpPublicKeyToAccount', assignZkpPublicKeyToAccount);
+router.post('/setZkpPublickeyToAccountAddressInPkd', assignZkpPublicKeyToAccount);
 router.get('/getZkpPublicKeyForAccount', getZkpPublicKeyForAccountByName);
 router.post('/setWhisperKeyToAccount', assignWhisperKeyToAccount);
 router.get('/getWhisperKeyForAccount', getWhisperKeyForAccountByName);
