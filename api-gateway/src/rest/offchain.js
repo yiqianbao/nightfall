@@ -63,6 +63,16 @@ export default {
     return requestWrapper(options);
   },
 
+  // get all registered names
+  getRegisteredNames() {
+    const options = {
+      url: `${url}/getAllRegisteredNames`,
+      method: 'GET',
+      json: true,
+    };
+    return requestWrapper(options);
+  },
+
   // get associated whisper for a name
   getWhisperPK(name) {
     const options = {
@@ -122,7 +132,7 @@ export default {
   // subcribe to a topic
   subscribe(body) {
     const options = {
-      url: `${url}/subscribeTopic`,
+      url: `${url}/subscribeToTopic`,
       method: 'POST',
       json: true,
       body,

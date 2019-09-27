@@ -33,7 +33,10 @@ export const config = {
   },
   offchain: {
     root: BaseUrl
-  }
+  },
+  user : {
+    root: BaseUrl + 'user/'
+  },
 };
 /**
  * @ignore
