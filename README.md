@@ -26,7 +26,7 @@ As well as this file, please be sure to check out:
 
 ## Security updates
 
-Critical security updates will be listed [here](./security-updates.md). If you had previously
+Critical security updates will be listed [here](https://github.com/EYBlockchain/nightfall/security/advisories/GHSA-36j7-5gjq-gq3w). If you had previously
 installed Nightfall prior to one of these security updates, please pull the latest code, and follow
 the extra re-installation steps.
 
