@@ -98,11 +98,6 @@ async function killContainer(container) {
   });
 }
 
-/**
-This function and the following ones are direct equivalents of the corresponding
-ZoKrates function.  They return Promises that resolve to the output (stdout, stderr)
-from ZoKrates.
-*/
 async function compile(container, codeFile) {
   console.log('Compiling code in the container - this can take some minutes...');
   const exec = await container.exec.create({
@@ -119,9 +114,12 @@ async function compile(container, codeFile) {
 }
 
 async function computeWitness(container, a, zkpPath) {
-  console.log('\nCompute-witness: Executing the program C(w,x) with:\n (w,x)=', a, '...');
+  console.log('\nCompute-witness...');
   // var config = Config.getProps()
-  console.log('a ', ...a);
+  console.log('./zokrates compute-witness -a ', ...a);
+  console.log(
+    `(you can paste the above line into the container to debug the 'compute-witness' step)`,
+  );
   const exec = await container.exec.create({
     Cmd: [
       config.ZOKRATES_APP_FILEPATH_ABS,
@@ -201,6 +199,10 @@ async function generateProof(container, b = config.ZOKRATES_BACKEND, zkpPath) {
   proof.A = proof.a; // our code expects uppercase keys
   proof.B = proof.b;
   proof.C = proof.c;
+  delete proof.a;
+  delete proof.b;
+  delete proof.c;
+
   return proof;
 }
 

@@ -50,6 +50,7 @@ async function getNameForAccount(req, res, next) {
 
 async function assignZkpPublicKeyToAccount(req, res, next) {
   const { pk } = req.body;
+  console.log("WE'RE IN THE PKD AND HERE'S THE PK:", pk);
   const { address } = req.headers;
 
   try {

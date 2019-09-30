@@ -15,7 +15,7 @@ const jsonfile = require('jsonfile');
 const fs = require('fs');
 const cliProgress = require('cli-progress');
 
-const hashLength = 27;
+const inputsHashLength = 32;
 const merkleDepth = 33;
 
 const bar = new cliProgress.Bar({
@@ -457,7 +457,7 @@ function xorItems(...items) {
 Utility function to concatenate two hex strings and return as buffer
 Looks like the inputs are somehow being changed to decimal!
 */
-function concat(a, b) {
+function concatenate(a, b) {
   const length = a.length + b.length;
   const buffer = Buffer.allocUnsafe(length); // creates a buffer object of length 'length'
   for (let i = 0; i < a.length; i += 1) {
@@ -472,45 +472,11 @@ function concat(a, b) {
 /**
 Utility function to concatenate multiple hex strings and return as string
 */
-function concatItems(...items) {
+function concatenateItems(...items) {
   const concatvalue = items
     .map(item => Buffer.from(strip0x(item), 'hex'))
-    .reduce((acc, item) => concat(acc, item));
+    .reduce((acc, item) => concatenate(acc, item));
   return `0x${concatvalue.toString('hex')}`;
-}
-
-function hashC(c) {
-  let hsh = '';
-  let conc = c;
-  while (conc) {
-    const slc = conc.slice(-hashLength * 4); // grab the first 432 bits (or whatever is left)
-    conc = conc.substring(0, conc.length - hashLength * 4); // and remove it from the input string
-    hsh =
-      crypto
-        .createHash('sha256') // hash it and grab 216 bits
-        .update(slc, 'hex')
-        .digest('hex')
-        .slice(-hashLength * 2) + hsh;
-  }
-  return hsh;
-}
-
-/**
-Like hashConcat above, this hashes a concatenation of items but it does it by
-breaking the items up into 432 bit chunks, hashing those, plus any remainder
-and then repeating the process until you end up with a single hash.  That way
-we can generate a hash without needing to use more than a single sha round.  It's
-not the same value as we'd get using rounds but it's at least doable.
-*/
-function recursiveHashConcat(...items) {
-  const conc = items // run all the items together in a string
-    .map(item => Buffer.from(strip0x(item), 'hex'))
-    .reduce((acc, item) => concat(acc, item))
-    .toString('hex');
-
-  let hsh = hashC(conc);
-  while (hsh.length > hashLength * 2) hsh = hashC(hsh); // have we reduced it to a single 216 bit hash?
-  return ensure0x(hsh);
 }
 
 /**
@@ -521,14 +487,21 @@ and then repeating the process until you end up with a single hash.  That way
 we can generate a hash without needing to use more than a single sha round.  It's
 not the same value as we'd get using rounds but it's at least doable.
 */
-function hash(...items) {
-  return recursiveHashConcat(...items);
+function hash(item) {
+  const preimage = strip0x(item);
+
+  const h = `0x${crypto
+    .createHash('sha256')
+    .update(preimage, 'hex')
+    .digest('hex')
+    .slice(-(inputsHashLength * 2))}`;
+  return h;
 }
 
 /**
 Utility function to:
 - convert each item in items to a 'buffer' of bytes (2 hex values), convert those bytes into decimal representation
-- 'concat' each decimally-represented byte together into 'concatenated bytes'
+- 'concatenate' each decimally-represented byte together into 'concatenated bytes'
 - hash the 'buffer' of 'concatenated bytes' (sha256) (sha256 returns a hex output)
 - truncate the result to the right-most 64 bits
 Return:
@@ -537,16 +510,16 @@ update: [input string to hash (an array of bytes (in decimal representaion) [byt
 digest: [output format ("hex" in our case)]
 slice: [begin value] outputs the items in the array on and after the 'begin value'
 */
-function hashConcat(...items) {
+function concatenateThenHash(...items) {
   const concatvalue = items
     .map(item => Buffer.from(strip0x(item), 'hex'))
-    .reduce((acc, item) => concat(acc, item));
+    .reduce((acc, item) => concatenate(acc, item));
 
   const h = `0x${crypto
     .createHash('sha256')
     .update(concatvalue, 'hex')
     .digest('hex')
-    .slice(-(hashLength * 2))}`;
+    .slice(-(inputsHashLength * 2))}`;
   return h;
 }
 
@@ -763,10 +736,10 @@ module.exports = _statsPath => {
     fieldsToHex,
     xor,
     xorItems,
-    concat,
-    concatItems,
+    concatenate,
+    concatenateItems,
     hash,
-    hashConcat,
+    concatenateThenHash,
     add,
     parseToDigitsArray,
     convertBase,
@@ -782,7 +755,6 @@ module.exports = _statsPath => {
     stopProgressBar,
     getTimeEst,
     updateTimeEst,
-    recursiveHashConcat,
     padHex,
     String2Hex,
   };

@@ -3,7 +3,8 @@ import Utils from '../zkp-utils';
 
 const utils = Utils('../config/stats');
 const { rndHex, padHex } = utils;
-const HASHLENGTH = config.get('HASHLENGTH');
+const INPUTS_HASHLENGTH = config.get('INPUTS_HASHLENGTH');
+// const MERKLE_HASHLENGTH = config.get('MERKLE_HASHLENGTH');
 
 const generateTokenID = async () => rndHex(32);
 const numberToHexString = int => padHex(int, 128);
@@ -53,8 +54,8 @@ export default {
 
       // commitment while mint
       get mintCommitment() {
-        return utils.recursiveHashConcat(
-          utils.strip0x(this.tokenID).slice(-(HASHLENGTH * 2)),
+        return utils.concatenateThenHash(
+          utils.strip0x(this.tokenID).slice(-(INPUTS_HASHLENGTH * 2)),
           alice.pk,
           this.S_A, // S_A - set at erc-721 commitment mint (step 4)
         );
@@ -62,8 +63,8 @@ export default {
 
       // commitment while transfer
       get transferCommitment() {
-        return utils.recursiveHashConcat(
-          utils.strip0x(this.tokenID).slice(-(HASHLENGTH * 2)),
+        return utils.concatenateThenHash(
+          utils.strip0x(this.tokenID).slice(-(INPUTS_HASHLENGTH * 2)),
           bob.pk,
           this.S_B, // S_B - set at erc-721 commitment transfer to bob (step 5)
         );
@@ -81,7 +82,7 @@ export default {
           A: numberToHexString(erc20.toBeMintedAsCommitment[0]),
           commitmentIndex: 0,
           get commitment() {
-            return utils.recursiveHashConcat(
+            return utils.concatenateThenHash(
               this.A,
               alice.pk,
               this.S_A, // S_A - set at erc-20 commitment mint (step 10)
@@ -92,7 +93,7 @@ export default {
           A: numberToHexString(erc20.toBeMintedAsCommitment[1]),
           commitmentIndex: 1,
           get commitment() {
-            return utils.recursiveHashConcat(
+            return utils.concatenateThenHash(
               this.A,
               alice.pk,
               this.S_A, // S_A - set at erc-20 commitment mint (step 11)
@@ -104,7 +105,7 @@ export default {
         value: numberToHexString(erc20.transfer),
         commitmentIndex: 2,
         get commitment() {
-          return utils.recursiveHashConcat(
+          return utils.concatenateThenHash(
             this.value,
             bob.pk,
             this.S_E, // S_E - set at erc-20 commitment transfer (step 12)
@@ -115,7 +116,7 @@ export default {
         value: numberToHexString(erc20.change),
         commitmentIndex: 3,
         get commitment() {
-          return utils.recursiveHashConcat(
+          return utils.concatenateThenHash(
             this.value,
             alice.pk,
             this.S_F, // S_F - set at erc-20 commitment transfer (step 12)

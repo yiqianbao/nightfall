@@ -88,7 +88,7 @@ async function mint(proof, _inputs, vkId, _account, fTokenShield) {
     gasPrice: config.GASPRICE,
   });
 
-  const { coin_index: coinIndex } = txReceipt.logs[0].args; // log for: event Mint
+  const coinIndex = txReceipt.logs[0].args.commitment_index; // log for: event Mint
 
   const root = await fTokenShield.latestRoot();
   console.log(`Merkle Root after mint: ${root}`);
@@ -184,14 +184,14 @@ checks the details of an incoming (newly transferred token), to ensure the data 
 */
 async function checkCorrectness(C, pk, S, z, zIndex, fTokenShield) {
   console.log('Checking h(A|pk|S) = z...');
-  const zCheck = utils.recursiveHashConcat(C, pk, S);
+  const zCheck = utils.concatenateThenHash(C, pk, S);
   const zCorrect = zCheck === z;
   console.log('z:', z);
   console.log('zCheck:', zCheck);
 
   console.log('Checking z exists on-chain...');
   const leafIndex = utils.getLeafIndexFromZCount(zIndex);
-  const zOnchain = await fTokenShield.M.call(leafIndex, {}); // lookup the nfTokenShield token merkle tree - we hope to find our new z at this index!
+  const zOnchain = await fTokenShield.merklTree.call(leafIndex, {}); // lookup the nfTokenShield token merkle tree - we hope to find our new z at this index!
   const zOnchainCorrect = zOnchain === z;
   console.log('z:', z);
   console.log('zOnchain:', zOnchain);

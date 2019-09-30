@@ -282,12 +282,12 @@ async function mint(A, pk_A, S_A, account) {
   const { vkId } = vkIds.MintToken;
 
   // Calculate new arguments for the proof:
-  const z_A = utils.recursiveHashConcat(utils.strip0x(A).slice(-config.HASHLENGTH * 2), pk_A, S_A);
+  const z_A = utils.concatenateThenHash(utils.strip0x(A).slice(-32 * 2), pk_A, S_A);
 
   // Summarise values in the console:
   console.group('Existing Proof Variables:');
-  const p = config.ZOKRATES_PACKING_SIZE;
-  const pt = Math.ceil((config.HASHLENGTH * 8) / config.ZOKRATES_PACKING_SIZE);
+  const p = config.ZOKRATES_PACKING_SIZE; // packing size in bits
+  const pt = Math.ceil((config.INPUTS_HASHLENGTH * 8) / config.ZOKRATES_PACKING_SIZE); // packets in bits
   console.log('A: ', A, ' : ', utils.hexToFieldPreserve(A, p, pt));
   console.log('pk_A: ', pk_A, ' : ', utils.hexToFieldPreserve(pk_A, p, pt));
   console.log('S_A: ', S_A, ' : ', utils.hexToFieldPreserve(S_A, p, pt));
@@ -387,10 +387,12 @@ async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, account) {
   console.log(`Merkle Root: ${root}`);
 
   // Calculate new arguments for the proof:
-  const n = utils.recursiveHashConcat(S_A, sk_A);
-  if (n !== utils.hashConcat(S_A, sk_A))
-    throw new Error(`hashConcat and recursiveHashConcat didn't agree`);
-  const z_B = utils.recursiveHashConcat(utils.strip0x(A).slice(-config.HASHLENGTH * 2), pk_B, S_B);
+  const n = utils.concatenateThenHash(S_A, sk_A);
+  const z_B = utils.concatenateThenHash(
+    utils.strip0x(A).slice(-config.INPUTS_HASHLENGTH * 2),
+    pk_B,
+    S_B,
+  );
 
   // we need the Merkle path from the token commitment to the root, expressed as Elements
   const path = await cv.computePath(account, nfTokenShield, z_A, z_A_index).then(result => {
@@ -407,7 +409,7 @@ async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, account) {
   // Summarise values in the console:
   console.group('Existing Proof Variables:');
   const p = config.ZOKRATES_PACKING_SIZE;
-  const pt = Math.ceil((config.HASHLENGTH * 8) / config.ZOKRATES_PACKING_SIZE);
+  const pt = Math.ceil((config.INPUTS_HASHLENGTH * 8) / config.ZOKRATES_PACKING_SIZE);
   console.log('A: ', A, ' : ', utils.hexToFieldPreserve(A, p, pt));
   console.log('S_A: ', S_A, ' : ', utils.hexToFieldPreserve(S_A, p, pt));
   console.log('S_B: ', S_B, ' : ', utils.hexToFieldPreserve(S_B, p, pt));
@@ -513,10 +515,8 @@ async function burn(A, Sk_A, S_A, z_A, z_A_index, account, payTo) {
   console.log(`Merkle Root: ${root}`);
 
   // Calculate new arguments for the proof:
-  const Na = utils.recursiveHashConcat(S_A, Sk_A);
-  if (Na !== utils.hashConcat(S_A, Sk_A))
-    throw new Error(`hashConcat and recursiveHashConcat didn't agree`);
-  const Pk_A = utils.recursiveHashConcat(Sk_A);
+  const Na = utils.concatenateThenHash(S_A, Sk_A);
+  const Pk_A = utils.hash(Sk_A);
   const path = await cv.computePath(account, nfTokenShield, z_A, z_A_index).then(result => {
     return {
       elements: result.path.map(element => new Element(element, 'field', 2)),
@@ -532,7 +532,7 @@ async function burn(A, Sk_A, S_A, z_A, z_A_index, account, payTo) {
   // Summarise values in the console:
   console.group('Existing Proof Variables:');
   const p = config.ZOKRATES_PACKING_SIZE;
-  const pt = Math.ceil((config.HASHLENGTH * 8) / config.ZOKRATES_PACKING_SIZE);
+  const pt = Math.ceil((config.INPUTS_HASHLENGTH * 8) / config.ZOKRATES_PACKING_SIZE);
   console.log(`A: ${A} : ${utils.hexToFieldPreserve(A, p, pt)}`);
   console.log(`sk_A: ${Sk_A} : ${utils.hexToFieldPreserve(Sk_A, p, pt)}`);
   console.log(`Pk_A: ${Pk_A} : ${utils.hexToFieldPreserve(Pk_A, p, pt)}`);

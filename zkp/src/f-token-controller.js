@@ -257,7 +257,7 @@ async function mint(A, pkA, S_A, account) {
   const { vkId } = vkIds.MintCoin;
 
   // Calculate new arguments for the proof:
-  const zA = utils.recursiveHashConcat(A, pkA, S_A);
+  const zA = utils.concatenateThenHash(A, pkA, S_A);
 
   console.group('Existing Proof Variables:');
   const p = config.ZOKRATES_PACKING_SIZE;
@@ -398,13 +398,13 @@ async function transfer(
   console.log(`Merkle Root: ${root}`);
 
   // Calculate new arguments for the proof:
-  const pkA = utils.recursiveHashConcat(skA);
-  const nC = utils.recursiveHashConcat(S_C, skA);
-  const nD = utils.recursiveHashConcat(S_D, skA);
-  const zE = utils.recursiveHashConcat(E, pkB, S_E);
-  const zF = utils.recursiveHashConcat(F, pkA, S_F); // /CARRY ON FROM HERE
+  const pkA = utils.hash(skA);
+  const nC = utils.concatenateThenHash(S_C, skA);
+  const nD = utils.concatenateThenHash(S_D, skA);
+  const zE = utils.concatenateThenHash(E, pkB, S_E);
+  const zF = utils.concatenateThenHash(F, pkA, S_F); // /CARRY ON FROM HERE
 
-  if (nD !== utils.hashConcat(S_D, skA))
+  if (nD !== utils.concatenateThenHash(S_D, skA))
     throw new Error('nullifier normal and recursive hashes do not match');
 
   // we need the Merkle path from the token commitment to the root, expressed as Elements
@@ -567,8 +567,8 @@ async function burn(C, skA, S_C, zC, zCIndex, account, _payTo) {
   console.log(`Merkle Root: ${root}`);
 
   // Calculate new arguments for the proof:
-  const Nc = utils.recursiveHashConcat(S_C, skA);
-  const pkA = utils.recursiveHashConcat(skA);
+  const Nc = utils.concatenateThenHash(S_C, skA);
+  const pkA = utils.hash(skA);
   const path = await cv.computePath(account, fTokenShield, zC, zCIndex).then(result => {
     return {
       elements: result.path.map(element => new Element(element, 'field', 2)),

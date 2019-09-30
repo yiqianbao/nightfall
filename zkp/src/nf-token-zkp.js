@@ -17,12 +17,33 @@ const utils = Utils('/app/stats-config/stats.json');
 @param {string} account - the account that is paying for the transactions
 @param {contract} nfTokenShield - an instance of the nfTokenShield smart contract
 @param {integer} index - the index of the token in the merkle tree, which we want to get from the nfTokenShield contract.
-@returns {Array[integer,Array[string,...]]} [chunkNumber, chunks[]] - where chunkNumber is the same as the input chunkNumber (returned for convenience), and chunks[] is an array of hex strings which represent token commitments (leaf nodes) or non-leaf nodes of the merkle tree.
+@returns {string} a hex node of the merkleTree
 */
 async function getMerkleNode(account, shieldContract, index) {
-  // get the chunk
-  const node = await shieldContract.M.call(index, { from: account });
+  const node = await shieldContract.merkleTree.call(index, { from: account });
   return node;
+}
+
+/**
+@notice gets the latestRoot public variable from the nfTokenShield contract.
+@param {string} account - the account that is paying for the transactions
+@param {contract} nfTokenShield - an instance of the nfTokenShield smart contract
+@returns {string} latestRoot
+*/
+async function getLatestRoot(shieldContract) {
+  const latestRoot = await shieldContract.latestRoot();
+  return latestRoot;
+}
+
+/**
+@notice gets the latestRoot public variable from the nfTokenShield contract.
+@param {string} account - the account that is paying for the transactions
+@param {contract} nfTokenShield - an instance of the nfTokenShield smart contract
+@returns {string} latestRoot
+*/
+async function getCommitment(account, shieldContract, commitment) {
+  const commitmentCheck = await shieldContract.commitments.call(commitment, { from: account });
+  return commitmentCheck;
 }
 
 /**
@@ -110,7 +131,7 @@ async function mint(proof, inputs, vkId, account, nfTokenShield) {
     gasPrice: config.GASPRICE,
   });
 
-  const { token_index: tokenIndex } = txReceipt.logs[0].args; // log for: event Mint
+  const { commitment_index: tokenIndex } = txReceipt.logs[0].args; // log for: event Mint
 
   const root = await nfTokenShield.latestRoot(); // solidity getter for the public variable latestRoot
   console.log(`Merkle Root after mint: ${root}`);
@@ -150,7 +171,7 @@ async function transfer(proof, inputs, vkId, account, nfTokenShield) {
     gasPrice: config.GASPRICE,
   });
 
-  const { token_index: tokenIndex } = txReceipt.logs[0].args; // log for: event Transfer;
+  const tokenIndex = txReceipt.logs[0].args.commitment_index; // log for: event Transfer;
 
   const root = await nfTokenShield.latestRoot(); // solidity getter for the public variable latestRoot
   console.log(`Merkle Root after transfer: ${root}`);
@@ -204,14 +225,17 @@ checks the details of an incoming (newly transferred token), to ensure the data 
 */
 async function checkCorrectness(A, pk, S, z, zIndex, nfTokenShield) {
   console.log('Checking h(A|pk|S) = z...');
-  const zCheck = utils.recursiveHashConcat(utils.strip0x(A).slice(-(config.HASHLENGTH * 2)), pk, S);
+  const zCheck = utils.concatenateThenHash(
+    utils.strip0x(A).slice(-(config.INPUTS_HASHLENGTH * 2)),
+    pk,
+    S,
+  );
   const z_correct = zCheck === z; // eslint-disable-line camelcase
   console.log('z:', z);
   console.log('zCheck:', zCheck);
 
   console.log('Checking z exists on-chain...');
-  const leafIndex = utils.getLeafIndexFromZCount(zIndex);
-  const zOnchain = await nfTokenShield.M.call(leafIndex, {}); // lookup the nfTokenShield token merkle tree - we hope to find our new z at this index!
+  const zOnchain = await nfTokenShield.commitments.call(z, {}); // lookup the nfTokenShield commitment mapping - we hope to find our new z here!
   const z_onchain_correct = zOnchain === z; // eslint-disable-line camelcase
   console.log('z:', z);
   console.log('zOnchain:', zOnchain);
@@ -230,5 +254,7 @@ export default {
   registerVerifierContract,
   setVkIds,
   getMerkleNode,
+  getLatestRoot,
+  getCommitment,
   checkCorrectness,
 };

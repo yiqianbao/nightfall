@@ -31,7 +31,8 @@ ABS - absolute path
 
 const props = {
   local: {
-    HASHLENGTH: 27, // expected length of a hash in bytes
+    INPUTS_HASHLENGTH: 32, // expected length of an input to a hash in bytes
+    MERKLE_HASHLENGTH: 27, // expected length of inputs to hashes up the merkle tree, in bytes
     ZOKRATES_IMAGE: 'zokrates/zokrates:0.4.10', // 20Nov2018", //tag of Zorates docker image
     ZKP_PWD: 'zkp',
     ZKP_SRC_REL: 'src/',

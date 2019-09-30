@@ -61,9 +61,11 @@ async function computePath(account, shieldContract, _myToken, myTokenIndex) {
   console.group('Computing path on local machine...');
   const myToken = utils.strip0x(_myToken);
   console.log('myToken', myToken);
-  if (myToken.length !== config.HASHLENGTH * 2) {
+  if (myToken.length !== config.INPUTS_HASHLENGTH * 2) {
     throw new Error(`tokens have incorrect length: ${myToken}`);
   }
+  const myTokenTruncated = myToken.slice(-config.MERKLE_HASHLENGTH * 2);
+  console.log('myTokenTruncated', myTokenTruncated);
   console.log(`myTokenIndex: ${myTokenIndex}`);
   const leafIndex = utils.getLeafIndexFromZCount(myTokenIndex);
   console.log('leafIndex', leafIndex);
@@ -72,20 +74,20 @@ async function computePath(account, shieldContract, _myToken, myTokenIndex) {
   const { MERKLE_DEPTH } = config;
 
   // get the relevant token data from the contract
-  let p = []; // direct path
-  let p0 = leafIndex; // index of path node in the merkle tree
-  let node = await zkp.getMerkleNode(account, shieldContract, p0);
-  node = utils.strip0x(node);
-  if (node === myToken) {
+  let leaf = await zkp.getMerkleNode(account, shieldContract, leafIndex);
+  leaf = utils.strip0x(leaf);
+  if (leaf === myTokenTruncated) {
     console.log(
-      `Found a matching token commitment, ${node} in the on-chain Merkle Tree at the specified index ${p0}`,
+      `Found a matching token commitment, ${leaf} in the on-chain Merkle Tree at the specified index ${leafIndex}`,
     );
   } else {
     throw new Error(
-      `Failed to find the token commitment, ${myToken} in the on-chain Merkle Tree at the specified index ${p0}. Found ${node} at this index instead.`,
+      `Failed to find the token commitment, ${myToken} in the on-chain Merkle Tree at the specified index ${leafIndex} (when truncated to ${myTokenTruncated}). Found ${leaf} at this index instead.`,
     );
   }
 
+  // let p = []; // direct path
+  let p0 = leafIndex; // index of path node in the merkle tree
   let nodeHash;
   // now we've verified the location of myToken in the Merkle Tree, we can extract the rest of the path and the sister-path:
   let s = []; // sister path
@@ -107,11 +109,11 @@ async function computePath(account, shieldContract, _myToken, myTokenIndex) {
       sisterSide = '1'; // conversly if p is odd then the sister will be on the right. Encode this as 1
     }
 
-    nodeHash = zkp.getMerkleNode(account, shieldContract, p0);
-    p[r] = {
-      merkleIndex: p0,
-      nodeHashOld: nodeHash,
-    };
+    // nodeHash = zkp.getMerkleNode(account, shieldContract, p0);
+    // p[r] = {
+    //   merkleIndex: p0,
+    //   nodeHashOld: nodeHash,
+    // };
 
     nodeHash = zkp.getMerkleNode(account, shieldContract, s0);
     s[r] = {
@@ -122,14 +124,15 @@ async function computePath(account, shieldContract, _myToken, myTokenIndex) {
 
     p0 = t0;
   }
+
   // separate case for the root:
-  nodeHash = zkp.getMerkleNode(account, shieldContract, 0);
-  p[0] = {
+  nodeHash = zkp.getLatestRoot(shieldContract);
+  s[0] = {
     merkleIndex: 0,
     nodeHashOld: nodeHash,
   };
   // the root strictly has no sister-node and destructuring is not the way to go here:
-  s[0] = p[0]; // eslint-disable-line prefer-destructuring
+  // s[0] = p[0]; // eslint-disable-line prefer-destructuring
 
   // and strip the '0x' from s and p
   s = s.map(async el => {
@@ -139,22 +142,34 @@ async function computePath(account, shieldContract, _myToken, myTokenIndex) {
       nodeHashOld: utils.strip0x(await el.nodeHashOld),
     };
   });
-  p = p.map(async el => {
-    return {
-      merkleIndex: el.merkleIndex,
-      nodeHashOld: utils.strip0x(await el.nodeHashOld),
-    };
-  });
+  // p = p.map(async el => {
+  //   return {
+  //     merkleIndex: el.merkleIndex,
+  //     nodeHashOld: utils.strip0x(await el.nodeHashOld),
+  //   };
+  // });
 
-  p = await Promise.all(p);
+  // p = await Promise.all(p);
   s = await Promise.all(s);
 
-  // check the lengths of the hashes of the path and the sister-path - they should all be a set length:
-  for (let i = 0; i < p.length; i += 1) {
-    p[i].nodeHashOld = utils.strip0x(p[i].nodeHashOld);
-    if (p[i].nodeHashOld.length !== 0 && p[i].nodeHashOld.length !== config.HASHLENGTH * 2)
-      throw new Error(`path nodeHash has incorrect length: ${p[i].nodeHashOld}`);
-    if (s[i].nodeHashOld.length !== 0 && s[i].nodeHashOld.length !== config.HASHLENGTH * 2)
+  // Check the lengths of the hashes of the path and the sister-path - they should all be a set length (except the more secure root):
+
+  // Handle the root separately:
+  s[0].nodeHashOld = utils.strip0x(s[0].nodeHashOld);
+  if (s[0].nodeHashOld.length !== 0 && s[0].nodeHashOld.length !== config.INPUTS_HASHLENGTH * 2)
+    // the !==0 check is for the very first path calculation
+    throw new Error(`path nodeHash has incorrect length: ${s[0].nodeHashOld}`);
+
+  // Now the rest of the nodes:
+  for (let i = 1; i < s.length; i += 1) {
+    s[i].nodeHashOld = utils.strip0x(s[i].nodeHashOld);
+
+    // if (p[i].nodeHashOld.length !== 0 && p[i].nodeHashOld.length !== config.MERKLE_HASHLENGTH * 2)
+    //   // the !==0 check is for the very first path calculation
+    //   throw new Error(`path nodeHash has incorrect length: ${p[i].nodeHashOld}`);
+
+    if (s[i].nodeHashOld.length !== 0 && s[i].nodeHashOld.length !== config.MERKLE_HASHLENGTH * 2)
+      // the !==0 check is for the very first path calculation
       throw new Error(`sister path nodeHash has incorrect length: ${s[i].nodeHashOld}`);
   }
 
@@ -190,6 +205,7 @@ async function computePath(account, shieldContract, _myToken, myTokenIndex) {
       .join('')
       .padEnd(config.ZOKRATES_PACKING_SIZE, '0'),
   ); // create a hex encoding of all the sister positions
+
   return { path: s.map(pos => utils.ensure0x(pos.nodeHashOld)), positions: sisterPositions }; // return the sister-path of nodeHashes together with the encoding of which side each is on
 }
 

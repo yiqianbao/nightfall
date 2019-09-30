@@ -12,7 +12,7 @@ import "./ERC20Interface.sol";
 contract FTokenShield is Ownable {
 
   /*
-  @notice Explanation of the Merkle Tree, M, in this contract:
+  @notice Explanation of the Merkle Tree, in this contract:
   We store the merkle tree nodes in a flat array.
 
 
@@ -41,8 +41,8 @@ depth row  width  st#     end#
 
   */
 
-  event Mint(uint256 amount, bytes27 coin, uint256 coin_index);
-  event Transfer(bytes27 nullifier1, bytes27 nullifier2, bytes27 coin1, uint256 coin1_index, bytes27 coin2, uint256 coin2_index);
+  event Mint(uint256 amount, bytes27 commitment, uint256 commitment_index);
+  event Transfer(bytes27 nullifier1, bytes27 nullifier2, bytes27 commitment1, uint256 commitment1_index, bytes27 commitment2, uint256 commitment2_index);
   event Burn(uint256 amount, address payTo, bytes27 nullifier);
 
   event VerifierChanged(address newVerifierContract);
@@ -54,13 +54,12 @@ depth row  width  st#     end#
   uint private balance = 0;
   uint256 constant zokratesPrime = 21888242871839275222246405745257275088548364400416034343698204186575808495617;
 
-  mapping(bytes27 => bytes27) public ns; //store nullifiers of spent commitments
-  mapping(bytes27 => bytes27) public zs; //array holding the commitments.  Basically the bottom row of the merkle tree
-  mapping(uint256 => bytes27) public M; //the entire Merkle Tree of nodes, with 0 being the root, and the latter 'half' of M being the leaves.
+  mapping(bytes27 => bytes27) public nullifiers; //store nullifiers of spent commitments
+  mapping(bytes27 => bytes27) public commitments; //array holding the commitments.  Basically the bottom row of the merkle tree
+  mapping(uint256 => bytes27) public merkleTree; //the entire Merkle Tree of nodes, with 0 being the root, and the latter 'half' of the merkleTree being the leaves.
   mapping(bytes27 => bytes27) public roots; //holds each root we've calculated so that we can pull the one relevant to the prover
 
-  uint256 public zCount; //remembers the number of commitments we hold
-  uint256 private leafIndex; //index for posting/getting leaves to/from M
+  uint256 public leafCount; //remembers the number of commitments we hold
   bytes27 public latestRoot; //holds the index for the latest root so that the prover can provide it later and this contract can look up the relevant root
 
   Verifier_Registry public verifierRegistry; //the Verifier Registry contract
@@ -137,21 +136,21 @@ depth row  width  st#     end#
     bool result = verifier.verify(_proof, _inputs, _vkId);
     require(result, "The proof has not been verified by the contract");
 
-    bytes27 z = packedToBytes27(_inputs[2], _inputs[1]);//recover the input params from MintVerifier
+    bytes27 commitment = packedToBytes27(_inputs[2], _inputs[1]);//recover the input params from MintVerifier
 
-    zs[z] = z; //add the token
+    commitments[commitment] = commitment; //add the commitment
 
-    leafIndex = merkleWidth - 1 + zCount;//specify the index of z within M
-    M[leafIndex] = z;//add z to M
+    uint256 leafIndex = merkleWidth - 1 + leafCount;//specify the index of the commitment within the merkleTree
+    merkleTree[leafIndex] = commitment;//add the commitment to the merkleTree
 
-    bytes27 root = updatePathToRoot(leafIndex);//recalculate the root of M as it's now different
+    bytes27 root = updatePathToRoot(leafIndex);//recalculate the root of the merkleTree as it's now different
     roots[root] = root; //and save the new root to the list of roots
     latestRoot = root;
 
     //Finally, transfer the fTokens from the sender to this contract
     fToken.transferFrom(msg.sender, address(this), _inputs[0]);
 
-    emit Mint(_inputs[0], z, zCount++);
+    emit Mint(_inputs[0], commitment, leafCount++);
   }
 
   /**
@@ -171,37 +170,37 @@ depth row  width  st#     end#
     bool result = verifier.verify(_proof, _inputs, _vkId);
     require(result, "The proof has not been verified by the contract");
 
-    bytes27 nc = packedToBytes27(_inputs[1], _inputs[0]);
-    bytes27 nd = packedToBytes27(_inputs[3], _inputs[2]);
-    bytes27 ze = packedToBytes27(_inputs[5], _inputs[4]);
-    bytes27 zf = packedToBytes27(_inputs[7], _inputs[6]);
+    bytes27 nullifierC = packedToBytes27(_inputs[1], _inputs[0]);
+    bytes27 nullifierD = packedToBytes27(_inputs[3], _inputs[2]);
+    bytes27 commitmentE = packedToBytes27(_inputs[5], _inputs[4]);
+    bytes27 commitmentF = packedToBytes27(_inputs[7], _inputs[6]);
     bytes27 inputRoot = packedToBytes27(_inputs[9],_inputs[8]);
 
     require(roots[inputRoot] == inputRoot, "The input root has never been the root of the Merkle Tree");
-    require(nc != nd, "The nullifiers nc and nd must be different!");
-    require(ze != zf, "The token commitments ze and zf must be different!");
-    require(ns[nc] == 0, "The token has already been nullified!");
-    require(ns[nd] == 0, "The token has already been nullified!");
+    require(nullifierC != nullifierD, "The two input nullifiers must be different!");
+    require(commitmentE != commitmentF, "The new commitments (commitmentE and commitmentF) must be different!");
+    require(nullifiers[nullifierC] == 0, "The commitment being spent (commitmentE) has already been nullified!");
+    require(nullifiers[nullifierD] == 0, "The commitment being spent (commitmentF) has already been nullified!");
 
-    ns[nc] = nc; //remember we spent it
-    ns[nd] = nd; //remember we spent it
-    zs[ze] = ze; //add Bob's commitment to the list of commitments
+    nullifiers[nullifierC] = nullifierC; //remember we spent it
+    nullifiers[nullifierD] = nullifierD; //remember we spent it
+    commitments[commitmentE] = commitmentE; //add the commitment to the list of commitments
 
-    leafIndex = merkleWidth - 1 + zCount++; //specify the index of z within M
-    M[leafIndex] = ze; //add z to M
+    uint256 leafIndex = merkleWidth - 1 + leafCount++; //specify the index of the commitment within the merkleTree
+    merkleTree[leafIndex] = commitmentE; //add the commitment to the merkleTree
 
     updatePathToRoot(leafIndex);
 
-    zs[zf] = zf; //add Alice's commitment to the list of commitment
+    commitments[commitmentF] = commitmentF; //add the commitment to the list of commitments
 
-    leafIndex = merkleWidth - 1 + zCount; //specify the index of z within M
-    M[leafIndex] = zf; //add z to M
+    leafIndex = merkleWidth - 1 + leafCount; //specify the index of the commitment within the merkleTree
+    merkleTree[leafIndex] = commitmentF; //add the commitment to the merkleTree
 
-    bytes27 root = updatePathToRoot(leafIndex);//recalculate the root of M as it's now different
+    bytes27 root = updatePathToRoot(leafIndex);//recalculate the root of the merkleTree as it's now different
     roots[root] = root; //and save the new root to the list of roots
     latestRoot = root;
 
-    emit Transfer(nc, nd, ze, zCount - 1, zf, zCount++);
+    emit Transfer(nullifierC, nullifierD, commitmentE, leafCount - 1, commitmentF, leafCount++);
   }
 
 
@@ -220,30 +219,30 @@ depth row  width  st#     end#
     uint256 payToUint = combineUint256(_inputs[1], _inputs[0]); //recover the payTo address
     address payTo = address(payToUint); // explicitly convert to address (because we're sure no data loss will result from this)
     uint256 value = _inputs[2]; //the coin value being cashed-out
-    bytes27 nc = packedToBytes27(_inputs[4], _inputs[3]); //recover the nullifier
+    bytes27 nullifier = packedToBytes27(_inputs[4], _inputs[3]); //recover the nullifier
     bytes27 inputRoot = packedToBytes27(_inputs[6], _inputs[5]); //recover the root
 
     require(roots[inputRoot] == inputRoot, "The input root has never been the root of the Merkle Tree");
-    require(ns[nc]==0, "The token has already been nullified!");
+    require(nullifiers[nullifier]==0, "The commitment being spent has already been nullified!");
 
-    ns[nc] = nc; //add the nullifier to the list of nullifiers
+    nullifiers[nullifier] = nullifier; //add the nullifier to the list of nullifiers
 
     //Finally, transfer the fungible tokens from this contract to the nominated address
     fToken.transfer(payTo, value);
 
-    emit Burn(value, payTo, nc);
+    emit Burn(value, payTo, nullifier);
 
   }
 
 
   /**
   Updates each node of the Merkle Tree on the path from leaf to root.
-  p - is the leafIndex of the new token within M.
+  p - is the leafIndex of the new commitment within the merkleTree.
   */
   function updatePathToRoot(uint p) private returns (bytes27) {
 
   /*
-  If Z were the token, then the p's mark the 'path', and the s's mark the 'sibling path'
+  If Z were the commitment, then the p's mark the 'path', and the s's mark the 'sibling path'
 
                    p
           p                  s
@@ -254,18 +253,18 @@ depth row  width  st#     end#
       uint s; //s is the 'sister' path of p.
       uint t; //temp index for the next p (i.e. the path node of the row above)
       for (uint r = merkleDepth-1; r > 0; r--) {
-          if (p%2 == 0) { //p even index in M
+          if (p%2 == 0) { //p even index in the merkleTree
               s = p-1;
               t = (p-1)/2;
-              M[t] = bytes27(sha256(abi.encodePacked(M[s],M[p]))<<40);
-          } else { //p odd index in M
+              merkleTree[t] = bytes27(sha256(abi.encodePacked(merkleTree[s],merkleTree[p]))<<40);
+          } else { //p odd index in the merkleTree
               s = p+1;
               t = p/2;
-              M[t] = bytes27(sha256(abi.encodePacked(M[p],M[s]))<<40);
+              merkleTree[t] = bytes27(sha256(abi.encodePacked(merkleTree[p],merkleTree[s]))<<40);
           }
           p = t; //move to the path node on the next highest row of the tree
       }
-      return M[0]; //the root of M
+      return merkleTree[0]; //the root of the merkleTree
   }
 
   function packedToBytes27(uint256 low, uint256 high) private pure returns (bytes27){
