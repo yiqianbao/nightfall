@@ -43,7 +43,7 @@ export default {
   // associate zkp publickey to geth account
   setZkpPublicKey(address, body) {
     const options = {
-      url: `${url}/setZkpPublickeyToAccountAddressInPkd`,
+      url: `${url}/setPublickeyToAddressInPKD`,
       method: 'POST',
       json: true,
       headers: { address },
