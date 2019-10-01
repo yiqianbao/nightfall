@@ -260,3 +260,35 @@ export async function getAllRegisteredNames(req, res, next) {
     next(err);
   }
 }
+
+export async function  getTokenCommitmentCounts(req, res, next) {
+  try {
+    const nftCommitments = await db.getNFTCommitments(req.user);
+    const ftCommitments = await db.getFTCommitments(req.user);
+
+    let totalAmount = 0;
+    if (ftCommitments.length) {
+      ftCommitments.forEach(ftCommitment => {
+        totalAmount += Number(ftCommitment.coin_value);
+      });
+    }
+
+    res.data = {
+      nftCommitmentCount: nftCommitments.length,
+      ftCommitmentCount: totalAmount,
+    };
+
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getUserDetails(req, res, next) {
+  try {
+    res.data = await db.fetchUser(req.user);
+    next();
+  } catch (err) {
+    next(err);
+  }
+}

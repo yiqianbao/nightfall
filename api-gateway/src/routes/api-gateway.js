@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginHandler, createAccountHandler, loadVks } from '../services/api-gateway';
+import { loginHandler, createAccountHandler, loadVks,  getTokenCommitmentCounts } from '../services/api-gateway';
 
 const router = express.Router();
 
@@ -85,6 +85,8 @@ router.route('/login').post(loginHandler);
  * @apiUse NameInUse
  */
 router.route('/createAccount').post(createAccountHandler);
+
+router.get('/getTokenCommitmentCounts', getTokenCommitmentCounts);
 
 // vk APIs
 router.route('/vk').post(loadVks);
