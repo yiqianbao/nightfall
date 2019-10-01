@@ -4,6 +4,7 @@ import {
   updateContract,
   deleteContract,
   getAllRegisteredNames,
+  getUserDetails,
 } from '../services/api-gateway';
 
 const router = express.Router();
@@ -131,5 +132,7 @@ router.route('/contractAddress').delete(deleteContract);
  *	  }
  */
 router.route('/getAllRegisteredNames').get(getAllRegisteredNames);
+
+router.get('/getUserDetails', getUserDetails);
 
 export default router;
