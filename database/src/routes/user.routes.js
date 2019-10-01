@@ -35,6 +35,37 @@ async function getUser(req, res, next) {
   }
 }
 
+async function updateUser(req, res, next) {
+  const userService = new UserService(req.user.db);
+  try {
+    await userService.updateUser(req.body);
+    res.data = { message: 'user informantion updated' };
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * This function is used to insert newly private account for a user
+ * req.body = {
+ *  address: '0x256140f466b2e56E3ae0055551591FE46664976d', // this is the newly created private account
+ *  password: '1535612512928', // and password used to create private account
+ * }
+ * req.headers.address = '0xE237b19f7a9f2E92018a68f4fB07C451F578fa26' // this is user public account
+ * @param {*} req
+ * @param {*} res
+ */
+async function insertPrivateAccountHandler(req, res, next) {
+  const userService = new UserService(req.user.db);
+  try {
+    res.data = await userService.insertPrivateAccountHandler(req.body);
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function configureDBconnection(req, res, next) {
   const {name, password} = req.body;
   try {
@@ -47,10 +78,12 @@ async function configureDBconnection(req, res, next) {
 }
 
 export default function(router) {
-  router.route('/users')
-    .post(createUser)
-    .get(getUser);
+  router.post('/users', createUser);
+  router.route('/users/:name')
+    .get(getUser)
+    .patch(updateUser);
 
-  router.post('/dbConnection', configureDBconnection, setDB, getUser);
+  router.post('/users/:name/private-accounts', insertPrivateAccountHandler);
+  router.post('/db-connection', configureDBconnection, setDB, getUser);
 }
 

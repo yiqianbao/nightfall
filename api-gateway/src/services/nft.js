@@ -28,7 +28,7 @@ export async function mintNFToken(req, res, next) {
 
     const user = await db.fetchUser(req.user);
 
-    await db.addNFToken(req.user, {
+    await db.insertNFToken(req.user, {
       uri: reqBody.tokenURI,
       tokenId: reqBody.tokenID,
       shieldContractAddress: user.selected_token_shield_contract,
@@ -60,29 +60,28 @@ export async function mintNFToken(req, res, next) {
  * @param {*} res
  */
 export async function transferNFToken(req, res, next) {
+  const {uri, tokenID, contractAddress} = req.body;
+
   try {
     const receiverAddress = await offchain.getAddressFromName(req.body.receiver_name);
-
     const { data } = await zkp.transferNFToken(req.user, {
-      tokenID: req.body.tokenID,
+      tokenID: tokenID,
       to: receiverAddress,
     });
 
-    const nftToken = {
-      uri: req.body.uri,
-      tokenId: req.body.tokenID,
-      shieldContractAddress: req.body.contractAddress,
-    };
-
-    await db.updateNFToken(req.user, {
-      ...nftToken,
+    await db.updateNFTokenByTokenId(req.user, tokenID, {
+      uri,
+      tokenId: tokenID,
+      shieldContractAddress: contractAddress,
       receiver: req.body.receiver_name,
       receiverAddress,
       isTransferred: true,
     });
 
     await whisperTransaction(req, {
-      ...nftToken,
+      uri,
+      tokenId: tokenID,
+      shieldContractAddress: contractAddress,
       receiver: req.body.receiver_name,
       sender: req.user.name,
       senderAddress: req.user.address,
@@ -113,15 +112,14 @@ export async function transferNFToken(req, res, next) {
  * @param {*} res
  */
 export async function burnNFToken(req, res, next) {
+  const {uri, tokenID, contractAddress} = req.body;
   try {
-    const { data } = await zkp.burnNFToken(req.user, {
-      tokenID: req.body.tokenID,
-    });
+    const { data } = await zkp.burnNFToken(req.user, { tokenID });
 
-    await db.updateNFToken(req.user, {
-      uri: req.body.uri,
-      tokenId: req.body.tokenID,
-      shieldContractAddress: req.body.contractAddress,
+    await db.updateNFTokenByTokenId(req.user, tokenID, {
+      uri,
+      tokenId: tokenID,
+      shieldContractAddress: contractAddress,
       isBurned: true,
     });
 

@@ -7,25 +7,6 @@ export default class AccountService {
   }
 
   /**
-   * This fucntion is used to add private ethereum accounts to a public account
-   * @param {string} account - public accunt
-   * @param {object} privateAccountDetails - contains ethereum private account and password
-   * @returns {string} a account
-   */
-  async updateUserWithPrivateAccount(privateAccountDetails) {
-    const updateData = {
-      $push: {
-        accounts: {
-          address: privateAccountDetails.address,
-          password: privateAccountDetails.password,
-        },
-      },
-    };
-    await this.db.updateData(COLLECTIONS.USER, {}, updateData);
-    return privateAccountDetails.address;
-  }
-
-  /**
    * This function will return all the private ethereum accounts assocated with a public ethereum account
    * @param {object} headers - req object header
    * @returns {array} all private accounts
@@ -49,31 +30,6 @@ export default class AccountService {
     };
     const [{ accounts }] = await this.db.getData(COLLECTIONS.USER, condition, projection);
     return accounts[0];
-  }
-
-  /**
-   * This function will update user whisper key generated at login
-   * @param {String} shhIdentity - key hash
-   * @returns {Promise}
-   */
-  updateWhisperIdentity(shhIdentity) {
-    return this.db.updateData(
-      COLLECTIONS.USER,
-      {},
-      {
-        shh_identity: shhIdentity,
-      },
-    );
-  }
-
-  /**
-   * This function will fetch user's whisper key from its user collection
-   * @returns {Promise} which resolve to whisper key.
-   */
-  async getWhisperIdentity() {
-    const users = await this.db.getData(COLLECTIONS.USER);
-    const shhIdentity = users[0].shh_identity || '';
-    return { shhIdentity };
   }
 
   /**

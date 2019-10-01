@@ -15,14 +15,23 @@ import {
 const app = express();
 const router = Router();
 
+function parseParams(req, res, next) {
+  req.username = req.params.name;
+  next();
+}
+
 app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(bodyParser.json());
+
+app.all('/users/:name', parseParams);
+app.all('/users/:name/private-accounts', parseParams);
+
 app.use(dbConnection);
 app.use(setDB);
-app.use('/', router);
+app.use(router);
 
 initializeAccountRoutes(router);
 initializeNftRoutes(router);

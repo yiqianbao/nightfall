@@ -18,7 +18,7 @@ export async function mintFToken(req, res, next) {
 
     const user = await db.fetchUser(req.user);
 
-    await db.addFTTransaction(req.user, {
+    await db.insertFTTransaction(req.user, {
       amount: req.body.amount,
       shieldContractAddress: user.selected_coin_shield_contract,
       isMinted: true,
@@ -51,7 +51,7 @@ export async function transferFToken(req, res, next) {
 
     const user = await db.fetchUser(req.user);
 
-    await db.addFTTransaction(req.user, {
+    await db.insertFTTransaction(req.user, {
       amount: req.body.amount,
       shieldContractAddress: user.selected_coin_shield_contract,
       receiver: req.body.receiver_name,
@@ -91,7 +91,7 @@ export async function burnFToken(req, res, next) {
 
     const user = await db.fetchUser(req.user);
 
-    await db.addFTTransaction(req.user, {
+    await db.insertFTTransaction(req.user, {
       amount: req.body.amount,
       shieldContractAddress: user.selected_coin_shield_contract,
       isBurned: true,

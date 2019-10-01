@@ -2,7 +2,6 @@ import dbConnections from '../common/dbConnections';
 
 export default async function(req, res, next) {
   req.user = {};
-
   try {
     // signup need admin privalage as it create user sepcific tables.
     if (req.path === '/users' && req.method === 'POST') {
@@ -10,11 +9,11 @@ export default async function(req, res, next) {
       return next();
     }
 
-    if (req.path === '/dbConnection' && req.method === 'POST') {
+    if (req.path === '/db-connection' && req.method === 'POST') {
       return next();
     }
 
-    const name = req.headers.name || req.body.name || req.query.name;
+    const name = req.headers.name || req.headers.loggedinusername || req.body.name || req.query.name || req.username;
     if (name) {
       if (!dbConnections[name]) next(new Error('user never loggedIn in'));
       req.user.connection = dbConnections[name];

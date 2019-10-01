@@ -29,17 +29,19 @@ export async function checkCorrectnessToken(req, res, next) {
  * @param {*} res
  */
 export async function mintToken(req, res, next) {
+  const {uri, tokenID, contractAddress} = req.body;
   try {
     // mint a private 'token commitment' within the shield contract to represent the public NFToken with the specified tokenID
     const { data } = await zkp.mintToken(req.user, {
-      A: req.body.tokenID,
+      A: tokenID,
       pk_A: req.user.pk_A,
     });
 
     // add the new token commitment (and details of its hash preimage) to the token db.
-    await db.addToken(req.user, {
-      tokenId: req.body.tokenID,
-      tokenUri: req.body.uri,
+    await db.insertNFTCommitment(req.user, {
+      tokenId: tokenID,
+      tokenUri: uri,
+      shieldContractAddress: contractAddress,
       salt: data.S_A,
       commitment: data.z_A,
       commitmentIndex: parseInt(data.z_A_index, 16),
@@ -47,10 +49,10 @@ export async function mintToken(req, res, next) {
     });
 
     // update public_token db: set is_shielded to 'true' to indicate that the token is 'in escrow' in the shield contract.
-    await db.updateNFToken(req.user, {
-      uri: req.body.uri,
-      tokenId: req.body.tokenID,
-      shieldContractAddress: req.body.contractAddress,
+    await db.updateNFTokenByTokenId(req.user, tokenID, {
+      uri: uri,
+      tokenId: tokenID,
+      shieldContractAddress: contractAddress,
       isShielded: true,
     });
 
@@ -74,7 +76,6 @@ export async function mintToken(req, res, next) {
     uri: 'unique token name',
     S_A: '0xe9a313c89c449af6e630c25ab3acc0fc3bab821638e0d55599b518',
     S_B: '0xF4C7028D78D140333A36381540E70E6210895A994429FB0483FB91',
-    sk_A: '0xcf6267b9393a8187ab72bf095e9ffc34af1a5d3d069b9d26e21eac',
     z_A: '0xca2c0c099289896be4d72c74f801bed6e4b2cd5297bfcf29325484',
     receiver_name: 'bob',
     z_A_index: 0,
@@ -91,6 +92,10 @@ export async function transferToken(req, res, next) {
     await db.updateUserWithPrivateAccount(req.user, { address, password });
     await accounts.unlockAccount({ address, password });
 
+    // get logged in user's secretkey.
+    const user = await db.fetchUser(req.user);
+    req.body.sk_A = user.secretkey;
+
     // Fetch the receiver's pk from the PKD by passing their username
     req.body.pk_B = await offchain.getZkpPublicKeyFromName(req.body.receiver_name);
 
@@ -100,7 +105,7 @@ export async function transferToken(req, res, next) {
     const { data } = await zkp.spendToken({ address }, req.body);
 
     // Update the sender's token db.
-    await db.updateToken(req.user, {
+    await db.updateNFTCommitmentByTokenId(req.user, req.body.A, {
       tokenId: req.body.A,
       tokenUri: req.body.uri,
       salt: req.body.S_A,
@@ -117,12 +122,13 @@ export async function transferToken(req, res, next) {
     await whisperTransaction(req, {
       tokenUri: req.body.uri,
       tokenId: req.body.A,
+      shieldContractAddress: req.body.contractAddress,
       salt: data.S_B,
       commitment: data.z_B,
       commitmentIndex: parseInt(data.z_B_index, 16),
       receiver: req.body.receiver_name,
       receiverPublicKey: req.body.pk_B,
-      for: 'token',
+      for: 'NFTCommitment',
     });
 
     res.data = data;
@@ -145,7 +151,6 @@ export async function transferToken(req, res, next) {
       uri: 'unique token name',
       S_A: '0xf4c7028d78d140333a36381540e70e6210895a994429fb0483fb91',
       z_A: '0xe0e327cee19c16949a829977a1e3a36b92c2ef22b735b6d7af6c33',
-      Sk_A: '0x99ba1bd95aef4bab8c4f8f73ccc804913c58828f6e11ed4760b2cd',
       z_A_index: 1,
       payTo: 'bob',
   }
@@ -155,19 +160,22 @@ export async function transferToken(req, res, next) {
 export async function burnToken(req, res, next) {
   try {
     const payToAddress = await offchain.getAddressFromName(req.body.payTo || req.user.name);
+
+     // get logged in user.
+    const user = await db.fetchUser(req.user);
     // Release the public token from escrow:
     // Nullify the burnor's 'token commitment' within the shield contract.
     // Transfer the public token from the shield contract to the owner.
     await zkp.burnToken(req.user, {
       A: req.body.A,
       S_A: req.body.S_A,
-      Sk_A: req.body.Sk_A,
+      Sk_A: user.secretkey,
       z_A: req.body.z_A,
       z_A_index: req.body.z_A_index,
       payTo: payToAddress,
     });
 
-    await db.updateToken(req.user, {
+    await db.updateNFTCommitmentByTokenId(req.user, req.body.A, {
       tokenId: req.body.A,
       tokenUri: req.body.uri,
       salt: req.body.S_A,
@@ -177,24 +185,22 @@ export async function burnToken(req, res, next) {
       isBurned: true,
     });
 
-    const user = await db.getNFTokenByTokenId(req.user, req.body.A);
-
     if (req.body.payTo) {
       // Send details of the token to the receiver via Whisper
       await whisperTransaction(req, {
         uri: req.body.uri,
         tokenId: req.body.A,
-        shieldContractAddress: user.shield_contract_address,
+        shieldContractAddress: req.body.contractAddress,
         receiver: req.body.payTo, // this will change when payTo will be a user other than burner himself.
         sender: req.user.name,
         senderAddress: req.user.address,
         for: 'NFTToken',
       });
     } else {
-      await db.addNFToken(req.user, {
+      await db.insertNFToken(req.user, {
         uri: req.body.uri,
         tokenId: req.body.A,
-        shieldContractAddress: user.shield_contract_address,
+        shieldContractAddress: req.body.contractAddress,
         sender: req.user.name,
         senderAddress: req.user.address,
         isReceived: true,

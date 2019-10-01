@@ -36,7 +36,7 @@ export default {
   },
   addNFTokenToDB(headers, body) {
     const options = {
-      url: `${url}/database/nft`,
+      url: `${url}/database/nfts`,
       method: 'POST',
       json: true,
       headers,
@@ -46,7 +46,7 @@ export default {
   },
   addFTokenToDB(headers, body) {
     const options = {
-      url: `${url}/database/ft/transaction`,
+      url: `${url}/database/fts/transactions`,
       method: 'POST',
       json: true,
       headers,
@@ -56,7 +56,7 @@ export default {
   },
   addTokenCommitmentToDB(headers, body) {
     const options = {
-      url: `${url}/database/token`,
+      url: `${url}/database/nft-commitments`,
       method: 'POST',
       json: true,
       headers,
@@ -66,7 +66,7 @@ export default {
   },
   addCoinCommitmentToDB(headers, body) {
     const options = {
-      url: `${url}/database/coin`,
+      url: `${url}/database/ft-commitments`,
       method: 'POST',
       json: true,
       headers,
