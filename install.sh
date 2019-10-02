@@ -5,5 +5,5 @@ set -o errexit
 
 cd zkp-utils && npm ci && \
 cd ../account-utils && npm ci && \
-cd ../zkp && npm ci # && \
-#npm run setup-all && cd ../
+cd ../zkp && npm ci && \
+npm run setup-all && cd ../
