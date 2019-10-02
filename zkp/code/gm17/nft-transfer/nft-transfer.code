@@ -1,6 +1,7 @@
 import "hashes/sha256/1024bit.code" as sha256of1024
 import "hashes/sha256/512bit.code" as sha256of512
 import "utils/pack/unpack128.code" as unpack128
+import "utils/pack/nonStrictUnpack256.code" as unpack256
 
 def concatenate256x256x256(field[256] a, field[256] b, field[256] c)->(field[768]):
 	return [...a, ...b, ...c]
@@ -22,14 +23,14 @@ def shaPad256To512()->(field[256]):
 
 // Provides the padding (only!) for a 512-bit message.
 def shaPad512To1024()->(field[512]):
-	return [1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,    0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	0,	0,	0,	0,	0,	0,	0,	0,	0]
+	return [1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,  0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	0,	0,	0,	0,	0,	0,	0,	0,	0]
 
 // Provides the padding (only!) for a 768-bit message.
 def shaPad768To1024()->(field[256]):
 	return [1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1,	0,	0,	0,	0,	0,	0,	0,	0]
 
 
-//inputs for main are:
+// Inputs for main are:
 // asset - the tokenId of the ERC-721 token
 // path - the path from the commitmentA (being spent) to the root of the merkle tree
 // root - the merkle root
@@ -39,14 +40,17 @@ def shaPad768To1024()->(field[256]):
 // saltB - salt for the commitment being created for the recipient Bob
 // secretKeyA - secret key of Alice
 // commitmentB - the commitment being created the recipient Bob
+// publicInputHash = hash(root, nullifier, commitmentB)
 
-// Note - we now use 216 bits for the Merkle tree calculation. This is because 432 is the biggest input we can use for sha256 if we want 432/2 to end on a byte boundary for easier Solidity computation without needing to do full rounds and we need to concatenate the two child hashes. We consider 216 bits to be sufficiently secure.
+// Note - we now use 216 bits for the Merkle tree calculation. This is because 432 is the biggest input we can use for sha256 if we want 432/2 to end on a byte boundary for easier Solidity computation without needing to do full rounds and we need to concatenate the two child hashes. We consider 216 bits to be sufficiently secure. The nullifier, commitment and root retain 256-bit security.
 
-//Each field element passed to main() can be at most 128bits, to make use of unpack128() so most variables occupy two fields
+// Each field element passed to main() can be at most 128bits, to make use of unpack128() so most variables occupy two fields (except the publicInputHash, which we maximize as 248-bits)
 
-def main(private field assetHigh, private field assetLow, private field path0High, private field path0Low, private field path1High, private field path1Low, private field path2High, private field path2Low, private field path3High, private field path3Low, private field path4High, private field path4Low, private field path5High, private field path5Low, private field path6High, private field path6Low, private field path7High, private field path7Low, private field path8High, private field path8Low, private field path9High, private field path9Low, private field path10High, private field path10Low, private field path11High, private field path11Low, private field path12High, private field path12Low, private field path13High, private field path13Low, private field path14High, private field path14Low, private field path15High, private field path15Low, private field path16High, private field path16Low, private field path17High, private field path17Low, private field path18High, private field path18Low, private field path19High, private field path19Low, private field path20High, private field path20Low, private field path21High, private field path21Low, private field path22High, private field path22Low, private field path23High, private field path23Low, private field path24High, private field path24Low, private field path25High, private field path25Low, private field path26High, private field path26Low, private field path27High, private field path27Low, private field path28High, private field path28Low, private field path29High, private field path29Low, private field path30High, private field path30Low, private field path31High, private field path31Low, private field order, field nullifierHigh, field nullifierLow, private field publicKeyBHigh, private field publicKeyBLow, private field  saltAHigh, private field saltALow, private field saltBHigh, private field  saltBLow, private field secretKeyAHigh, private field secretKeyALow, field  rootHigh, field rootLow, field commitmentBHigh, field commitmentBLow)->(field):
+def main(field publicInputHash, private field assetHigh, private field assetLow, private field path0High, private field path0Low, private field path1High, private field path1Low, private field path2High, private field path2Low, private field path3High, private field path3Low, private field path4High, private field path4Low, private field path5High, private field path5Low, private field path6High, private field path6Low, private field path7High, private field path7Low, private field path8High, private field path8Low, private field path9High, private field path9Low, private field path10High, private field path10Low, private field path11High, private field path11Low, private field path12High, private field path12Low, private field path13High, private field path13Low, private field path14High, private field path14Low, private field path15High, private field path15Low, private field path16High, private field path16Low, private field path17High, private field path17Low, private field path18High, private field path18Low, private field path19High, private field path19Low, private field path20High, private field path20Low, private field path21High, private field path21Low, private field path22High, private field path22Low, private field path23High, private field path23Low, private field path24High, private field path24Low, private field path25High, private field path25Low, private field path26High, private field path26Low, private field path27High, private field path27Low, private field path28High, private field path28Low, private field path29High, private field path29Low, private field path30High, private field path30Low, private field path31High, private field path31Low, private field order, private field nullifierHigh, private field nullifierLow, private field publicKeyBHigh, private field publicKeyBLow, private field  saltAHigh, private field saltALow, private field saltBHigh, private field  saltBLow, private field secretKeyAHigh, private field secretKeyALow, private field rootHigh, private field rootLow, private field commitmentBHigh, private field commitmentBLow)->(field):
 
-	//Unpack the inputs of main() to 128 bits. We'll unpack each field to its own 128 bit strings for simplicity for now. Later efficiencies could be made by grouping some inputs.
+	// Unpack the inputs of main() to 128 bits. We'll unpack each field to its own 128 bit strings for simplicity for now. Later efficiencies could be made by grouping some inputs.
+
+	field[256] publicInputHashBits = unpack256(publicInputHash)
 
 	field[128] assetHighBits = unpack128(assetHigh) //this may seem long-winded but ZoKrates needs intermediate variables for now
 	field[128] assetLowBits = unpack128(assetLow)
@@ -351,6 +355,15 @@ def main(private field assetHigh, private field assetLow, private field path0Hig
 	rootBits == rootBitsCheck
 
 	commitmentBBits == commitmentBBitsCheck
+
+
+	// Check that the 'public inputs' hash to the publicInputHash:
+
+	preimage768 = concatenate256x256x256(rootBits, nullifierBits, commitmentBBits)
+
+	field[256] publicInputHashBitsCheck = sha256of1024(preimage768[0..256], preimage768[256..512], preimage768[512..768], padding768To1024)
+
+	publicInputHashBits[8..256] == publicInputHashBitsCheck[8..256]
 
 
 	return 1

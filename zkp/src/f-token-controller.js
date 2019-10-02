@@ -261,19 +261,20 @@ async function mint(A, pkA, S_A, account) {
 
   console.group('Existing Proof Variables:');
   const p = config.ZOKRATES_PACKING_SIZE;
+  const pt = Math.ceil((config.INPUTS_HASHLENGTH * 8) / config.ZOKRATES_PACKING_SIZE); // packets in bits
   console.log('A: ', `${A} : `, utils.hexToFieldPreserve(A, p, 1));
-  console.log('pkA: ', pkA, ' : ', utils.hexToFieldPreserve(pkA, p));
-  console.log('S_A: ', S_A, ' : ', utils.hexToFieldPreserve(S_A, p));
+  console.log('pkA: ', pkA, ' : ', utils.hexToFieldPreserve(pkA, p, pt));
+  console.log('S_A: ', S_A, ' : ', utils.hexToFieldPreserve(S_A, p, pt));
   console.groupEnd();
 
   console.group('New Proof Variables:');
-  console.log('zA: ', zA, ' : ', utils.hexToFieldPreserve(zA, p));
+  console.log('zA: ', zA, ' : ', utils.hexToFieldPreserve(zA, p, pt));
   console.groupEnd();
 
-  const inputs = cv.computeVectors([
-    new Element(A, 'field', 1), // Note that, unlike with an Asset token, we load A, not H(A)
-    new Element(zA, 'field'),
-  ]);
+  const publicInputHash = utils.concatenateThenHash(A, zA);
+  console.log('publicInputHash:', publicInputHash);
+
+  const inputs = cv.computeVectors([new Element(publicInputHash, 'field', 248, 1)]);
   console.log('inputs:');
   console.log(inputs);
 
@@ -288,7 +289,8 @@ async function mint(A, pkA, S_A, account) {
   console.group('Computing proof with w=[pkA,S_A] x=[A,Z,1]');
   let proof = await computeProof(
     [
-      new Element(A, 'field', 1),
+      new Element(publicInputHash, 'field', 248, 1),
+      new Element(A, 'field', 128, 1),
       new Element(pkA, 'field'),
       new Element(S_A, 'field'),
       new Element(zA, 'field'),
@@ -318,7 +320,7 @@ async function mint(A, pkA, S_A, account) {
 
   // with the pre-compute done, and the funds approved, we can mint the token,
   // which is now a reasonably light-weight calculation
-  const zAIndex = await zkp.mint(proof, inputs, vkId, account, fTokenShield);
+  const zAIndex = await zkp.mint(proof, inputs, vkId, A, zA, account, fTokenShield);
 
   console.log('Mint output: [zA, zAIndex]:', zA, zAIndex.toString());
   console.log('MINT COMPLETE\n');
@@ -402,22 +404,19 @@ async function transfer(
   const nC = utils.concatenateThenHash(S_C, skA);
   const nD = utils.concatenateThenHash(S_D, skA);
   const zE = utils.concatenateThenHash(E, pkB, S_E);
-  const zF = utils.concatenateThenHash(F, pkA, S_F); // /CARRY ON FROM HERE
-
-  if (nD !== utils.concatenateThenHash(S_D, skA))
-    throw new Error('nullifier normal and recursive hashes do not match');
+  const zF = utils.concatenateThenHash(F, pkA, S_F);
 
   // we need the Merkle path from the token commitment to the root, expressed as Elements
   const pathC = await cv.computePath(account, fTokenShield, zC, zCIndex).then(result => {
     return {
-      elements: result.path.map(element => new Element(element, 'field', 2)),
-      positions: new Element(result.positions, 'field', 1),
+      elements: result.path.map(element => new Element(element, 'field', 128, 2)),
+      positions: new Element(result.positions, 'field', 128, 1),
     };
   });
   const pathD = await cv.computePath(account, fTokenShield, zD, zDIndex).then(result => {
     return {
-      elements: result.path.map(element => new Element(element, 'field', 2)),
-      positions: new Element(result.positions, 'field', 1),
+      elements: result.path.map(element => new Element(element, 'field', 128, 2)),
+      positions: new Element(result.positions, 'field', 128, 1),
     };
   });
 
@@ -449,13 +448,10 @@ async function transfer(
   console.log(`root: ${root} : ${utils.hexToFieldPreserve(root, p)}`);
   console.groupEnd();
 
-  const inputs = cv.computeVectors([
-    new Element(nC, 'field'),
-    new Element(nD, 'field'),
-    new Element(zE, 'field'),
-    new Element(zF, 'field'),
-    new Element(root, 'field'),
-  ]);
+  const publicInputHash = utils.concatenateThenHash(root, nC, nD, zE, zF);
+  console.log('publicInputHash:', publicInputHash);
+
+  const inputs = cv.computeVectors([new Element(publicInputHash, 'field', 248, 1)]);
   console.log('inputs:');
   console.log(inputs);
 
@@ -475,22 +471,23 @@ async function transfer(
   );
   let proof = await computeProof(
     [
-      new Element(C, 'field', 1),
+      new Element(publicInputHash, 'field', 248, 1),
+      new Element(C, 'field', 128, 1),
       new Element(skA, 'field'),
       new Element(S_C, 'field'),
       ...pathC.elements.slice(1),
       pathC.positions,
-      new Element(D, 'field', 1),
+      new Element(D, 'field', 128, 1),
       new Element(S_D, 'field'),
       ...pathD.elements.slice(1),
       pathD.positions,
       new Element(nC, 'field'),
       new Element(nD, 'field'),
-      new Element(E, 'field', 1),
+      new Element(E, 'field', 128, 1),
       new Element(pkB, 'field'),
       new Element(S_E, 'field'),
       new Element(zE, 'field'),
-      new Element(F, 'field', 1),
+      new Element(F, 'field', 128, 1),
       new Element(S_F, 'field'),
       new Element(zF, 'field'),
       pathC.elements[0],
@@ -507,7 +504,18 @@ async function transfer(
   console.groupEnd();
 
   // send the token to Bob by transforming the commitment
-  const [zEIndex, zFIndex, txObj] = await zkp.transfer(proof, inputs, vkId, account, fTokenShield);
+  const [zEIndex, zFIndex, txObj] = await zkp.transfer(
+    proof,
+    inputs,
+    vkId,
+    root,
+    nC,
+    nD,
+    zE,
+    zF,
+    account,
+    fTokenShield,
+  );
 
   console.log('TRANSFER COMPLETE\n');
   console.groupEnd();
@@ -568,11 +576,12 @@ async function burn(C, skA, S_C, zC, zCIndex, account, _payTo) {
 
   // Calculate new arguments for the proof:
   const Nc = utils.concatenateThenHash(S_C, skA);
-  const pkA = utils.hash(skA);
+
+  // we need the Merkle path from the commitment to the root, expressed as Elements
   const path = await cv.computePath(account, fTokenShield, zC, zCIndex).then(result => {
     return {
-      elements: result.path.map(element => new Element(element, 'field', 2)),
-      positions: new Element(result.positions, 'field', 1),
+      elements: result.path.map(element => new Element(element, 'field', 128, 2)),
+      positions: new Element(result.positions, 'field', 128, 1),
     };
   });
 
@@ -582,22 +591,21 @@ async function burn(C, skA, S_C, zC, zCIndex, account, _payTo) {
   console.log(`C: ${C} : ${utils.hexToFieldPreserve(C, p)}`);
   console.log(`skA: ${skA} : ${utils.hexToFieldPreserve(skA, p)}`);
   console.log(`S_C: ${S_C} : ${utils.hexToFieldPreserve(S_C, p)}`);
-  console.log(`payTo: ${payTo} : ${utils.hexToFieldPreserve(payTo, p)}`);
+  console.log(`payTo: ${payTo}`);
+  const payToLeftPadded = utils.leftPadHex(payTo, config.INPUTS_HASHLENGTH * 2); // left-pad the payToAddress with 0's to fill all 256 bits (64 octets) (so the sha256 function is hashing the same thing as inside the zokrates proof)
+  console.log(`payToLeftPadded: ${payToLeftPadded}`);
   console.groupEnd();
+
   console.group('New Proof Variables:');
   console.log(`Nc: ${Nc} : ${utils.hexToFieldPreserve(Nc, p)}`);
-  console.log(`pkA: ${pkA} : ${utils.hexToFieldPreserve(pkA, p)}`);
   console.log(`zC: ${zC} : ${utils.hexToFieldPreserve(zC, p)}`);
-  console.log(`Nc: ${Nc} : ${utils.hexToFieldPreserve(Nc, p)}`);
   console.log(`root: ${root} : ${utils.hexToFieldPreserve(root, p)}`);
   console.groupEnd();
 
-  const inputs = cv.computeVectors([
-    new Element(payTo, 'field'),
-    new Element(C, 'field', 1),
-    new Element(Nc, 'field'),
-    new Element(root, 'field'),
-  ]);
+  const publicInputHash = utils.concatenateThenHash(root, Nc, C, payToLeftPadded); // notice we're using the version of payTo which has been padded to 256-bits; to match our derivation of publicInputHash within our zokrates proof.
+  console.log('publicInputHash:', publicInputHash);
+
+  const inputs = cv.computeVectors([new Element(publicInputHash, 'field', 248, 1)]);
   console.log('inputs:');
   console.log(inputs);
 
@@ -612,8 +620,9 @@ async function burn(C, skA, S_C, zC, zCIndex, account, _payTo) {
   console.group('Computing proof with w=[skA,S_C,path[],order] x=[C,Nc,root,1]');
   let proof = await computeProof(
     [
+      new Element(publicInputHash, 'field', 248, 1),
       new Element(payTo, 'field'),
-      new Element(C, 'field', 1),
+      new Element(C, 'field', 128, 1),
       new Element(skA, 'field'),
       new Element(S_C, 'field'),
       ...path.elements.slice(1),
@@ -634,7 +643,7 @@ async function burn(C, skA, S_C, zC, zCIndex, account, _payTo) {
 
   // with the pre-compute done we can burn the token, which is now a reasonably
   // light-weight calculation
-  await zkp.burn(proof, inputs, vkId, account, fTokenShield);
+  await zkp.burn(proof, inputs, vkId, root, Nc, C, payTo, account, fTokenShield);
 
   console.log('BURN COMPLETE\n');
   console.groupEnd();

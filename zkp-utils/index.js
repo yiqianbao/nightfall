@@ -222,22 +222,32 @@ function hexToField(hexStr, fieldSize) {
 }
 
 /**
+Left-pads the input hex string with zeros, so that it becomes of size N octets.
+@param {string} hexStr A hex number/string.
+@param {integer} N The string length (i.e. the number of octets).
+@return A hex string (padded) to size N octets, (plus 0x at the start).
+*/
+function leftPadHex(hexStr, n) {
+  return ensure0x(strip0x(hexStr).padStart(n, '0'));
+}
+
+/**
 Used by splitAndPadBitsN function.
 Left-pads the input binary string with zeros, so that it becomes of size N bits.
 @param {string} bitStr A binary number/string.
 @param {integer} N The 'chunk size'.
 @return A binary string (padded) to size N bits.
 */
-function leftPadBitsN(bitStr, N) {
+function leftPadBitsN(bitStr, n) {
   const len = bitStr.length;
   let paddedStr;
-  if (len > N) {
-    return new Error(`String larger than ${N} bits passed to leftPadBitsN`);
+  if (len > n) {
+    return new Error(`String larger than ${n} bits passed to leftPadBitsN`);
   }
-  if (len === N) {
+  if (len === n) {
     return bitStr;
   }
-  paddedStr = '0'.repeat(N - len);
+  paddedStr = '0'.repeat(n - len);
   paddedStr = paddedStr.toString() + bitStr.toString();
   return paddedStr;
 }
@@ -249,16 +259,16 @@ Checks whether a binary number is larger than N bits, and splits its binary repr
 @param {integer} N The 'chunk size'.
 @return An array whose elements are binary 'chunks' which altogether represent the input binary number.
 */
-function splitAndPadBitsN(bitStr, N) {
+function splitAndPadBitsN(bitStr, n) {
   let a = [];
   const len = bitStr.length;
-  if (len <= N) {
-    return [leftPadBitsN(bitStr, N)];
+  if (len <= n) {
+    return [leftPadBitsN(bitStr, n)];
   }
-  const nStr = bitStr.slice(-N); // the rightmost N bits
-  const remainderStr = bitStr.slice(0, len - N); // the remaining rightmost bits
+  const nStr = bitStr.slice(-n); // the rightmost N bits
+  const remainderStr = bitStr.slice(0, len - n); // the remaining rightmost bits
 
-  a = [...splitAndPadBitsN(remainderStr, N), nStr, ...a];
+  a = [...splitAndPadBitsN(remainderStr, n), nStr, ...a];
 
   return a;
 }
@@ -268,11 +278,11 @@ function splitAndPadBitsN(bitStr, N) {
 @param {integer} N The 'chunk size'.
 @return An array whose elements are binary 'chunks' which altogether represent the input hex number.
 */
-function splitHexToBitsN(hexStr, N) {
+function splitHexToBitsN(hexStr, n) {
   const strippedHexStr = strip0x(hexStr);
   const bitStr = hexToBinSimple(strippedHexStr.toString());
   let a = [];
-  a = splitAndPadBitsN(bitStr, N);
+  a = splitAndPadBitsN(bitStr, n);
   return a;
 }
 
@@ -285,15 +295,29 @@ function binToDec(binStr) {
 /** Preserves the magnitude of a hex number in a finite field, even if the order of the field is smaller than hexStr. hexStr is converted to decimal (as fields work in decimal integer representation) and then split into chunks of size packingSize. Relies on a sensible packing size being provided (ZoKrates uses packingSize = 128).
  *if the result has fewer elements than it would need for compatibiity with the dsl, it's padded to the left with zero elements
  */
-function hexToFieldPreserve(hexStr, packingSize, packets) {
+function hexToFieldPreserve(hexStr, packingSize, packets, silenceWarnings) {
   let bitsArr = [];
   bitsArr = splitHexToBitsN(strip0x(hexStr).toString(), packingSize.toString());
+
   let decArr = []; // decimal array
   decArr = bitsArr.map(item => binToDec(item.toString()));
-  // now we need to add any missing zero elements
+
+  // fit the output array to the desired number of packets:
   if (packets !== undefined) {
-    const missing = packets - decArr.length;
-    for (let i = 0; i < missing; i += 1) decArr.unshift('0');
+    if (packets < decArr.length) {
+      const overflow = decArr.length - packets;
+      if (!silenceWarnings)
+        throw new Error(
+          `Field split into an array of ${decArr.length} packets: ${decArr}
+          , but this exceeds the requested packet size of ${packets}. Data would have been lost; possibly unexpectedly. To silence this warning, pass '1' or 'true' as the final parameter.`,
+        );
+      // remove extra packets (dangerous!):
+      for (let i = 0; i < overflow; i += 1) decArr.shift();
+    } else {
+      const missing = packets - decArr.length;
+      // add any missing zero elements
+      for (let i = 0; i < missing; i += 1) decArr.unshift('0');
+    }
   }
   return decArr;
 }
@@ -748,6 +772,7 @@ module.exports = _statsPath => {
     splitHexToBitsN,
     splitAndPadBitsN,
     leftPadBitsN,
+    leftPadHex,
     getLeafIndexFromZCount,
     rndHex,
     flattenDeep,

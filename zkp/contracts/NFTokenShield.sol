@@ -52,12 +52,11 @@ depth row  width  st#     end#
 
     uint constant merkleWidth = 4294967296; //2^32
     uint constant merkleDepth = 33; //33
-    uint256 constant zokratesPrime = 21888242871839275222246405745257275088548364400416034343698204186575808495617;
 
-    mapping(bytes32 => bytes32) public nullifiers; //store nullifiers of spent commitments
-    mapping(bytes32 => bytes32) public commitments; //array holding the commitments.  Basically the bottom row of the merkle tree
-    mapping(uint256 => bytes27) public merkleTree; //the entire Merkle Tree of nodes, with the latter 'half' of merkleTree being the leaves.
-    mapping(bytes32 => bytes32) public roots; //holds each root we've calculated so that we can pull the one relevant to the prover
+    mapping(bytes32 => bytes32) public nullifiers; // store nullifiers of spent commitments
+    mapping(bytes32 => bytes32) public commitments; // array holding the commitments.  Basically the bottom row of the merkle tree
+    mapping(uint256 => bytes27) public merkleTree; // the entire Merkle Tree of nodes, with the latter 'half' of merkleTree being the leaves.
+    mapping(bytes32 => bytes32) public roots; // holds each root we've calculated so that we can pull the one relevant to the prover
 
     uint256 public leafCount; //remembers the number of commitments we hold
     bytes32 public latestRoot; //holds the index for the latest root so that the prover can provide it later and this contract can look up the relevant root
@@ -66,7 +65,7 @@ depth row  width  st#     end#
     Verifier_Interface public verifier; //the verification smart contract
     ERC721Interface public nfToken; //the NFToken ERC-721 token contract
 
-    //following registration of the vkId's with the Verifier Registry, we hard code their vkId's in setVkIds
+    // following registration of the vkId's with the Verifier Registry, we hard code their vkId's in setVkIds
     bytes32 public mintVkId;
     bytes32 public transferVkId;
     bytes32 public burnVkId;
@@ -104,12 +103,12 @@ depth row  width  st#     end#
     Sets the vkIds (as registered with the Verifier Registry) which correspond to 'mint', 'transfer' and 'burn' computations respectively
     */
     function setVkIds(bytes32 _mintVkId, bytes32 _transferVkId, bytes32 _burnVkId) external onlyOwner {
-        //ensure the vkId's have been registered:
+        // ensure the vkId's have been registered:
         require(_mintVkId == verifierRegistry.getVkEntryVkId(_mintVkId), "Mint vkId not registered.");
         require(_transferVkId == verifierRegistry.getVkEntryVkId(_transferVkId), "Transfer vkId not registered.");
         require(_burnVkId == verifierRegistry.getVkEntryVkId(_burnVkId), "Burn vkId not registered.");
 
-        //store the vkIds
+        // store the vkIds
         mintVkId = _mintVkId;
         transferVkId = _transferVkId;
         burnVkId = _burnVkId;
@@ -121,7 +120,7 @@ depth row  width  st#     end#
     returns the ERC-721 contract address that this shield contract is calling
     */
     function getNFToken() public view returns(address){
-      return address(nfToken);
+        return address(nfToken);
     }
 
     /**
@@ -131,106 +130,103 @@ depth row  width  st#     end#
     * The correct value is Returns `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
     */
     function onERC721Received(address, address, uint256, bytes memory) public pure returns (bytes4) {
-    return bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"));
+        return bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"));
     }
 
     /**
     The mint function creates ('mints') a new commitment and stores it in the merkleTree
     */
-    function mint(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _vkId) external {
+    function mint(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _vkId, uint256 _tokenId, bytes32 _commitment) external {
 
         require(_vkId == mintVkId, "Incorrect vkId");
+
+        // Check that the publicInputHash equals the hash of the 'public inputs':
+        bytes31 publicInputHash = bytes31(bytes32(_inputs[0])<<8);
+        bytes31 publicInputHashCheck = bytes31(sha256(abi.encodePacked(_tokenId, _commitment))<<8);
+        require(publicInputHashCheck == publicInputHash, "publicInputHash cannot be reconciled");
 
         // verify the proof
         bool result = verifier.verify(_proof, _inputs, _vkId);
         require(result, "The proof has not been verified by the contract");
 
-        //convert the first two inputs back into a token ID
-        uint256 tokenId = combineUint256(_inputs[1], _inputs[0]);
+        // update contract states
+        uint256 leafIndex = merkleWidth - 1 + leafCount; // specify the index of the commitment within the merkleTree
+        merkleTree[leafIndex] = bytes27(_commitment<<40); // add the commitment to the merkleTree
 
-        bytes32 commitment = packedToBytes32(_inputs[3], _inputs[2]); //each of these is two words
+        commitments[_commitment] = _commitment; // add the commitment
 
-        uint256 leafIndex = merkleWidth - 1 + leafCount;//specify the index of the commitment within the merkleTree
-        merkleTree[leafIndex] = bytes27(commitment<<40);//add the commitment to the merkleTree
-
-        commitments[commitment] = commitment; //add the commitment
-
-        bytes32 root = updatePathToRoot(leafIndex);//recalculate the root of the merkleTree as it's now different
-        roots[root] = root; //and save the new root to the list of roots
+        bytes32 root = updatePathToRoot(leafIndex); // recalculate the root of the merkleTree as it's now different
+        roots[root] = root; // and save the new root to the list of roots
         latestRoot = root;
 
-        //Finally, transfer token from the sender to this contract address
-        nfToken.safeTransferFrom(msg.sender, address(this), tokenId);
+        // Finally, transfer token from the sender to this contract address
+        nfToken.safeTransferFrom(msg.sender, address(this), _tokenId);
 
-        emit Mint(msg.sender, address(this), tokenId, commitment, leafCount++);
+        emit Mint(msg.sender, address(this), _tokenId, _commitment, leafCount++);
     }
 
     /**
     The transfer function transfers a commitment to a new owner
     */
-    function transfer(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _vkId) external {
+    function transfer(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _vkId, bytes32 _root, bytes32 _nullifier, bytes32 _commitment) external {
 
         require(_vkId == transferVkId, "Incorrect vkId");
 
-        //checks to prevent a ZoKrates overflow attack
-        require(_inputs[0]<zokratesPrime, "Input too large - possible overflow attack");
-        require(_inputs[1]<zokratesPrime, "Input too large - possible overflow attack");
+        // Check that the publicInputHash equals the hash of the 'public inputs':
+        bytes31 publicInputHash = bytes31(bytes32(_inputs[0])<<8);
+        bytes31 publicInputHashCheck = bytes31(sha256(abi.encodePacked(_root, _nullifier, _commitment))<<8);
+        require(publicInputHashCheck == publicInputHash, "publicInputHash cannot be reconciled");
 
         // verify the proof
         bool result = verifier.verify(_proof, _inputs, _vkId);
         require(result, "The proof has not been verified by the contract");
 
-        bytes32 nullifier = packedToBytes32(_inputs[1],_inputs[0]);
-        bytes32 inputRoot = packedToBytes32(_inputs[3],_inputs[2]);
-        bytes32 commitment = packedToBytes32(_inputs[5],_inputs[4]);
+        // check inputs vs on-chain states
+        require(nullifiers[_nullifier] == 0, "The commitment being spent has already been nullified!");
+        require(roots[_root] == _root, "The input root has never been the root of the Merkle Tree");
 
-        require(nullifiers[nullifier] == 0, "The commitment being spent has already been nullified!");
-        require(roots[inputRoot] == inputRoot, "The input root has never been the root of the Merkle Tree");
+        // update contract states
+        nullifiers[_nullifier] = _nullifier; // remember we spent it
 
-        nullifiers[nullifier] = nullifier; //remember we spent it
+        uint256 leafIndex = merkleWidth - 1 + leafCount; // specify the index of the commitment within the merkleTree
+        merkleTree[leafIndex] = bytes27(_commitment<<40); // add the commitment to the merkleTree
 
-        uint256 leafIndex = merkleWidth - 1 + leafCount; //specify the index of the commitment within the merkleTree
-        merkleTree[leafIndex] = bytes27(commitment<<40); //add the commitment to the merkleTree
+        commitments[_commitment] = _commitment; // add Bob's commitment to the list of tokens
 
-        commitments[commitment] = commitment; //add Bob's commitment to the list of tokens
+        latestRoot = updatePathToRoot(leafIndex); // recalculate the root of the merkleTree as it's now different
+        roots[latestRoot] = latestRoot; // and save the new root to the list of roots
 
-        bytes32 root = updatePathToRoot(leafIndex);//recalculate the root of the merkleTree as it's now different
-        roots[root] = root; //and save the new root to the list of roots
-        latestRoot = root;
-
-        emit Transfer(nullifier, commitment, leafCount++);
+        emit Transfer(_nullifier, _commitment, leafCount++);
     }
 
     /**
     The burn function burns a commitment and transfers the asset held within the commiment to the address payTo
     */
-    function burn(uint256[] memory _proof, uint256[] memory _inputs, bytes32 _vkId) public {
+    function burn(uint256[] memory _proof, uint256[] memory _inputs, bytes32 _vkId, bytes32 _root, bytes32 _nullifier, uint256 _tokenId, uint256 _payTo) public {
 
-      require(_vkId == burnVkId, "Incorrect vkId");
+        require(_vkId == burnVkId, "Incorrect vkId");
 
-      //checks to prevent a ZoKrates overflow attack
-      require(_inputs[4]<zokratesPrime, "Input too large - possible overflow attack");
-      require(_inputs[5]<zokratesPrime, "Input too large - possible overflow attack");
+        // Check that the publicInputHash equals the hash of the 'public inputs':
+        bytes31 publicInputHash = bytes31(bytes32(_inputs[0])<<8);
+        bytes31 publicInputHashCheck = bytes31(sha256(abi.encodePacked(_root, _nullifier, _tokenId, _payTo))<<8); // Note that although _payTo represents an address, we have declared it as a uint256. This is because we want it to be abi-encoded as a bytes32 (left-padded with zeros) so as to match the padding in the hash calculation performed within the zokrates proof.
+        require(publicInputHashCheck == publicInputHash, "publicInputHash cannot be reconciled");
 
-      // verify the proof
-      bool result = verifier.verify(_proof, _inputs, _vkId);
-      require(result, "The proof has not been verified by the contract");
+        // verify the proof
+        bool result = verifier.verify(_proof, _inputs, _vkId);
+        require(result, "The proof has not been verified by the contract");
 
-      uint256 payToUint = combineUint256(_inputs[1], _inputs[0]); //recover the payTo address
-      address payTo = address(payToUint); // explicitly convert to address (because we're sure no data loss will result from this)
-      uint256 tokenId = combineUint256(_inputs[3], _inputs[2]); //recover the tokenId
-      bytes32 nullifier = packedToBytes32(_inputs[5], _inputs[4]); //recover the nullifier
-      bytes32 inputRoot = packedToBytes32(_inputs[7], _inputs[6]); //recover the root
+        // check inputs vs on-chain states
+        require(roots[_root] == _root, "The input root has never been the root of the Merkle Tree");
+        require(nullifiers[_nullifier]==0, "The commitment being spent has already been nullified!");
 
-      require(roots[inputRoot] == inputRoot, "The input root has never been the root of the Merkle Tree");
-      require(nullifiers[nullifier]==0, "The commitment being spent has already been nullified!");
+        // update contract states
+        nullifiers[_nullifier] = _nullifier; //add the nullifier to the list of nullifiers
 
-      nullifiers[nullifier] = nullifier; //add the nullifier to the list of nullifiers
+        //Finally, transfer NFToken from this contract address to the nominated address
+        address payToAddress = address(_payTo); // we passed _payTo as a uint256, to ensure the packing was correct within the sha256() above
+        nfToken.safeTransferFrom(address(this), payToAddress, _tokenId);
 
-      //Finally, transfer NFToken from this contract address to the nominated address
-      nfToken.safeTransferFrom(address(this), payTo, tokenId);
-
-      emit Burn(tokenId, payTo, nullifier);
+        emit Burn(_tokenId, payToAddress, _nullifier);
     }
 
     /**
@@ -239,14 +235,14 @@ depth row  width  st#     end#
     */
     function updatePathToRoot(uint p) private returns (bytes32) {
 
-    /*
-    If Z were the commitment, then the p's mark the 'path', and the s's mark the 'sibling path'
+        /*
+        If Z were the commitment, then the p's mark the 'path', and the s's mark the 'sibling path'
 
-                     p
-            p                  s
-       s         p        EF        GH
-    A    B    Z    s    E    F    G    H
-    */
+                         p
+                p                  s
+           s         p        EF        GH
+        A    B    Z    s    E    F    G    H
+        */
 
         uint s; //s is the 'sister' path of p.
         uint t; //temp index for the next p (i.e. the path node of the row above)
@@ -265,15 +261,15 @@ depth row  width  st#     end#
             }
             p = t; //move to the path node on the next highest row of the tree
         }
-        return h; //the root of the merkleTree
+        return h; //the (256-bit) root of the merkleTree
     }
 
-    function packedToBytes32(uint256 low, uint256 high) private pure returns (bytes32){
-      return bytes32(uint256(low)) | (bytes32(uint256(high))<<128);
+    function packToBytes32(uint256 low, uint256 high) private pure returns (bytes32) {
+        return (bytes32(high)<<128) | bytes32(low);
     }
 
-    function combineUint256(uint256 low, uint256 high) private pure returns (uint256){
-      return uint256((bytes32(high)<<128) | bytes32(low));
+    function packToUint256(uint256 low, uint256 high) private pure returns (uint256) {
+        return uint256((bytes32(high)<<128) | bytes32(low));
     }
 
 }

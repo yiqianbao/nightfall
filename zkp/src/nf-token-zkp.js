@@ -112,7 +112,7 @@ This function creates a nf token commitment.
 @param {contract} nfTokenShield - an instance of the TokenShield contract
 @return {integer} tokenIndex - the index of the z_B token within the on-chain Merkle Tree
 */
-async function mint(proof, inputs, vkId, account, nfTokenShield) {
+async function mint(proof, inputs, vkId, tokenId, commitment, account, nfTokenShield) {
   const accountWith0x = utils.ensure0x(account);
   const finalInputs = [...inputs, '1'];
 
@@ -125,13 +125,13 @@ async function mint(proof, inputs, vkId, account, nfTokenShield) {
   console.log(finalInputs);
   console.log(`vkId: ${vkId}`);
 
-  const txReceipt = await nfTokenShield.mint(proof, finalInputs, vkId, {
+  const txReceipt = await nfTokenShield.mint(proof, finalInputs, vkId, tokenId, commitment, {
     from: accountWith0x,
     gas: 6500000,
     gasPrice: config.GASPRICE,
   });
 
-  const { commitment_index: tokenIndex } = txReceipt.logs[0].args; // log for: event Mint
+  const tokenIndex = txReceipt.logs[0].args.commitment_index; // log for: event Mint
 
   const root = await nfTokenShield.latestRoot(); // solidity getter for the public variable latestRoot
   console.log(`Merkle Root after mint: ${root}`);
@@ -152,7 +152,7 @@ key and the transfer input vector having been input.
 @return {integer} tokenIndex - the index of the z_B token within the on-chain Merkle Tree
 @returns {object} txObject
 */
-async function transfer(proof, inputs, vkId, account, nfTokenShield) {
+async function transfer(proof, inputs, vkId, root, nullifier, commitment, account, nfTokenShield) {
   const accountWith0x = utils.ensure0x(account);
   const finalInputs = [...inputs, 1];
 
@@ -165,16 +165,24 @@ async function transfer(proof, inputs, vkId, account, nfTokenShield) {
   console.log(finalInputs);
   console.log(`vkId: ${vkId}`);
 
-  const txReceipt = await nfTokenShield.transfer(proof, finalInputs, vkId, {
-    from: accountWith0x,
-    gas: 6500000,
-    gasPrice: config.GASPRICE,
-  });
+  const txReceipt = await nfTokenShield.transfer(
+    proof,
+    finalInputs,
+    vkId,
+    root,
+    nullifier,
+    commitment,
+    {
+      from: accountWith0x,
+      gas: 6500000,
+      gasPrice: config.GASPRICE,
+    },
+  );
 
   const tokenIndex = txReceipt.logs[0].args.commitment_index; // log for: event Transfer;
 
-  const root = await nfTokenShield.latestRoot(); // solidity getter for the public variable latestRoot
-  console.log(`Merkle Root after transfer: ${root}`);
+  const newRoot = await nfTokenShield.latestRoot(); // solidity getter for the public variable latestRoot
+  console.log(`Merkle Root after transfer: ${newRoot}`);
   console.groupEnd();
 
   return [tokenIndex, txReceipt];
@@ -195,7 +203,7 @@ computed.
 @param {string} proofId is a unique ID for the proof, used by the verifier contract to lookup the correct proof.
 @returns {object} burnResponse - a promise that resolves into the transaction hash
 */
-async function burn(proof, inputs, vkId, account, nfTokenShield) {
+async function burn(proof, inputs, vkId, root, nullifier, tokenId, payTo, account, nfTokenShield) {
   const accountWith0x = utils.ensure0x(account);
   const finalInputs = [...inputs, '1'];
 
@@ -207,14 +215,23 @@ async function burn(proof, inputs, vkId, account, nfTokenShield) {
   console.log(finalInputs);
   console.log(`vkId: ${vkId}`);
 
-  const txReceipt = await nfTokenShield.burn(proof, finalInputs, vkId, {
-    from: accountWith0x,
-    gas: 6500000,
-    gasPrice: config.GASPRICE,
-  });
+  const txReceipt = await nfTokenShield.burn(
+    proof,
+    finalInputs,
+    vkId,
+    root,
+    nullifier,
+    tokenId,
+    payTo,
+    {
+      from: accountWith0x,
+      gas: 6500000,
+      gasPrice: config.GASPRICE,
+    },
+  );
 
-  const root = await nfTokenShield.latestRoot();
-  console.log(`Merkle Root after burn: ${root}`);
+  const newRoot = await nfTokenShield.latestRoot();
+  console.log(`Merkle Root after burn: ${newRoot}`);
   console.groupEnd();
 
   return txReceipt;
