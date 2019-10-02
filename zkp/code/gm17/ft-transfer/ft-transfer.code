@@ -640,6 +640,7 @@ def main(field publicInputHash, private field valueC, private field secretKeyAHi
 
 
 	// Concatenate with the 32nd sibling. This should equal the root.
+	
 	concatenation432 = orderedConcatenate216x216(orderDBits[0], hash[40..256], pathD0Bits[40..256])
 	preimage512 = shaPad432To512(concatenation432)
 

@@ -130,7 +130,7 @@ depth row  width  st#     end#
   */
   function mint(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _vkId, uint128 _value, bytes32 _commitment) external {
 
-      require(_vkId == mintVkId, "Incorrect vkId - hello");
+      require(_vkId == mintVkId, "Incorrect vkId");
 
       // Check that the publicInputHash equals the hash of the 'public inputs':
       bytes31 publicInputHash = bytes31(bytes32(_inputs[0])<<8);
@@ -183,19 +183,19 @@ depth row  width  st#     end#
       // update contract states
       nullifiers[_nullifierC] = _nullifierC; //remember we spent it
       nullifiers[_nullifierD] = _nullifierD; //remember we spent it
+
       commitments[_commitmentE] = _commitmentE; //add the commitment to the list of commitments
 
       uint256 leafIndex = merkleWidth - 1 + leafCount++; //specify the index of the commitment within the merkleTree
       merkleTree[leafIndex] = bytes27(_commitmentE<<40); //add the commitment to the merkleTree
-
       updatePathToRoot(leafIndex);
 
       commitments[_commitmentF] = _commitmentF; //add the commitment to the list of commitments
 
       leafIndex = merkleWidth - 1 + leafCount; //specify the index of the commitment within the merkleTree
       merkleTree[leafIndex] = bytes27(_commitmentF<<40); //add the commitment to the merkleTree
-
-      bytes32 latestRoot = updatePathToRoot(leafIndex);//recalculate the root of the merkleTree as it's now different
+      latestRoot = updatePathToRoot(leafIndex);//recalculate the root of the merkleTree as it's now different
+      
       roots[latestRoot] = latestRoot; //and save the new root to the list of roots
 
       emit Transfer(_nullifierC, _nullifierD, _commitmentE, leafCount - 1, _commitmentF, leafCount++);

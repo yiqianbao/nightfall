@@ -10,8 +10,8 @@ def concatenate256x256(field[256] a, field[256] b)->(field[512]):
 	return [...a, ...b]
 
 def orderedConcatenate216x216(field order, field[216] a, field[216] b)->(field[432]):
-	field[216] left = if order==0 then b else a fi
-	field[216] right = if order==0 then a else b fi
+	field[216] left = if order == 0 then b else a fi
+	field[216] right = if order == 0 then a else b fi
 	return [...left, ...right]
 
 def shaPad432To512(field[432] a)->(field[512]):

@@ -409,7 +409,9 @@ function decToFieldPreserve(decStr, packingSize) {
   return decArr;
 }
 
-const isProbablyBinary = arr => !arr.find(el => el !== 0 || el !== 1);
+function isProbablyBinary(arr) {
+  return !arr.find(el => el !== 0 || el !== 1);
+}
 
 // FUNCTIONS ON FIELDS
 
@@ -542,8 +544,7 @@ function concatenateThenHash(...items) {
   const h = `0x${crypto
     .createHash('sha256')
     .update(concatvalue, 'hex')
-    .digest('hex')
-    .slice(-(inputsHashLength * 2))}`;
+    .digest('hex')}`;
   return h;
 }
 

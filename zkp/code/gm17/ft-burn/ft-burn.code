@@ -14,8 +14,8 @@ def concatenate256x256x128x256(field[256] a, field[256] b, field[128] c, field[2
 	return [...a, ...b, ...c, ...d]
 
 def orderedConcatenate216x216(field order, field[216] a, field[216] b)->(field[432]):
-	field[216] left = if order==0 then b else a fi
-	field[216] right = if order==0 then a else b fi
+	field[216] left = if order == 0 then b else a fi
+	field[216] right = if order == 0 then a else b fi
 	return [...left, ...right]
 
 def shaPad432To512(field[432] a)->(field[512]):
@@ -77,7 +77,7 @@ def main(field publicInputHash, private field payToHigh, private field payToLow,
 	field[128] secretKeyLowBits = unpack128(secretKeyLow)
 	field[256] secretKeyBits = [...secretKeyHighBits, ...secretKeyLowBits]
 
-	field[128] saltHighBits = unpack128(saltHigh) //this slightly long-winded approach needed so Zokrates can flatten the expressions
+	field[128] saltHighBits = unpack128(saltHigh)
 	field[128] saltLowBits = unpack128(saltLow)
 	field[256] saltBits = [...saltHighBits, ...saltLowBits]
 
@@ -350,10 +350,11 @@ def main(field publicInputHash, private field payToHigh, private field payToLow,
 	hash = sha256of512(preimage512[0..256], preimage512[256..512])
 
 
- 	// concatenate with the 32nd sibling. This should equal the root.
+ 	// Concatenate with the 32nd sibling. This should equal the root.
 
 	concatenation432 = orderedConcatenate216x216(orderBits[0], hash[40..256], path0Bits[40..256])
 	preimage512 = shaPad432To512(concatenation432)
+
 	field[256] rootBitsCheck = sha256of512(preimage512[0..256], preimage512[256..512])
 
 

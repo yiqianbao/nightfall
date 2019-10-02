@@ -172,13 +172,13 @@ async function setup(codeFile, outputDirPath, backend, a) {
       if (!s) console.log(`outVals: \n${outVals}`);
 
       let outVal;
-      switch (utils.isProbablyBinary(outVals)) {
+      switch (utils().isProbablyBinary(outVals)) {
         case 'decimal':
           console.group('\nOutput from compute-witness:\n');
           console.log(`output array length: ${outVals.length}\n`);
-          console.log(`bin:  ${outVals.forEach(val => utils.decToBin(val))}`);
+          console.log(`bin:  ${outVals.forEach(val => utils().decToBin(val))}`);
           console.log(`dec:  ${outVals}`);
-          console.log(`hex:  ${outVals.forEach(val => utils.decToHex(val))}`);
+          console.log(`hex:  ${outVals.forEach(val => utils().decToHex(val))}`);
           console.groupEnd();
           break;
         default:
@@ -186,8 +186,8 @@ async function setup(codeFile, outputDirPath, backend, a) {
           console.group('\nOutput from compute-witness:\n');
           console.log(`output array length: ${outVals.length}\n`);
           console.log(`bin:  ${outVal}`);
-          console.log(`dec:  ${utils.binToDec(outVal)}`);
-          console.log(`hex:  ${utils.binToHex(outVal)}`);
+          console.log(`dec:  ${utils().binToDec(outVal)}`);
+          console.log(`hex:  ${utils().binToHex(outVal)}`);
           console.groupEnd();
       }
       console.log(codeFileName, 'SETUP MESSAGE: CREATE WITNESS COMPLETE');

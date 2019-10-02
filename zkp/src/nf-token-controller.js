@@ -185,13 +185,10 @@ This function needs to be run *before* computing any proofs in order to deploy
 the necessary code to the docker container, after instantiating the same. It
 will be called automatically by computeProof if it detects tha there is no container
 being instantiated.
-@param {string} tar - the tar file containing all the code needed to compute the proof
+@param {string} hostDir - the directory on the host to mount into the runContainerMounted
 */
 async function setupComputeProof(hostDir) {
   container = await zokrates.runContainerMounted(hostDir);
-
-  console.log(`Container id: ${container.id}`);
-  console.log(`To connect to the container manually: 'docker exec -ti ${container.id} bash'`);
 }
 
 /**
@@ -205,6 +202,10 @@ you.
 */
 async function computeProof(elements, hostDir, proofDescription) {
   if (container === undefined || container === null) await setupComputeProof(hostDir);
+
+  console.log(`Container id: ${container.id}`);
+  console.log(`To connect to the container manually: 'docker exec -ti ${container.id} bash'`);
+
   let timeEst;
   let startTime;
   let endTime;

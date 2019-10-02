@@ -2,12 +2,11 @@ import config from 'config';
 import Utils from '../zkp-utils';
 
 const utils = Utils('../config/stats');
-const { rndHex, padHex } = utils;
+const { rndHex, leftPadHex } = utils;
 const INPUTS_HASHLENGTH = config.get('INPUTS_HASHLENGTH');
 // const MERKLE_HASHLENGTH = config.get('MERKLE_HASHLENGTH');
 
 const generateTokenID = async () => rndHex(32);
-const numberToHexString = int => padHex(int, 128);
 
 // test data.
 export default {
@@ -79,7 +78,7 @@ export default {
     return {
       mint: [
         {
-          A: numberToHexString(erc20.toBeMintedAsCommitment[0]),
+          A: leftPadHex(erc20.toBeMintedAsCommitment[0], 32),
           commitmentIndex: 0,
           get commitment() {
             return utils.concatenateThenHash(
@@ -90,7 +89,7 @@ export default {
           },
         },
         {
-          A: numberToHexString(erc20.toBeMintedAsCommitment[1]),
+          A: leftPadHex(erc20.toBeMintedAsCommitment[1], 32),
           commitmentIndex: 1,
           get commitment() {
             return utils.concatenateThenHash(
@@ -102,7 +101,7 @@ export default {
         },
       ],
       transfer: {
-        value: numberToHexString(erc20.transfer),
+        value: leftPadHex(erc20.transfer, 32),
         commitmentIndex: 2,
         get commitment() {
           return utils.concatenateThenHash(
@@ -113,7 +112,7 @@ export default {
         },
       },
       change: {
-        value: numberToHexString(erc20.change),
+        value: leftPadHex(erc20.change, 32),
         commitmentIndex: 3,
         get commitment() {
           return utils.concatenateThenHash(

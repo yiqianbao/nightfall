@@ -109,12 +109,6 @@ async function computePath(account, shieldContract, _myToken, myTokenIndex) {
       sisterSide = '1'; // conversly if p is odd then the sister will be on the right. Encode this as 1
     }
 
-    // nodeHash = zkp.getMerkleNode(account, shieldContract, p0);
-    // p[r] = {
-    //   merkleIndex: p0,
-    //   nodeHashOld: nodeHash,
-    // };
-
     nodeHash = zkp.getMerkleNode(account, shieldContract, s0);
     s[r] = {
       merkleIndex: s0,
@@ -131,10 +125,8 @@ async function computePath(account, shieldContract, _myToken, myTokenIndex) {
     merkleIndex: 0,
     nodeHashOld: nodeHash,
   };
-  // the root strictly has no sister-node and destructuring is not the way to go here:
-  // s[0] = p[0]; // eslint-disable-line prefer-destructuring
 
-  // and strip the '0x' from s and p
+  // and strip the '0x' from s
   s = s.map(async el => {
     return {
       merkleIndex: el.merkleIndex,
@@ -142,14 +134,7 @@ async function computePath(account, shieldContract, _myToken, myTokenIndex) {
       nodeHashOld: utils.strip0x(await el.nodeHashOld),
     };
   });
-  // p = p.map(async el => {
-  //   return {
-  //     merkleIndex: el.merkleIndex,
-  //     nodeHashOld: utils.strip0x(await el.nodeHashOld),
-  //   };
-  // });
 
-  // p = await Promise.all(p);
   s = await Promise.all(s);
 
   // Check the lengths of the hashes of the path and the sister-path - they should all be a set length (except the more secure root):
@@ -163,10 +148,6 @@ async function computePath(account, shieldContract, _myToken, myTokenIndex) {
   // Now the rest of the nodes:
   for (let i = 1; i < s.length; i += 1) {
     s[i].nodeHashOld = utils.strip0x(s[i].nodeHashOld);
-
-    // if (p[i].nodeHashOld.length !== 0 && p[i].nodeHashOld.length !== config.MERKLE_HASHLENGTH * 2)
-    //   // the !==0 check is for the very first path calculation
-    //   throw new Error(`path nodeHash has incorrect length: ${p[i].nodeHashOld}`);
 
     if (s[i].nodeHashOld.length !== 0 && s[i].nodeHashOld.length !== config.MERKLE_HASHLENGTH * 2)
       // the !==0 check is for the very first path calculation
@@ -189,27 +170,71 @@ async function computePath(account, shieldContract, _myToken, myTokenIndex) {
   A    B    C    X    E    F    G    H
   */
 
-  console.log(
-    'Sister Positions encoding',
-    s
-      .map(pos => pos.sisterSide)
-      // .reverse()
-      .join('')
-      .padEnd(config.ZOKRATES_PACKING_SIZE, '0'),
-  );
-  console.groupEnd();
-  const sisterPositions = utils.binToHex(
-    s
-      .map(pos => pos.sisterSide)
-      // .reverse()
-      .join('')
-      .padEnd(config.ZOKRATES_PACKING_SIZE, '0'),
-  ); // create a hex encoding of all the sister positions
+  let sisterPositions = s
+    .map(pos => pos.sisterSide)
+    .join('')
+    .padEnd(config.ZOKRATES_PACKING_SIZE, '0');
+  console.log('sisterPositions binary encoding:', sisterPositions);
 
-  return { path: s.map(pos => utils.ensure0x(pos.nodeHashOld)), positions: sisterPositions }; // return the sister-path of nodeHashes together with the encoding of which side each is on
+  sisterPositions = utils.binToHex(sisterPositions);
+  console.log('sisterPositions hex encoding:', sisterPositions);
+  console.groupEnd();
+
+  // create a hex encoding of all the sister positions
+  const sisterPath = s.map(pos => utils.ensure0x(pos.nodeHashOld));
+
+  return { path: sisterPath, positions: sisterPositions }; // return the sister-path of nodeHashes together with the encoding of which side each is on
+}
+
+function orderBeforeConcatenation(order, pair) {
+  if (parseInt(order, 10) === 1) {
+    return pair;
+  }
+  return pair.reverse();
+}
+
+function checkRoot(commitment, path, root) {
+  // define Merkle Constants:
+  const { MERKLE_DEPTH, MERKLE_HASHLENGTH } = config;
+
+  console.log(`commitment:`, commitment);
+  const truncatedCommitment = commitment.slice(-MERKLE_HASHLENGTH * 2); // truncate to the desired 216 bits for Merkle Path computations
+  // console.log(`truncatedCommitment:`, truncatedCommitment);
+  // console.log(`path:`);
+  // console.log(path.path);
+  // console.log(`path positions hex`);
+  // console.log(path.positions);
+  const order = utils.hexToBin(path.positions);
+  // console.log(`root:`, root);
+
+  let hash216 = truncatedCommitment;
+  let hash256;
+
+  for (let r = MERKLE_DEPTH - 1; r > 0; r -= 1) {
+    const pair = [hash216, path.path[r]];
+    const orderedPair = orderBeforeConcatenation(order[r - 1], pair);
+    hash256 = utils.concatenateThenHash(...orderedPair);
+    // keep the below comments for future debugging:
+    // console.log(`hash pre-slice at row ${r - 1}:`, hash256);
+    hash216 = `0x${hash256.slice(-MERKLE_HASHLENGTH * 2)}`;
+    // console.log(`hash at row ${r - 1}:`, hash216);
+  }
+
+  const rootCheck = hash256;
+
+  if (root !== rootCheck) {
+    throw new Error(
+      `Root ${root} cannot be recalculated from the path and commitment ${commitment}. An attempt to recalculate gives ${rootCheck} as the root.`,
+    );
+  } else {
+    console.log(
+      '\nRoot successfully reconciled from first principles using the commitment and its sister-path.',
+    );
+  }
 }
 
 export default {
   computeVectors,
   computePath,
+  checkRoot,
 };

@@ -163,8 +163,6 @@ being instantiated.
 */
 async function setupComputeProof(hostDir) {
   container = await zokrates.runContainerMounted(hostDir);
-  console.log(`Container id: ${container.id}`);
-  console.log(`To connect to the container manually: 'docker exec -ti ${container.id} bash'`);
 }
 
 /**
@@ -178,6 +176,10 @@ you.
 */
 async function computeProof(elements, hostDir, proofDescription) {
   if (container === undefined || container === null) await setupComputeProof(hostDir);
+
+  console.log(`Container id: ${container.id}`);
+  console.log(`To connect to the container manually: 'docker exec -ti ${container.id} bash'`);
+
   let timeEst;
   let startTime;
   let endTime;
@@ -407,21 +409,24 @@ async function transfer(
   const zF = utils.concatenateThenHash(F, pkA, S_F);
 
   // we need the Merkle path from the token commitment to the root, expressed as Elements
-  const pathC = await cv.computePath(account, fTokenShield, zC, zCIndex).then(result => {
-    return {
-      elements: result.path.map(element => new Element(element, 'field', 128, 2)),
-      positions: new Element(result.positions, 'field', 128, 1),
-    };
-  });
-  const pathD = await cv.computePath(account, fTokenShield, zD, zDIndex).then(result => {
-    return {
-      elements: result.path.map(element => new Element(element, 'field', 128, 2)),
-      positions: new Element(result.positions, 'field', 128, 1),
-    };
-  });
+  const pathC = await cv.computePath(account, fTokenShield, zC, zCIndex);
+  const pathCElements = {
+    elements: pathC.path.map(element => new Element(element, 'field', 128, 2)),
+    positions: new Element(pathC.positions, 'field', 128, 1),
+  };
+  // console.log(`pathCElements.path:`, pathCElements.elements);
+  // console.log(`pathCElements.positions:`, pathCElements.positions);
+  const pathD = await cv.computePath(account, fTokenShield, zD, zDIndex);
+  const pathDElements = {
+    elements: pathD.path.map(element => new Element(element, 'field', 128, 2)),
+    positions: new Element(pathD.positions, 'field', 128, 1),
+  };
+  // console.log(`pathDlements.path:`, pathDElements.elements);
+  // console.log(`pathDlements.positions:`, pathDElements.positions);
 
-  if (pathD.elements[0].hex !== root || pathC.elements[0].hex !== root)
-    throw new Error('Root inequality');
+  // Although we only strictly need the root to be reconciled within zokrates, it's easier to check and intercept any errors in js; so we'll first try to reconcole here:
+  cv.checkRoot(zC, pathC, root);
+  cv.checkRoot(zD, pathD, root);
 
   console.group('Existing Proof Variables:');
   const p = config.ZOKRATES_PACKING_SIZE;
@@ -475,12 +480,12 @@ async function transfer(
       new Element(C, 'field', 128, 1),
       new Element(skA, 'field'),
       new Element(S_C, 'field'),
-      ...pathC.elements.slice(1),
-      pathC.positions,
+      ...pathCElements.elements.slice(1),
+      pathCElements.positions,
       new Element(D, 'field', 128, 1),
       new Element(S_D, 'field'),
-      ...pathD.elements.slice(1),
-      pathD.positions,
+      ...pathDElements.elements.slice(1),
+      pathDElements.positions,
       new Element(nC, 'field'),
       new Element(nD, 'field'),
       new Element(E, 'field', 128, 1),
@@ -490,7 +495,7 @@ async function transfer(
       new Element(F, 'field', 128, 1),
       new Element(S_F, 'field'),
       new Element(zF, 'field'),
-      pathC.elements[0],
+      pathCElements.elements[0],
     ],
     hostDir,
     'TransferCoin',
@@ -544,13 +549,6 @@ async function burn(C, skA, S_C, zC, zCIndex, account, _payTo) {
   if (payTo === undefined) payTo = account; // have the option to pay out to another address
   // before we can burn, we need to deploy a verifying key to mintVerifier (reusing mint for this)
   console.group('\nIN BURN...');
-  console.log('C', C);
-  console.log('skA', skA);
-  console.log('S_C', S_C);
-  console.log('zC', zC);
-  console.log('zCIndex', zCIndex);
-  console.log('account', account);
-  console.log('payTo', payTo);
 
   console.log('Finding the relevant Shield and Verifier contracts');
   const fTokenShield = shield[account] ? shield[account] : await FTokenShield.deployed();
@@ -577,13 +575,17 @@ async function burn(C, skA, S_C, zC, zCIndex, account, _payTo) {
   // Calculate new arguments for the proof:
   const Nc = utils.concatenateThenHash(S_C, skA);
 
-  // we need the Merkle path from the commitment to the root, expressed as Elements
-  const path = await cv.computePath(account, fTokenShield, zC, zCIndex).then(result => {
-    return {
-      elements: result.path.map(element => new Element(element, 'field', 128, 2)),
-      positions: new Element(result.positions, 'field', 128, 1),
-    };
-  });
+  // We need the Merkle path from the commitment to the root, expressed as Elements
+  const path = await cv.computePath(account, fTokenShield, zC, zCIndex);
+  const pathElements = {
+    elements: path.path.map(element => new Element(element, 'field', 128, 2)),
+    positions: new Element(path.positions, 'field', 128, 1),
+  };
+  // console.log(`pathElements.path:`, pathElements.elements);
+  // console.log(`pathElements.positions:`, pathElements.positions);
+
+  // Although we only strictly need the root to be reconciled within zokrates, it's easier to check and intercept any errors in js; so we'll first try to reconcole here:
+  cv.checkRoot(zC, path, root);
 
   // Summarise values in the console:
   console.group('Existing Proof Variables:');
@@ -591,7 +593,7 @@ async function burn(C, skA, S_C, zC, zCIndex, account, _payTo) {
   console.log(`C: ${C} : ${utils.hexToFieldPreserve(C, p)}`);
   console.log(`skA: ${skA} : ${utils.hexToFieldPreserve(skA, p)}`);
   console.log(`S_C: ${S_C} : ${utils.hexToFieldPreserve(S_C, p)}`);
-  console.log(`payTo: ${payTo}`);
+  console.log(`payTo: ${payTo} : ${utils.hexToFieldPreserve(payTo, p)}`);
   const payToLeftPadded = utils.leftPadHex(payTo, config.INPUTS_HASHLENGTH * 2); // left-pad the payToAddress with 0's to fill all 256 bits (64 octets) (so the sha256 function is hashing the same thing as inside the zokrates proof)
   console.log(`payToLeftPadded: ${payToLeftPadded}`);
   console.groupEnd();
@@ -625,8 +627,8 @@ async function burn(C, skA, S_C, zC, zCIndex, account, _payTo) {
       new Element(C, 'field', 128, 1),
       new Element(skA, 'field'),
       new Element(S_C, 'field'),
-      ...path.elements.slice(1),
-      path.positions,
+      ...pathElements.elements.slice(1),
+      pathElements.positions,
       new Element(Nc, 'field'),
       new Element(root, 'field'),
     ],

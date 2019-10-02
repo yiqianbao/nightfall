@@ -120,18 +120,29 @@ async function computeWitness(container, a, zkpPath) {
   console.log(
     `(you can paste the above line into the container to debug the 'compute-witness' step)`,
   );
-  const exec = await container.exec.create({
-    Cmd: [
-      config.ZOKRATES_APP_FILEPATH_ABS,
-      'compute-witness',
-      '-a',
-      ...a,
-      '-i',
-      path.resolve(config.ZOKRATES_CONTAINER_CODE_DIRPATH_ABS, zkpPath, 'out'),
-    ],
-    AttachStdout: true,
-    AttachStderr: true,
-  });
+  let exec;
+  // handle the case of debugging compute-witness through the setup tool (where no output path is specified):
+  if (!zkpPath) {
+    // then we're debugging
+    exec = await container.exec.create({
+      Cmd: [config.ZOKRATES_APP_FILEPATH_ABS, 'compute-witness', '-a', ...a],
+      AttachStdout: true,
+      AttachStderr: true,
+    });
+  } else {
+    exec = await container.exec.create({
+      Cmd: [
+        config.ZOKRATES_APP_FILEPATH_ABS,
+        'compute-witness',
+        '-a',
+        ...a,
+        '-i',
+        path.resolve(config.ZOKRATES_CONTAINER_CODE_DIRPATH_ABS, zkpPath, 'out'),
+      ],
+      AttachStdout: true,
+      AttachStderr: true,
+    });
+  }
   return promisifyStream(await exec.start(), 'compute-witness'); // return a promisified stream
 }
 
