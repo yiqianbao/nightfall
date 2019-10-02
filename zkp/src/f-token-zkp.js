@@ -212,8 +212,7 @@ async function checkCorrectness(C, pk, S, z, zIndex, fTokenShield) {
   console.log('zCheck:', zCheck);
 
   console.log('Checking z exists on-chain...');
-  const leafIndex = utils.getLeafIndexFromZCount(zIndex);
-  const zOnchain = await fTokenShield.merklTree.call(leafIndex, {}); // lookup the nfTokenShield token merkle tree - we hope to find our new z at this index!
+  const zOnchain = await fTokenShield.commitments.call(z, {}); // lookup the nfTokenShield commitment mapping - we hope to find our new z here!
   const zOnchainCorrect = zOnchain === z;
   console.log('z:', z);
   console.log('zOnchain:', zOnchain);
