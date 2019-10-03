@@ -395,7 +395,9 @@ function decToFieldPreserve(decStr, packingSize) {
 }
 
 function isProbablyBinary(arr) {
-  return !arr.find(el => el !== 0 || el !== 1);
+  const foundField = arr.find(el => el !== 0 && el !== 1);
+  // ...hence it is not binary:
+  return !foundField;
 }
 
 // FUNCTIONS ON FIELDS

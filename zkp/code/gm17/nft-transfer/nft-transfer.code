@@ -51,7 +51,7 @@ def unpackPath(field p)->(field[216]):
 
 // Each field element passed to main() can be at most 128bits, to make use of unpack128() so most variables occupy two fields (except the publicInputHash, which we maximize as 248-bits)
 
-def main(field publicInputHash, private field assetHigh, private field assetLow, private field[32] path, private field order, private field nullifierHigh, private field nullifierLow, private field publicKeyBHigh, private field publicKeyBLow, private field  saltAHigh, private field saltALow, private field saltBHigh, private field  saltBLow, private field secretKeyAHigh, private field secretKeyALow, private field rootHigh, private field rootLow, private field commitmentBHigh, private field commitmentBLow)->(field):
+def main(field publicInputHash, private field assetHigh, private field assetLow, private field[32] path, private field order, private field nullifierHigh, private field nullifierLow, private field publicKeyBHigh, private field publicKeyBLow, private field  saltAHigh, private field saltALow, private field saltBHigh, private field  saltBLow, private field secretKeyAHigh, private field secretKeyALow, private field rootHigh, private field rootLow, private field commitmentBHigh, private field commitmentBLow)->():
 
 	// Unpack the inputs of main() to 128 bits. We'll unpack each field to its own 128 bit strings for simplicity for now. Later efficiencies could be made by grouping some inputs.
 
@@ -148,4 +148,4 @@ def main(field publicInputHash, private field assetHigh, private field assetLow,
 	publicInputHashBits[8..256] == publicInputHashBitsCheck[8..256]
 
 
-	return 1
+	return

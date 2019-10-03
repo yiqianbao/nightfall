@@ -115,11 +115,7 @@ async function compile(container, codeFile) {
 
 async function computeWitness(container, a, zkpPath) {
   console.log('\nCompute-witness...');
-  // var config = Config.getProps()
-  console.log('./zokrates compute-witness -a ', ...a);
-  console.log(
-    `(you can paste the above line into the container to debug the 'compute-witness' step)`,
-  );
+
   let exec;
   // handle the case of debugging compute-witness through the setup tool (where no output path is specified):
   if (!zkpPath) {
@@ -130,6 +126,10 @@ async function computeWitness(container, a, zkpPath) {
       AttachStderr: true,
     });
   } else {
+    console.log('./zokrates compute-witness', '-a', ...a, '-i', `code/${zkpPath}out`);
+    console.log(
+      `(you can paste the above line into the container to debug the 'compute-witness' step)`,
+    );
     exec = await container.exec.create({
       Cmd: [
         config.ZOKRATES_APP_FILEPATH_ABS,

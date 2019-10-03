@@ -80,7 +80,7 @@ def unpackPath(field p)->(field[216]):
 
 // Each field element passed to main() can be at most 128bits, to make use of unpack128() so most variables occupy two fields (except the publicInputHash, which we maximize as 248-bits)
 
-def main(field publicInputHash, private field valueC, private field secretKeyAHigh, private field  secretKeyALow, private field saltCHigh, private field saltCLow, private field[32] pathC, private field orderC, private field valueD, private field saltDHigh, private field saltDLow, private field[32] pathD, private field orderD, private field nullifierCHigh, private field nullifierCLow, private field nullifierDHigh, private field nullifierDLow, private field valueE, private field publicKeyBHigh, private field publicKeyBLow, private field saltEHigh, private field saltELow, private field commitmentEHigh, private field commitmentELow, private field valueF, private field saltFHigh, private field saltFLow, private field commitmentFHigh, private field commitmentFLow, private field rootHigh, private field rootLow)->(field):
+def main(field publicInputHash, private field valueC, private field secretKeyAHigh, private field  secretKeyALow, private field saltCHigh, private field saltCLow, private field[32] pathC, private field orderC, private field valueD, private field saltDHigh, private field saltDLow, private field[32] pathD, private field orderD, private field nullifierCHigh, private field nullifierCLow, private field nullifierDHigh, private field nullifierDLow, private field valueE, private field publicKeyBHigh, private field publicKeyBLow, private field saltEHigh, private field saltELow, private field commitmentEHigh, private field commitmentELow, private field valueF, private field saltFHigh, private field saltFLow, private field commitmentFHigh, private field commitmentFLow, private field rootHigh, private field rootLow)->():
 
 	// Unpack the inputs of main() to 128 bits. We'll unpack each field to its own 128 bit string for simplicity for now. Later efficiencies could be made by grouping some inputs.
 
@@ -252,4 +252,4 @@ def main(field publicInputHash, private field valueC, private field secretKeyAHi
 	publicInputHashBits[8..256] == publicInputHashBitsCheck[8..256]
 
 
-	return 1
+	return

@@ -28,7 +28,7 @@ def shaPad768To1024()->(field[256]):
 // Each field element passed to main() can be at most 128bits, to make use of unpack128() so most variables occupy two fields (except the publicInputHash, which we maximize as 248-bits)
 
 
-def main(field publicInputHash, private field assetHigh, private field  assetLow, private field publicKeyHigh, private field publicKeyLow, private field saltHigh, private field saltLow, private field commitmentHigh, private field commitmentLow)->(field):
+def main(field publicInputHash, private field assetHigh, private field  assetLow, private field publicKeyHigh, private field publicKeyLow, private field saltHigh, private field saltLow, private field commitmentHigh, private field commitmentLow)->():
 
 
 	// Unpack the inputs of main() to 128 bits. We'll unpack each field to its own 128 bit string for simplicity for now. Later efficiencies could be made by grouping some inputs.
@@ -74,4 +74,4 @@ def main(field publicInputHash, private field assetHigh, private field  assetLow
 	publicInputHashBits[8..256] == publicInputHashBitsCheck[8..256]
 
 
-	return 1
+	return

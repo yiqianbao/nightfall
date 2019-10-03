@@ -169,25 +169,26 @@ async function setup(codeFile, outputDirPath, backend, a) {
         );
       outVals = outVals.reverse(); // the outputs of zokrates are the wrong way around
 
-      if (!s) console.log(`outVals: \n${outVals}`);
-
       let outVal;
-      switch (utils().isProbablyBinary(outVals)) {
-        case 'decimal':
+      console.log(outVals);
+      switch (utils.isProbablyBinary(outVals)) {
+        case false:
+          console.log("'field' element detected as output");
           console.group('\nOutput from compute-witness:\n');
           console.log(`output array length: ${outVals.length}\n`);
-          console.log(`bin:  ${outVals.forEach(val => utils().decToBin(val))}`);
+          console.log(`bin:  ${outVals.forEach(val => utils.decToBin(val))}`);
           console.log(`dec:  ${outVals}`);
-          console.log(`hex:  ${outVals.forEach(val => utils().decToHex(val))}`);
+          console.log(`hex:  ${outVals.forEach(val => utils.decToHex(val))}`);
           console.groupEnd();
           break;
-        default:
+        case true:
+          console.log("'binary' array detected as output");
           outVal = outVals.join('');
           console.group('\nOutput from compute-witness:\n');
           console.log(`output array length: ${outVals.length}\n`);
           console.log(`bin:  ${outVal}`);
-          console.log(`dec:  ${utils().binToDec(outVal)}`);
-          console.log(`hex:  ${utils().binToHex(outVal)}`);
+          console.log(`dec:  ${utils.binToDec(outVal)}`);
+          console.log(`hex:  ${utils.binToHex(outVal)}`);
           console.groupEnd();
       }
       console.log(codeFileName, 'SETUP MESSAGE: CREATE WITNESS COMPLETE');
