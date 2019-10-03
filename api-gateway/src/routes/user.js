@@ -165,5 +165,4 @@ router.route('/getAllRegisteredNames').get(getAllRegisteredNames);
  */
 router.get('/getUserDetails', getUserDetails);
 
->>>>>>> refactor: database proxy removed all api are handled from orchestration
 export default router;
