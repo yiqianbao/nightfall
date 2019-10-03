@@ -111,7 +111,7 @@ export class TokenApiService {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
-    let url = config.database.root + 'nft-commitments?';
+    let url = config.apiGateway.root + 'token?';
 
     if (pageNo) {
       url += 'pageNo=' + pageNo + '&';

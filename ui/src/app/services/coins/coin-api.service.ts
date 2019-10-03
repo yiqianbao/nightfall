@@ -107,7 +107,7 @@ export class CoinApiService {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
-    const url = config.database.root + 'ft-commitments';
+    const url = config.apiGateway.root + 'coin';
 
     return this.http
       .get(url, httpOptions)
