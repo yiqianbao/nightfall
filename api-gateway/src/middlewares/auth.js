@@ -5,12 +5,12 @@ const noAuthRoutes = ['/login', 'createAccount'];
 const JWT_SECRET = 'secret';
 
 export function createToken(data, password) {
+  const jwtData = { ...data, password: encryptPassword(password) };
   // delete all secret info user info before creating jwt token.
-  delete data.secretkey;
-  delete data.shh_identity;
-  delete data.password;
+  delete jwtData.secretkey;
+  delete jwtData.shh_identity;
 
-  return jwt.sign({ ...data, password: encryptPassword(password) }, JWT_SECRET);
+  return jwt.sign(jwtData, JWT_SECRET);
 }
 
 export function authentication(req, res, next) {
