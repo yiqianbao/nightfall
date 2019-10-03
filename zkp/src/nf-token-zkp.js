@@ -112,7 +112,6 @@ This function creates a nf token commitment.
 */
 async function mint(proof, inputs, vkId, tokenId, commitment, account, nfTokenShield) {
   const accountWith0x = utils.ensure0x(account);
-  const finalInputs = [...inputs, '1'];
 
   // mint within the shield contract
   console.group('Minting within the Shield contract');
@@ -120,10 +119,10 @@ async function mint(proof, inputs, vkId, tokenId, commitment, account, nfTokenSh
   console.log('proof:');
   console.log(proof);
   console.log('inputs:');
-  console.log(finalInputs);
+  console.log(inputs);
   console.log(`vkId: ${vkId}`);
 
-  const txReceipt = await nfTokenShield.mint(proof, finalInputs, vkId, tokenId, commitment, {
+  const txReceipt = await nfTokenShield.mint(proof, inputs, vkId, tokenId, commitment, {
     from: accountWith0x,
     gas: 6500000,
     gasPrice: config.GASPRICE,
@@ -152,7 +151,6 @@ key and the transfer input vector having been input.
 */
 async function transfer(proof, inputs, vkId, root, nullifier, commitment, account, nfTokenShield) {
   const accountWith0x = utils.ensure0x(account);
-  const finalInputs = [...inputs, 1];
 
   // transfer within the shield contract
   console.group('Transferring within the Shield contract');
@@ -160,22 +158,14 @@ async function transfer(proof, inputs, vkId, root, nullifier, commitment, accoun
   console.log('proof:');
   console.log(proof);
   console.log('inputs:');
-  console.log(finalInputs);
+  console.log(inputs);
   console.log(`vkId: ${vkId}`);
 
-  const txReceipt = await nfTokenShield.transfer(
-    proof,
-    finalInputs,
-    vkId,
-    root,
-    nullifier,
-    commitment,
-    {
-      from: accountWith0x,
-      gas: 6500000,
-      gasPrice: config.GASPRICE,
-    },
-  );
+  const txReceipt = await nfTokenShield.transfer(proof, inputs, vkId, root, nullifier, commitment, {
+    from: accountWith0x,
+    gas: 6500000,
+    gasPrice: config.GASPRICE,
+  });
 
   const tokenIndex = txReceipt.logs[0].args.commitment_index; // log for: event Transfer;
 
@@ -203,30 +193,20 @@ computed.
 */
 async function burn(proof, inputs, vkId, root, nullifier, tokenId, payTo, account, nfTokenShield) {
   const accountWith0x = utils.ensure0x(account);
-  const finalInputs = [...inputs, '1'];
 
   console.group('Burning within the Shield contract');
 
   console.log('proof:');
   console.log(proof);
   console.log('inputs:');
-  console.log(finalInputs);
+  console.log(inputs);
   console.log(`vkId: ${vkId}`);
 
-  const txReceipt = await nfTokenShield.burn(
-    proof,
-    finalInputs,
-    vkId,
-    root,
-    nullifier,
-    tokenId,
-    payTo,
-    {
-      from: accountWith0x,
-      gas: 6500000,
-      gasPrice: config.GASPRICE,
-    },
-  );
+  const txReceipt = await nfTokenShield.burn(proof, inputs, vkId, root, nullifier, tokenId, payTo, {
+    from: accountWith0x,
+    gas: 6500000,
+    gasPrice: config.GASPRICE,
+  });
 
   const newRoot = await nfTokenShield.latestRoot();
   console.log(`Merkle Root after burn: ${newRoot}`);

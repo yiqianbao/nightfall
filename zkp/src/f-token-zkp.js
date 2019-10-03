@@ -70,9 +70,8 @@ This function creates an f token commitment.
 @param {contract} fTokenShield - an instance of the TokenShield contract
 @return {integer} coinIndex - the index of the z_B token within the on-chain Merkle Tree
 */
-async function mint(proof, _inputs, vkId, value, commitment, _account, fTokenShield) {
+async function mint(proof, inputs, vkId, value, commitment, _account, fTokenShield) {
   const account = utils.ensure0x(_account);
-  const inputs = [..._inputs, '1'];
 
   console.group('Minting within the Shield contract');
 
@@ -112,7 +111,7 @@ computed.
 */
 async function transfer(
   proof,
-  _inputs,
+  inputs,
   vkId,
   root,
   nullifierC,
@@ -123,7 +122,6 @@ async function transfer(
   fTokenShield,
 ) {
   const account = utils.ensure0x(_account);
-  const inputs = [..._inputs, '1'];
 
   console.group('Transferring within the Shield contract');
 
@@ -176,9 +174,8 @@ computed.
 @param {string} vkId is a unique ID for the vk, used by the verifier contract to lookup the correct vk.
 @returns {object} burnResponse - a promise that resolves into the transaction hash
 */
-async function burn(proof, _inputs, vkId, root, nullifier, value, payTo, _account, fTokenShield) {
+async function burn(proof, inputs, vkId, root, nullifier, value, payTo, _account, fTokenShield) {
   const account = utils.ensure0x(_account);
-  const inputs = [..._inputs, '1'];
 
   console.group('Burning within the Shield contract');
 
