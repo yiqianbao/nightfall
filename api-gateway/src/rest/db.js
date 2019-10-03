@@ -28,6 +28,7 @@ export default {
     return requestWrapper(options);
   },
 
+  // initalize db connection at time first login
   configureDBconnection(body) {
     const options = {
       url: `${url}/db-connection`,
@@ -55,6 +56,70 @@ export default {
       method: 'PATCH',
       json: true,
       body,
+    };
+    return requestWrapper(options);
+  },
+
+  // insert new coin shield contract info for user in user collection
+  addFTShieldContractInfo({ name }, body) {
+    const options = {
+      url: `${url}/users/${name}/ft-shield-contracts`,
+      method: 'POST',
+      json: true,
+      body,
+    };
+    return requestWrapper(options);
+  },
+
+  // insert new token shield contract info for user in user collection
+  addNFTShieldContractInfo({ name }, body) {
+    const options = {
+      url: `${url}/users/${name}/nft-shield-contracts`,
+      method: 'POST',
+      json: true,
+      body,
+    };
+    return requestWrapper(options);
+  },
+
+  // update coin shield contract info for user in user collection
+  updateFTShieldContractInfoByContractAddress({ name }, contractAdress, body) {
+    const options = {
+      url: `${url}/users/${name}/ft-shield-contracts/${contractAdress}`,
+      method: 'PUT',
+      json: true,
+      body,
+    };
+    return requestWrapper(options);
+  },
+
+  // update token shield contract info for user in user collection
+  updateNFTShieldContractInfoByContractAddress({ name }, contractAdress, body) {
+    const options = {
+      url: `${url}/users/${name}/nft-shield-contracts/${contractAdress}`,
+      method: 'PUT',
+      json: true,
+      body,
+    };
+    return requestWrapper(options);
+  },
+
+  // delete coin shield contract info for user from user collection
+  deleteFTShieldContractInfoByContractAddress({ name }, contractAdress) {
+    const options = {
+      url: `${url}/users/${name}/ft-shield-contracts/${contractAdress}`,
+      method: 'DELETE',
+      json: true,
+    };
+    return requestWrapper(options);
+  },
+
+  // delete token shield contract info for user from user collection
+  deleteNFTShieldContractInfoByContractAddress({ name }, contractAdress) {
+    const options = {
+      url: `${url}/users/${name}/nft-shield-contracts/${contractAdress}`,
+      method: 'DELETE',
+      json: true,
     };
     return requestWrapper(options);
   },
@@ -88,7 +153,7 @@ export default {
       url: `${url}/nfts/${tokenId}`,
       method: 'PATCH',
       json: true,
-      headers: { loggedInUsername: name},
+      headers: { loggedInUsername: name },
       body,
     };
     return requestWrapper(options);
@@ -106,6 +171,17 @@ export default {
     return requestWrapper(options);
   },
 
+  // fetch NFT transactions
+  getNFTTransactions({ name }, qs) {
+    const options = {
+      url: `${url}/nfts/transactions`,
+      method: 'GET',
+      json: true,
+      headers: { loggedInUsername: name },
+      qs,
+    };
+    return requestWrapper(options);
+  },
 
   // insert non-fungible token commitment info in nft_commitment collection
   insertNFTCommitment({ name }, body) {
@@ -131,12 +207,26 @@ export default {
     return requestWrapper(options);
   },
 
-  getNFTCommitments({ name }) {
+  // fetch NFT commitments
+  getNFTCommitments({ name }, qs) {
     const options = {
       url: `${url}/nft-commitments`,
       method: 'GET',
       json: true,
       headers: { loggedInUsername: name },
+      qs,
+    };
+    return requestWrapper(options);
+  },
+
+  // fetch NFT commitment transactions
+  getNFTCommitmentTransactions({ name }, qs) {
+    const options = {
+      url: `${url}/nft-commitments/transactions`,
+      method: 'GET',
+      json: true,
+      headers: { loggedInUsername: name },
+      qs,
     };
     return requestWrapper(options);
   },
@@ -149,6 +239,18 @@ export default {
       json: true,
       headers: { loggedInUsername: name },
       body,
+    };
+    return requestWrapper(options);
+  },
+
+  // fetch FT transactions
+  getFTTransactions({ name }, qs) {
+    const options = {
+      url: `${url}/fts/transactions`,
+      method: 'GET',
+      json: true,
+      headers: { loggedInUsername: name },
+      qs,
     };
     return requestWrapper(options);
   },
@@ -177,6 +279,7 @@ export default {
     return requestWrapper(options);
   },
 
+  // fetch FT Commitments
   getFTCommitments({ name }) {
     const options = {
       url: `${url}/ft-commitments`,
@@ -193,79 +296,19 @@ export default {
       url: `${url}/ft-commitments/transactions`,
       method: 'POST',
       json: true,
-      headers: { name },
+      headers: { loggedInUsername: name },
       body,
     };
     return requestWrapper(options);
   },
 
-  // insert new coin shield contract info for user in user collection
-  addCoinShieldContractAddress({ name }, body) {
+  // fetch FT Commitments transactions
+  getFTCommitmentTransactions({ name }, qs) {
     const options = {
-      url: `${url}/user/coinShield`,
-      method: 'POST',
-      headers: { name },
+      url: `${url}/ft-commitments/transactions`,
+      method: 'GET',
       json: true,
-      body,
-    };
-    return requestWrapper(options);
-  },
-
-  // update coin shield contract info for user in user collection
-  updateCoinShieldContractAddress({ name }, body) {
-    const options = {
-      url: `${url}/user/coinShield`,
-      method: 'PUT',
-      headers: { name },
-      json: true,
-      body,
-    };
-    return requestWrapper(options);
-  },
-
-  // delete coin shield contract info for user from user collection
-  deleteCoinShieldContractAddress({ name }, qs) {
-    const options = {
-      url: `${url}/user/coinShield`,
-      method: 'DELETE',
-      headers: { name },
-      json: true,
-      qs,
-    };
-    return requestWrapper(options);
-  },
-
-  // insert new token shield contract info for user in user collection
-  addTokenShieldContractAddress({ name }, body) {
-    const options = {
-      url: `${url}/user/tokenShield`,
-      method: 'POST',
-      headers: { name },
-      json: true,
-      body,
-    };
-    return requestWrapper(options);
-  },
-
-  // update token shield contract info for user in user collection
-  updateTokenShieldContractAddress({ name }, body) {
-    const options = {
-      url: `${url}/user/tokenShield`,
-      method: 'PUT',
-      headers: { name },
-      json: true,
-      body,
-    };
-    return requestWrapper(options);
-  },
-
-  // delete token shield contract info for user from user collection
-  deleteTokenShieldContractAddress({ name }, qs) {
-    const options = {
-      url: `${url}/user/tokenShield`,
-      method: 'DELETE',
-      headers: { name },
-      json: true,
+      headers: { loggedInUsername: name },
       qs,
     };
     return requestWrapper(options);

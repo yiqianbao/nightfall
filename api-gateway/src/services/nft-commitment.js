@@ -1,6 +1,85 @@
 import { whisperTransaction } from './whisper';
 import { accounts, db, offchain, zkp } from '../rest';
 
+/**
+ * This function will insert NFT commitment in database
+ * req.user {
+    address: '0x04b95c76d5075620a655b707a7901462aea8656d',
+    name: 'alice',
+    pk_A: '0x4c45963a12f0dfa530285fde66ac235c8f8ddf8d178098cdb292ac',
+    password: 'alicesPassword'
+ }
+ * req.body {
+    tokenUri: 'unique token name'
+    tokenId: '0x1448d8ab4e0d610000000000000000000000000000000000000000000000000'
+    salt: '0xE9A313C89C449AF6E630C25AB3ACC0FC3BAB821638E0D55599B518',
+    commitment: '0xdd3434566',
+    commitmentIndex: 1,
+    isReceived: true,
+    zCorrect: true,
+    zOnchainCorrect: true,
+  }
+ * @param {*} req
+ * @param {*} res
+ */
+export async function insertNFTCommitmentToDb(req, res, next) {
+  try {
+    res.data = await db.insertNFTCommitment(req.user, req.body);
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * This function will fetch NFT commitments from database
+ * req.user {
+    address: '0x04b95c76d5075620a655b707a7901462aea8656d',
+    name: 'alice',
+    pk_A: '0x4c45963a12f0dfa530285fde66ac235c8f8ddf8d178098cdb292ac',
+    password: 'alicesPassword'
+ }
+ * req.query {
+    pageNo: 1,
+    limit: 4
+  }
+ * @param {*} req
+ * @param {*} res
+ */
+export async function getNFTCommitments(req, res, next) {
+  try {
+    res.data = await db.getNFTCommitments(req.user, req.query);
+    console.log(res.data);
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * This function will fetch NFT commitment transactions from database
+ * req.user {
+    address: '0x04b95c76d5075620a655b707a7901462aea8656d',
+    name: 'alice',
+    pk_A: '0x4c45963a12f0dfa530285fde66ac235c8f8ddf8d178098cdb292ac',
+    password: 'alicesPassword'
+ }
+ * req.query {
+    pageNo: 1,
+    limit: 4
+  }
+ * @param {*} req
+ * @param {*} res
+ */
+export async function getNFTCommitmentTransactions(req, res, next) {
+  try {
+    res.data = await db.getNFTCommitmentTransactions(req.user, req.query);
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
 // check correctness
 export async function checkCorrectnessToken(req, res, next) {
   try {
@@ -29,7 +108,7 @@ export async function checkCorrectnessToken(req, res, next) {
  * @param {*} res
  */
 export async function mintToken(req, res, next) {
-  const {uri, tokenID, contractAddress} = req.body;
+  const { uri, tokenID, contractAddress } = req.body;
   try {
     // mint a private 'token commitment' within the shield contract to represent the public NFToken with the specified tokenID
     const { data } = await zkp.mintToken(req.user, {
@@ -50,7 +129,7 @@ export async function mintToken(req, res, next) {
 
     // update public_token db: set is_shielded to 'true' to indicate that the token is 'in escrow' in the shield contract.
     await db.updateNFTokenByTokenId(req.user, tokenID, {
-      uri: uri,
+      uri,
       tokenId: tokenID,
       shieldContractAddress: contractAddress,
       isShielded: true,
@@ -161,7 +240,7 @@ export async function burnToken(req, res, next) {
   try {
     const payToAddress = await offchain.getAddressFromName(req.body.payTo || req.user.name);
 
-     // get logged in user.
+    // get logged in user.
     const user = await db.fetchUser(req.user);
     // Release the public token from escrow:
     // Nullify the burnor's 'token commitment' within the shield contract.

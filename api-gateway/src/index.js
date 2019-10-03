@@ -37,7 +37,7 @@ app.use(cors()); // cross origin filter
 app.use(authentication);
 
 app.use('/zkp', unlockAccount, proxy(config.zkp.url));
-app.use('/database', proxy(config.database.url));
+
 app.use('/', unlockAccount, router);
 app.use('/', rootRouter);
 app.use('/token', nftCommitmentRoutes);
