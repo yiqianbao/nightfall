@@ -3,22 +3,16 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import logger from './logger';
 import { setDB, dbConnection, formatResponse, formatError, errorHandler } from './middlewares';
-import {
-  initializeAccountRoutes,
+import configureRoutesToPraseParams, {
   initializeNftRoutes,
   initializeNftCommitmentRoutes,
   initializeFtRoutes,
   initializeFtCommitmentRoutes,
-  initializeUserRoutes
+  initializeUserRoutes,
 } from './routes';
 
 const app = express();
 const router = Router();
-
-function parseParams(req, res, next) {
-  req.username = req.params.name;
-  next();
-}
 
 app.use(cors());
 
@@ -26,14 +20,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(bodyParser.json());
 
-app.all('/users/:name', parseParams);
-app.all('/users/:name/private-accounts', parseParams);
+configureRoutesToPraseParams(app);
 
 app.use(dbConnection);
 app.use(setDB);
 app.use(router);
 
-initializeAccountRoutes(router);
 initializeNftRoutes(router);
 initializeNftCommitmentRoutes(router);
 initializeFtRoutes(router);

@@ -67,7 +67,7 @@ async function getNFTCommitments(req, res, next) {
  * @param {*} res
  */
 async function updateNFTCommitmentByTokenId(req, res, next) {
-  const {tokenId} = req.params;
+  const { tokenId } = req.params;
   const nftCommitmentService = new NftCommitmentService(req.user.db);
   try {
     await nftCommitmentService.updateNFTCommitmentByTokenId(tokenId, req.body);

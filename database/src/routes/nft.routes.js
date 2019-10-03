@@ -45,7 +45,7 @@ async function insertNFToken(req, res, next) {
  * @param {*} res
  */
 async function updateNFTokenByTokenId(req, res, next) {
-  const {tokenId} = req.params;
+  const { tokenId } = req.params;
   try {
     const nftService = new NftService(req.user.db);
     await nftService.updateNFTokenByTokenId(tokenId, req.body);

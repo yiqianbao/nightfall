@@ -2,6 +2,25 @@ import { UserService } from '../business';
 import { setDB } from '../middlewares';
 
 /**
+ * This function will create or get mongo db connection
+ * req.body = {
+ *  name: 'a',
+ *  password: 'a',
+ * }
+ * @param {*} req
+ * @param {*} res
+ */
+async function configureDBconnection(req, res, next) {
+  const { name, password } = req.body;
+  try {
+    const connection = await UserService.setDBconnection(name, password);
+    req.user.connection = connection;
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+/**
  * This function will create a user(public ethereum account)
  * req.body = {
  *  name: 'a',
@@ -66,11 +85,132 @@ async function insertPrivateAccountHandler(req, res, next) {
   }
 }
 
-async function configureDBconnection(req, res, next) {
-  const {name, password} = req.body;
+/**
+ * this function is used to add ERC-20 Contract related information in user table, such as contract addresses,
+ * account address to which user hold ERC-20 token and password of that account address used to unlock account.
+ * req.body = {
+ *  contractAddress,
+ *  accountAddress,
+ *  accountPassword
+ * }
+ * @param {*} req
+ * @param {*} res
+ */
+async function addFTShieldContractInfo(req, res, next) {
+  const userService = new UserService(req.user.db);
   try {
-    const connection = await UserService.setDBconnection(name, password);
-    req.user.connection = connection;
+    await userService.addFTShieldContractInfo(req.body);
+    res.data = { message: 'Contract Information Inserted' };
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * this function is used to update ERC-20 Contract related information in user table, such as contract addresses,
+ * account address to which user hold ERC-20 token and password of that account address used to unlock account.
+ * req.body = {
+ *  contractAddress,
+ *  accountAddress,
+ *  accountPassword
+ * }
+ * @param {*} req
+ * @param {*} res
+ */
+async function updateFTShieldContractInfoByContractAddress(req, res, next) {
+  const { address } = req.params;
+  const userService = new UserService(req.user.db);
+  try {
+    await userService.updateFTShieldContractInfoByContractAddress(address, req.body);
+    res.data = { message: 'Contract Information Updated' };
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * this function is used to remove ERC-20 contract related information from user table
+ * req.query = {
+ *  contractAddress
+ * }
+ * @param {*} req
+ * @param {*} res
+ */
+async function deleteFTShieldContractInfoByContractAddress(req, res, next) {
+  const userService = new UserService(req.user.db);
+  try {
+    const status = await userService.deleteFTShieldContractInfoByContractAddress(
+      req.params.address,
+    );
+    res.data = { message: 'Contract Information Removed', status };
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * this function is used to add ERC-721 contract related information in user table, such as contract addresses,
+ * account address to which user hold ERC-721 token and password of that account address used to unlock account.
+ * req.body = {
+ *  contractAddress,
+ *  accountAddress,
+ *  accountPassword
+ * }
+ * @param {*} req
+ * @param {*} res
+ */
+async function addNFTShieldContractInfo(req, res, next) {
+  const userService = new UserService(req.user.db);
+  try {
+    await userService.addNFTShieldContractInfo(req.body);
+    res.data = { message: 'Contract Information Inserted' };
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * this function is used to update ERC-721 Contract related information in user table, such as contract addresses,
+ * account address to which user hold ERC-721 token and password of that account address used to unlock account.
+ * req.body = {
+ *  contractAddress,
+ *  accountAddress,
+ *  accountPassword
+ * }
+ * @param {*} req
+ * @param {*} res
+ */
+async function updateNFTShieldContractInfoByContractAddress(req, res, next) {
+  const { address } = req.params;
+  const userService = new UserService(req.user.db);
+  try {
+    await userService.updateNFTShieldContractInfoByContractAddress(address, req.body);
+    res.data = { message: 'Contract Information Updated' };
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * this function is used to remove ERC-721 contract related information from user table
+ * req.query = {
+ *  contractAddress
+ * }
+ * @param {*} req
+ * @param {*} res
+ */
+async function deleteNFTShieldContractInfoByContractAddress(req, res, next) {
+  const userService = new UserService(req.user.db);
+  try {
+    const status = await userService.deleteNFTShieldContractInfoByContractAddress(
+      req.params.address,
+    );
+    res.data = { message: 'Contract Information Removed', status };
     next();
   } catch (err) {
     next(err);
@@ -78,12 +218,28 @@ async function configureDBconnection(req, res, next) {
 }
 
 export default function(router) {
+  router.post('/db-connection', configureDBconnection, setDB, getUser);
+
   router.post('/users', createUser);
-  router.route('/users/:name')
+
+  router
+    .route('/users/:name')
     .get(getUser)
     .patch(updateUser);
 
   router.post('/users/:name/private-accounts', insertPrivateAccountHandler);
-  router.post('/db-connection', configureDBconnection, setDB, getUser);
-}
 
+  router.post('/users/:name/ft-shield-contracts', addFTShieldContractInfo);
+
+  router
+    .route('/users/:name/ft-shield-contracts/:address')
+    .put(updateFTShieldContractInfoByContractAddress)
+    .delete(deleteFTShieldContractInfoByContractAddress);
+
+  router.post('/users/:name/nft-shield-contracts', addNFTShieldContractInfo);
+
+  router
+    .route('/users/:name/nft-shield-contracts/:address')
+    .put(updateNFTShieldContractInfoByContractAddress)
+    .delete(deleteNFTShieldContractInfoByContractAddress);
+}

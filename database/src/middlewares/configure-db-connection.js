@@ -13,7 +13,7 @@ export default async function(req, res, next) {
       return next();
     }
 
-    const name = req.headers.name || req.headers.loggedinusername || req.body.name || req.query.name || req.username;
+    const name = req.headers.loggedinusername || req.username;
     if (name) {
       if (!dbConnections[name]) next(new Error('user never loggedIn in'));
       req.user.connection = dbConnections[name];
