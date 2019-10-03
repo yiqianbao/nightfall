@@ -38,7 +38,7 @@ export async function loginHandler(req, res, next) {
 /**
  * This function will create an account
  * req.body {
-     name: 'bob',
+    name: 'bob',
     email: 'bob@email.com',
     password: 'bobsPassword'
   }
