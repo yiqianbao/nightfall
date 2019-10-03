@@ -29,6 +29,11 @@ def shaPad512To1024()->(field[512]):
 def shaPad768To1024()->(field[256]):
 	return [1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1,	0,	0,	0,	0,	0,	0,	0,	0]
 
+// unpacks the bits in a path field ready for sha-ing
+def unpackPath(field p)->(field[216]):
+	field[256] sister = unpack256(p)
+	return sister[40..256]
+
 
 // Inputs for main are:
 // asset - the tokenId of the ERC-721 token
@@ -46,7 +51,7 @@ def shaPad768To1024()->(field[256]):
 
 // Each field element passed to main() can be at most 128bits, to make use of unpack128() so most variables occupy two fields (except the publicInputHash, which we maximize as 248-bits)
 
-def main(field publicInputHash, private field assetHigh, private field assetLow, private field path0High, private field path0Low, private field path1High, private field path1Low, private field path2High, private field path2Low, private field path3High, private field path3Low, private field path4High, private field path4Low, private field path5High, private field path5Low, private field path6High, private field path6Low, private field path7High, private field path7Low, private field path8High, private field path8Low, private field path9High, private field path9Low, private field path10High, private field path10Low, private field path11High, private field path11Low, private field path12High, private field path12Low, private field path13High, private field path13Low, private field path14High, private field path14Low, private field path15High, private field path15Low, private field path16High, private field path16Low, private field path17High, private field path17Low, private field path18High, private field path18Low, private field path19High, private field path19Low, private field path20High, private field path20Low, private field path21High, private field path21Low, private field path22High, private field path22Low, private field path23High, private field path23Low, private field path24High, private field path24Low, private field path25High, private field path25Low, private field path26High, private field path26Low, private field path27High, private field path27Low, private field path28High, private field path28Low, private field path29High, private field path29Low, private field path30High, private field path30Low, private field path31High, private field path31Low, private field order, private field nullifierHigh, private field nullifierLow, private field publicKeyBHigh, private field publicKeyBLow, private field  saltAHigh, private field saltALow, private field saltBHigh, private field  saltBLow, private field secretKeyAHigh, private field secretKeyALow, private field rootHigh, private field rootLow, private field commitmentBHigh, private field commitmentBLow)->(field):
+def main(field publicInputHash, private field assetHigh, private field assetLow, private field[32] path, private field order, private field nullifierHigh, private field nullifierLow, private field publicKeyBHigh, private field publicKeyBLow, private field  saltAHigh, private field saltALow, private field saltBHigh, private field  saltBLow, private field secretKeyAHigh, private field secretKeyALow, private field rootHigh, private field rootLow, private field commitmentBHigh, private field commitmentBLow)->(field):
 
 	// Unpack the inputs of main() to 128 bits. We'll unpack each field to its own 128 bit strings for simplicity for now. Later efficiencies could be made by grouping some inputs.
 
@@ -63,105 +68,6 @@ def main(field publicInputHash, private field assetHigh, private field assetLow,
 	field[128] saltBHighBits = unpack128(saltBHigh)
 	field[128] saltBLowBits = unpack128(saltBLow)
 	field[256] saltBBits = [...saltBHighBits, ...saltBLowBits]
-
-	field[128] path31HighBits = unpack128(path31High)
-	field[128] path30HighBits = unpack128(path30High)
-	field[128] path29HighBits = unpack128(path29High)
-	field[128] path28HighBits = unpack128(path28High)
-	field[128] path27HighBits = unpack128(path27High)
-	field[128] path26HighBits = unpack128(path26High)
-	field[128] path25HighBits = unpack128(path25High)
-	field[128] path24HighBits = unpack128(path24High)
-	field[128] path23HighBits = unpack128(path23High)
-	field[128] path22HighBits = unpack128(path22High)
-	field[128] path21HighBits = unpack128(path21High)
-	field[128] path20HighBits = unpack128(path20High)
-	field[128] path19HighBits = unpack128(path19High)
-	field[128] path18HighBits = unpack128(path18High)
-	field[128] path17HighBits = unpack128(path17High)
-	field[128] path16HighBits = unpack128(path16High)
-	field[128] path15HighBits = unpack128(path15High)
-	field[128] path14HighBits = unpack128(path14High)
-	field[128] path13HighBits = unpack128(path13High)
-	field[128] path12HighBits = unpack128(path12High)
-	field[128] path11HighBits = unpack128(path11High)
-	field[128] path10HighBits = unpack128(path10High)
-	field[128] path9HighBits = unpack128(path9High)
-	field[128] path8HighBits = unpack128(path8High)
-	field[128] path7HighBits = unpack128(path7High)
-	field[128] path6HighBits = unpack128(path6High)
-	field[128] path5HighBits = unpack128(path5High)
-	field[128] path4HighBits = unpack128(path4High)
-	field[128] path3HighBits = unpack128(path3High)
-	field[128] path2HighBits = unpack128(path2High)
-	field[128] path1HighBits = unpack128(path1High)
-	field[128] path0HighBits = unpack128(path0High)
-
-	field[128] path31LowBits = unpack128(path31Low)
-	field[128] path30LowBits = unpack128(path30Low)
-	field[128] path29LowBits = unpack128(path29Low)
-	field[128] path28LowBits = unpack128(path28Low)
-	field[128] path27LowBits = unpack128(path27Low)
-	field[128] path26LowBits = unpack128(path26Low)
-	field[128] path25LowBits = unpack128(path25Low)
-	field[128] path24LowBits = unpack128(path24Low)
-	field[128] path23LowBits = unpack128(path23Low)
-	field[128] path22LowBits = unpack128(path22Low)
-	field[128] path21LowBits = unpack128(path21Low)
-	field[128] path20LowBits = unpack128(path20Low)
-	field[128] path19LowBits = unpack128(path19Low)
-	field[128] path18LowBits = unpack128(path18Low)
-	field[128] path17LowBits = unpack128(path17Low)
-	field[128] path16LowBits = unpack128(path16Low)
-	field[128] path15LowBits = unpack128(path15Low)
-	field[128] path14LowBits = unpack128(path14Low)
-	field[128] path13LowBits = unpack128(path13Low)
-	field[128] path12LowBits = unpack128(path12Low)
-	field[128] path11LowBits = unpack128(path11Low)
-	field[128] path10LowBits = unpack128(path10Low)
-	field[128] path9LowBits = unpack128(path9Low)
-	field[128] path8LowBits = unpack128(path8Low)
-	field[128] path7LowBits = unpack128(path7Low)
-	field[128] path6LowBits = unpack128(path6Low)
-	field[128] path5LowBits = unpack128(path5Low)
-	field[128] path4LowBits = unpack128(path4Low)
-	field[128] path3LowBits = unpack128(path3Low)
-	field[128] path2LowBits = unpack128(path2Low)
-	field[128] path1LowBits = unpack128(path1Low)
-	field[128] path0LowBits = unpack128(path0Low)
-
-	field[256] path31Bits= [...path31HighBits, ...path31LowBits]
-	field[256] path30Bits= [...path30HighBits, ...path30LowBits]
-	field[256] path29Bits= [...path29HighBits, ...path29LowBits]
-	field[256] path28Bits= [...path28HighBits, ...path28LowBits]
-	field[256] path27Bits= [...path27HighBits, ...path27LowBits]
-	field[256] path26Bits= [...path26HighBits, ...path26LowBits]
-	field[256] path25Bits= [...path25HighBits, ...path25LowBits]
-	field[256] path24Bits= [...path24HighBits, ...path24LowBits]
-	field[256] path23Bits= [...path23HighBits, ...path23LowBits]
-	field[256] path22Bits= [...path22HighBits, ...path22LowBits]
-	field[256] path21Bits= [...path21HighBits, ...path21LowBits]
-	field[256] path20Bits= [...path20HighBits, ...path20LowBits]
-	field[256] path19Bits= [...path19HighBits, ...path19LowBits]
-	field[256] path18Bits= [...path18HighBits, ...path18LowBits]
-	field[256] path17Bits= [...path17HighBits, ...path17LowBits]
-	field[256] path16Bits= [...path16HighBits, ...path16LowBits]
-	field[256] path15Bits= [...path15HighBits, ...path15LowBits]
-	field[256] path14Bits= [...path14HighBits, ...path14LowBits]
-	field[256] path13Bits= [...path13HighBits, ...path13LowBits]
-	field[256] path12Bits= [...path12HighBits, ...path12LowBits]
-	field[256] path11Bits= [...path11HighBits, ...path11LowBits]
-	field[256] path10Bits= [...path10HighBits, ...path10LowBits]
-	field[256] path9Bits= [...path9HighBits, ...path9LowBits]
-	field[256] path8Bits= [...path8HighBits, ...path8LowBits]
-	field[256] path7Bits= [...path7HighBits, ...path7LowBits]
-	field[256] path6Bits= [...path6HighBits, ...path6LowBits]
-	field[256] path5Bits= [...path5HighBits, ...path5LowBits]
-	field[256] path4Bits= [...path4HighBits, ...path4LowBits]
-	field[256] path3Bits= [...path3HighBits, ...path3LowBits]
-	field[256] path2Bits= [...path2HighBits, ...path2LowBits]
-	field[256] path1Bits= [...path1HighBits, ...path1LowBits]
-	field[256] path0Bits= [...path0HighBits, ...path0LowBits]
 
 	field[128] saltAHighBits = unpack128(saltAHigh)
 	field[128] saltALowBits = unpack128(saltALow)
@@ -208,138 +114,14 @@ def main(field publicInputHash, private field assetHigh, private field assetLow,
 
 	field[256] hash = sha256of1024(preimage768[0..256], preimage768[256..512], preimage768[512..768], padding768To1024) // commitmentA
 
-
-	// Concat 1st through 31st siblings
-	field[432] concatenation432 = orderedConcatenate216x216(orderBits[31], hash[40..256], path31Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[30], hash[40..256], path30Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[29], hash[40..256], path29Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[28], hash[40..256], path28Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[27], hash[40..256], path27Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[26], hash[40..256], path26Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[25], hash[40..256], path25Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[24], hash[40..256], path24Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[23], hash[40..256], path23Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[22], hash[40..256], path22Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[21], hash[40..256], path21Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[20], hash[40..256], path20Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[19], hash[40..256], path19Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[18], hash[40..256], path18Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[17], hash[40..256], path17Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[16], hash[40..256], path16Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[15], hash[40..256], path15Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[14], hash[40..256], path14Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[13], hash[40..256], path13Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[12], hash[40..256], path12Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[11], hash[40..256], path11Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[10], hash[40..256], path10Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[9], hash[40..256], path9Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[8], hash[40..256], path8Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[7], hash[40..256], path7Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[6], hash[40..256], path6Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[5], hash[40..256], path5Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[4], hash[40..256], path4Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[3], hash[40..256], path3Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[2], hash[40..256], path2Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-	concatenation432 = orderedConcatenate216x216(orderBits[1], hash[40..256], path1Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	hash = sha256of512(preimage512[0..256], preimage512[256..512])
-
-
-	// concat with the 32nd sibling. This should equal the root.
-	concatenation432 = orderedConcatenate216x216(orderBits[0], hash[40..256], path0Bits[40..256])
-	preimage512 = shaPad432To512(concatenation432)
-	field[256] rootBitsCheck = sha256of512(preimage512[0..256],preimage512[256..512])
-
+	// concatenate siblings and hash all the way up to the root:
+	for field i in 0..32 do
+		field j = 31-i
+		preimage512 = shaPad432To512(orderedConcatenate216x216(orderBits[j], hash[40..256], unpackPath(path[j])))
+		hash = sha256of512(preimage512[0..256], preimage512[256..512])
+	endfor
+	// save the computed root:
+	field[256] rootBitsCheck = hash
 
 	// Know asset|publicKeyB|saltB such that H(asset|publicKeyB|saltB) = commitmentB
 
