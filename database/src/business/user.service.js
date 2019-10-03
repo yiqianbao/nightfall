@@ -1,14 +1,13 @@
 import { exec } from 'child_process';
 import mongoose from 'mongoose';
 import config from 'config';
-import Utils from 'zkp-utils';
+import utils from 'zkp-utils';
 
 import { COLLECTIONS } from '../common/constants';
 import dbConnections from '../common/dbConnections';
 import { userMapper } from '../mappers';
 
 const mongo = config.get('mongo');
-const utils = Utils('/app/config/stats.json');
 
 function updateUserRole() {
   return new Promise((resolve, reject) =>
