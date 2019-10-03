@@ -1,6 +1,6 @@
 import config from 'config';
 
-const utils = require('zkp-utils')('/app/stats-config/stats.json');
+const utils = require('zkp-utils');
 
 /**
 This class defines a 'proof element'.  That's basically an object that will be fed

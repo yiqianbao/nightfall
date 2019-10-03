@@ -1,7 +1,4 @@
-/* es-lint-ignore */
-import Utils from 'zkp-utils';
-
-const utils = Utils('/app/config/stats.json');
+import utils from 'zkp-utils';
 
 const dec = '17408914224622445472';
 const hex = '0xf198e3403bdda3a0';

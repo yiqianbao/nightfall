@@ -1,10 +1,8 @@
 import config from 'config';
-import Utils from '../zkp-utils';
+import utils from '../zkp-utils';
 
-const utils = Utils('../config/stats');
 const { rndHex, leftPadHex } = utils;
 const INPUTS_HASHLENGTH = config.get('INPUTS_HASHLENGTH');
-// const MERKLE_HASHLENGTH = config.get('MERKLE_HASHLENGTH');
 
 const generateTokenID = async () => rndHex(32);
 

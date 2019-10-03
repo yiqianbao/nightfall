@@ -16,7 +16,7 @@ import zokrates from './zokrates';
 import cv from './compute-vectors';
 import Element from './Element';
 
-const utils = require('zkp-utils')('/app/stats-config/stats.json');
+const utils = require('zkp-utils');
 
 const web3 = new Web3(
   Web3.givenProvider || new Web3.providers.HttpProvider(config.get('web3ProviderURL')),
@@ -174,45 +174,15 @@ you.
 @param {string} hostDir - the directory on the host to mount into the runContainerMounted
 @returns the proof object
 */
-async function computeProof(elements, hostDir, proofDescription) {
+async function computeProof(elements, hostDir) {
   if (container === undefined || container === null) await setupComputeProof(hostDir);
 
   console.log(`Container id: ${container.id}`);
   console.log(`To connect to the container manually: 'docker exec -ti ${container.id} bash'`);
 
-  let timeEst;
-  let startTime;
-  let endTime;
-  let duration;
-  if (proofDescription) {
-    timeEst = await utils.getTimeEst(proofDescription, 'computeWitness');
-    startTime = new Date();
-    setTimeout(() => {
-      utils.progressBar(timeEst);
-    }, 1000);
-  }
   await zokrates.computeWitness(container, cv.computeVectors(elements), hostDir);
-  if (proofDescription) {
-    await utils.stopProgressBar();
-    endTime = new Date();
-    duration = endTime - startTime;
-    utils.updateTimeEst(proofDescription, 'computeWitness', duration);
-  }
 
-  if (proofDescription) {
-    timeEst = await utils.getTimeEst(proofDescription, 'generateProof');
-    startTime = new Date();
-    setTimeout(() => {
-      utils.progressBar(timeEst);
-    }, 1000);
-  }
   const proof = await zokrates.generateProof(container, undefined, hostDir);
-  if (proofDescription) {
-    await utils.stopProgressBar();
-    endTime = new Date();
-    duration = endTime - startTime;
-    utils.updateTimeEst(proofDescription, 'generateProof', duration);
-  }
 
   console.group(`Proof: ${JSON.stringify(proof, undefined, 2)}`);
   console.groupEnd();
@@ -298,7 +268,6 @@ async function mint(A, pkA, S_A, account) {
       new Element(zA, 'field'),
     ],
     hostDir,
-    'MintCoin',
   );
 
   proof = Object.values(proof);
@@ -498,7 +467,6 @@ async function transfer(
       pathCElements.elements[0],
     ],
     hostDir,
-    'TransferCoin',
   );
 
   proof = Object.values(proof);
@@ -633,7 +601,6 @@ async function burn(C, skA, S_C, zC, zCIndex, account, _payTo) {
       new Element(root, 'field'),
     ],
     hostDir,
-    'BurnCoin',
   );
 
   proof = Object.values(proof);
