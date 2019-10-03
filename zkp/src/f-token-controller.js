@@ -380,14 +380,18 @@ async function transfer(
   // we need the Merkle path from the token commitment to the root, expressed as Elements
   const pathC = await cv.computePath(account, fTokenShield, zC, zCIndex);
   const pathCElements = {
-    elements: pathC.path.map(element => new Element(element, 'field', 128, 2)),
+    elements: pathC.path.map(
+      element => new Element(element, 'field', config.MERKLE_HASHLENGTH * 8, 1),
+    ), // we truncate to 216 bits - sending the whole 256 bits will overflow the prime field
     positions: new Element(pathC.positions, 'field', 128, 1),
   };
   // console.log(`pathCElements.path:`, pathCElements.elements);
   // console.log(`pathCElements.positions:`, pathCElements.positions);
   const pathD = await cv.computePath(account, fTokenShield, zD, zDIndex);
   const pathDElements = {
-    elements: pathD.path.map(element => new Element(element, 'field', 128, 2)),
+    elements: pathD.path.map(
+      element => new Element(element, 'field', config.MERKLE_HASHLENGTH * 8, 1),
+    ), // we truncate to 216 bits - sending the whole 256 bits will overflow the prime field
     positions: new Element(pathD.positions, 'field', 128, 1),
   };
   // console.log(`pathDlements.path:`, pathDElements.elements);
@@ -464,7 +468,7 @@ async function transfer(
       new Element(F, 'field', 128, 1),
       new Element(S_F, 'field'),
       new Element(zF, 'field'),
-      pathCElements.elements[0],
+      new Element(root, 'field'),
     ],
     hostDir,
   );
@@ -546,7 +550,9 @@ async function burn(C, skA, S_C, zC, zCIndex, account, _payTo) {
   // We need the Merkle path from the commitment to the root, expressed as Elements
   const path = await cv.computePath(account, fTokenShield, zC, zCIndex);
   const pathElements = {
-    elements: path.path.map(element => new Element(element, 'field', 128, 2)),
+    elements: path.path.map(
+      element => new Element(element, 'field', config.MERKLE_HASHLENGTH * 8, 1),
+    ), // We can fit the 216 bit hash into a single field - more compact
     positions: new Element(path.positions, 'field', 128, 1),
   };
   // console.log(`pathElements.path:`, pathElements.elements);

@@ -367,7 +367,9 @@ async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, account) {
   // we need the Merkle path from the token commitment to the root, expressed as Elements
   const path = await cv.computePath(account, nfTokenShield, z_A, z_A_index).then(result => {
     return {
-      elements: result.path.map(element => new Element(element, 'field', 128, 2)),
+      elements: result.path.map(
+        element => new Element(element, 'field', config.MERKLE_HASHLENGTH * 8, 1),
+      ),
       positions: new Element(result.positions, 'field', 128, 1),
     };
   });
@@ -392,7 +394,7 @@ async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, account) {
   console.group('New Proof Variables:');
   console.log('n: ', n, ' : ', utils.hexToFieldPreserve(n, p, pt));
   console.log('z_B: ', z_B, ' : ', utils.hexToFieldPreserve(z_B, p, pt));
-  console.log('root: ', root, ' : ', utils.hexToFieldPreserve(root, p, pt));
+  console.log('root: ', root, ' : ', utils.hexToFieldPreserve(root, p));
   console.groupEnd();
 
   const publicInputHash = utils.concatenateThenHash(root, n, z_B);
@@ -422,7 +424,7 @@ async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, account) {
       new Element(S_A, 'field'),
       new Element(S_B, 'field'),
       new Element(sk_A, 'field'),
-      path.elements[0],
+      new Element(root, 'field'),
       new Element(z_B, 'field'),
     ],
     hostDir,
@@ -500,7 +502,9 @@ async function burn(A, Sk_A, S_A, z_A, z_A_index, account, payTo) {
   // we need the Merkle path from the token commitment to the root, expressed as Elements
   const path = await cv.computePath(account, nfTokenShield, z_A, z_A_index).then(result => {
     return {
-      elements: result.path.map(element => new Element(element, 'field', 128, 2)),
+      elements: result.path.map(
+        element => new Element(element, 'field', config.MERKLE_HASHLENGTH * 8, 1),
+      ),
       positions: new Element(result.positions, 'field', 128, 1),
     };
   });
