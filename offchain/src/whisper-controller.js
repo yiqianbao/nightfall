@@ -4,10 +4,10 @@
 @author Westlad
 */
 
-import Web3 from 'web3';
 import utils from 'zkp-utils';
+import Web3 from './web3';
 
-const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8546'); // note ws is required for shh
+const web3 = Web3.connection();
 const TRANSFER_TOPIC = '0xeca7945f';
 
 /**

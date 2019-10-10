@@ -137,7 +137,7 @@ describe('utils.js tests', () => {
         '0xa48eb90d402c7d1f',
         '0xcd8d31e3cc9af568',
       );
-      const truncated = 'b5a95142b8fa2cd63d51e6e7f6584186ce955be1c6bebc20d03f9148b8886fea';
+      const truncated = '8141a91eb505996e5fc78a00d9af895b32cb6e667e1ec28dd35d3947648cc1b1';
       const calculatedHash = `0x${truncated.slice(truncated.length - testInputHash.length + 2)}`;
       expect(calculatedHash).toEqual(testInputHash);
     });
