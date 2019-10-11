@@ -1,4 +1,4 @@
-name: Run Nightfall Integration test
+name: Run Nightfall test suite
 
 on:
   pull_request:
@@ -6,8 +6,8 @@ on:
     - master
 
 jobs:
-  eslint-and-integration-test:
-    name: Run eslint check and Integration test
+  eslint-test:
+    name: Run eslint check
     runs-on: ubuntu-18.04
     
     steps:
@@ -15,10 +15,19 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: '10.15.3'
-    - name: Run check for eslint errors
-      run:  |
-        npm ci
-        npm run lint
+    - run: npm ci
+    - name: Run check for ESLint errors
+      run: npm run lint
+
+  integration-test:
+    name: Run integration test
+    runs-on: ubuntu-18.04
+    
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.15.3'
     - name: Pull docker image
       run:  docker pull zokrates/zokrates:0.4.11
     - name: Increase swap memory
@@ -34,9 +43,9 @@ jobs:
       run:  |
         chmod -R 777 zkp/code/
         npm run setupAll
-    - name: Remove zokrates Containers
+    - name: Remove ZoKrates Containers
       run:  |
         docker stop $(docker ps -a -q)
         docker rm $(docker ps -a -q)
-    - name: Run Integration test
+    - name: Run integration test
       run:  ./nightfall-test
