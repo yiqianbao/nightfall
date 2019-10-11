@@ -1,4 +1,4 @@
-# Contributing to the Nightfall
+# Contributing to Nightfall
 
 As an auditor, EY has to comply with strict procedures to ensure that we maintain independence from
 any organisations we audit. Accordingly, we would be very grateful to receive PRs for bug fixes or
