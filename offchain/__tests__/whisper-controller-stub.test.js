@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 
-import AccountUtils from '../src/account-utils';
+import Web3 from '../src/web3';
 
 import {
   generateWhisperKeys,
@@ -12,9 +12,12 @@ import {
 const alice = {};
 const bob = {};
 
+Web3.connect();
+const web3 = Web3.connection();
+
 describe('Whisper-controller-stub tests', () => {
   test('Generate & retrieve a Whisper key-pair', async () => {
-    const accounts = await AccountUtils.getEthAccounts();
+    const accounts = await web3.eth.getAccounts();
     // eslint-disable-next-line prefer-destructuring
     alice.address = accounts[0];
     // eslint-disable-next-line prefer-destructuring

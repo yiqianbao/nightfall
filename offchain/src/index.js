@@ -1,9 +1,12 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+
+import Web3 from './web3';
 import { pkdRouter, whisperRouter } from './routes';
 import { formatResponse, formatError, errorHandler } from './middlewares';
 
 const app = express();
+Web3.connect();
 
 app.use(function cors(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');

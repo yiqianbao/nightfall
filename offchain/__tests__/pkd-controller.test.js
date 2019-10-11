@@ -23,11 +23,14 @@ import {
   setPublicKeys,
 } from '../src/pkd-controller';
 
-import AccountUtils from '../src/account-utils/account-utils';
+import Web3 from '../src/web3';
 
 let whisperPublicKeyInput;
 let zkpPublicKeyInput;
 let nameInput;
+
+Web3.connect();
+const web3 = Web3.connection();
 
 describe('PKD Controller testing', () => {
   test('Utility function correctly converts string to hex', () => {
@@ -49,7 +52,7 @@ describe('PKD Controller testing', () => {
 
   test('Name can be set and retrieved using the PKD name to address association', async () => {
     nameInput = `duncan${Date.now()}`;
-    const accounts = await AccountUtils.getEthAccounts();
+    const accounts = await web3.eth.getAccounts();
     await setName(nameInput, accounts[0]);
     const nameFromAddress = await getNameFromAddress(accounts[0]);
     const addressFromName = await getAddressFromName(nameInput);
@@ -81,7 +84,7 @@ describe('PKD Controller testing', () => {
   test('Whisper public key can be set and retrieved using the PKD whisper public key to address association', async () => {
     whisperPublicKeyInput =
       '0x04f39b93e3c7968df4358e17222adc0cd8a12d24f94ad63d3cb5abf536381bca4234af17102338638ab40cec85cffe9a021f699e2c84064c492f3f4442a1f147eb';
-    const accounts = await AccountUtils.getEthAccounts();
+    const accounts = await web3.eth.getAccounts();
     await setWhisperPublicKey(whisperPublicKeyInput, accounts[0]);
     const whisperPublicKeyOutput = await getWhisperPublicKeyFromAddress(accounts[0]);
 
@@ -92,7 +95,7 @@ describe('PKD Controller testing', () => {
   });
 
   test('Whisper public key can be set and retrieved using the PKD whisper public key to name association', async () => {
-    const accounts = await AccountUtils.getEthAccounts();
+    const accounts = await web3.eth.getAccounts();
     const nameFromAddress = await getNameFromAddress(accounts[0]);
     const whisperPublicKeyOutput = await getWhisperPublicKeyFromName(nameFromAddress);
 
@@ -104,7 +107,7 @@ describe('PKD Controller testing', () => {
 
   test('ZKP public key can be set and retrieved using the ZKP public key to address association', async () => {
     zkpPublicKeyInput = await utils.rndHex(32);
-    const accounts = await AccountUtils.getEthAccounts();
+    const accounts = await web3.eth.getAccounts();
     await setZkpPublicKey(zkpPublicKeyInput, accounts[0]);
     const zkpPublicKeyOutput = await getZkpPublicKeyFromAddress(accounts[0]);
 
@@ -115,7 +118,7 @@ describe('PKD Controller testing', () => {
   });
 
   test('ZKP public key can be set and retrieved using the ZKP public key to name association', async () => {
-    const accounts = await AccountUtils.getEthAccounts();
+    const accounts = await web3.eth.getAccounts();
     const nameFromAddress = await getNameFromAddress(accounts[0]);
     const zkpPublicKeyOutput = await getZkpPublicKeyFromName(nameFromAddress);
 
@@ -126,7 +129,7 @@ describe('PKD Controller testing', () => {
   });
 
   test('Public key can be set and retrieved using the Public key to address association', async () => {
-    const accounts = await AccountUtils.getEthAccounts();
+    const accounts = await web3.eth.getAccounts();
     zkpPublicKeyInput = await utils.rndHex(32);
 
     const publicKeyInput = [];
@@ -147,7 +150,7 @@ describe('PKD Controller testing', () => {
   });
 
   test('Public key can be set and retrieved using the Public key to name association', async () => {
-    const accounts = await AccountUtils.getEthAccounts();
+    const accounts = await web3.eth.getAccounts();
 
     const publicKeyInput = [];
     const publicKeyOutput = [];

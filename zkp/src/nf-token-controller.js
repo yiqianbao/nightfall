@@ -7,7 +7,6 @@ rest api calls, and the heavy-lifitng token-zkp.js and zokrates.js.  It exists s
 
 /* eslint-disable camelcase */
 
-import Web3 from 'web3';
 import contract from 'truffle-contract';
 import jsonfile from 'jsonfile';
 import utils from 'zkp-utils';
@@ -16,26 +15,23 @@ import zkp from './nf-token-zkp';
 import zokrates from './zokrates';
 import cv from './compute-vectors';
 import Element from './Element';
-
-const web3 = new Web3(
-  Web3.givenProvider || new Web3.providers.HttpProvider(config.get('web3ProviderURL')),
-);
+import Web3 from './web3';
 
 const NFTokenShield = contract(jsonfile.readFileSync('./build/contracts/NFTokenShield.json'));
 
-NFTokenShield.setProvider(web3.currentProvider);
+NFTokenShield.setProvider(Web3.connect());
 
 const Verifier_Registry = contract(
   jsonfile.readFileSync('./build/contracts/Verifier_Registry.json'),
 );
 
-Verifier_Registry.setProvider(web3.currentProvider);
+Verifier_Registry.setProvider(Web3.connect());
 
 const Verifier = contract(jsonfile.readFileSync('./build/contracts/GM17_v0.json'));
-Verifier.setProvider(web3.currentProvider);
+Verifier.setProvider(Web3.connect());
 
 const NFTokenMetadata = contract(jsonfile.readFileSync('./build/contracts/NFTokenMetadata.json'));
-NFTokenMetadata.setProvider(web3.currentProvider);
+NFTokenMetadata.setProvider(Web3.connect());
 
 let container;
 const shield = {}; // this field holds the current Shield contract instance.

@@ -7,7 +7,6 @@ arbitrary amounts of currency in zero knowlege.
 @author westlad, Chaitanya-Konda, iAmMichaelConnor
 */
 
-import Web3 from 'web3';
 import contract from 'truffle-contract';
 import jsonfile from 'jsonfile';
 import config from 'config';
@@ -15,31 +14,29 @@ import zkp from './f-token-zkp';
 import zokrates from './zokrates';
 import cv from './compute-vectors';
 import Element from './Element';
+import Web3 from './web3';
 
 const utils = require('zkp-utils');
 
-const web3 = new Web3(
-  Web3.givenProvider || new Web3.providers.HttpProvider(config.get('web3ProviderURL')),
-);
-
 const FTokenShield = contract(jsonfile.readFileSync('./build/contracts/FTokenShield.json'));
-FTokenShield.setProvider(web3.currentProvider);
+FTokenShield.setProvider(Web3.connect());
 
 const VerifierRegistry = contract(
   jsonfile.readFileSync('./build/contracts/Verifier_Registry.json'),
 );
-VerifierRegistry.setProvider(web3.currentProvider);
+VerifierRegistry.setProvider(Web3.connect());
 
 const Verifier = contract(jsonfile.readFileSync('./build/contracts/GM17_v0.json'));
-Verifier.setProvider(web3.currentProvider);
+Verifier.setProvider(Web3.connect());
 
 const FToken = contract(jsonfile.readFileSync('./build/contracts/FToken.json'));
-FToken.setProvider(web3.currentProvider);
+FToken.setProvider(Web3.connect());
 
 let container;
 const shield = {}; // this field holds the current Shield contract instance.
 
 async function unlockAccount(address, password) {
+  const web3 = Web3.connection();
   await web3.eth.personal.unlockAccount(address, password, 0);
 }
 
