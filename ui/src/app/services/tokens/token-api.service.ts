@@ -34,7 +34,7 @@ export class TokenApiService {
       contractAddress: token.shield_contract_address
     };
 
-    const url = config.apiGateway.root + 'token/mint';
+    const url = config.apiGateway.root + 'mintNFTCommitment';
 
     return this.http
       .post(url, body, httpOptions)
@@ -66,7 +66,7 @@ export class TokenApiService {
       receiver_name,
       z_A_index
     };
-    const url = config.apiGateway.root + 'token/transfer';
+    const url = config.apiGateway.root + 'transferNFTCommitment';
 
     return this.http
       .post(url, body, httpOptions)
@@ -95,7 +95,7 @@ export class TokenApiService {
       z_A_index,
       payTo
     };
-    const url = config.apiGateway.root + 'token/burn';
+    const url = config.apiGateway.root + 'burnNFTCommitment';
     return this.http
       .post(url, body, httpOptions)
       .pipe(tap(data => console.log(data)), catchError(this.handleError('burnToken', [])));
@@ -153,7 +153,7 @@ export class TokenApiService {
 
     const body = { tokenURI };
 
-    const url = config.apiGateway.root + 'nft/mint';
+    const url = config.apiGateway.root + 'mintNFToken';
 
     return this.http
       .post(url, body, httpOptions)
@@ -171,7 +171,7 @@ export class TokenApiService {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
     const body = { tokenID: nftToken.token_id, uri: nftToken.uri, receiver_name, contractAddress: nftToken.shield_contract_address};
-    const url = config.apiGateway.root + 'nft/transfer';
+    const url = config.apiGateway.root + 'transferNFToken';
     return this.http
       .post(url, body, httpOptions)
       .pipe(tap(data => console.log(`Token minted `)), catchError(this.handleError('mintNFToken', [])));
@@ -188,7 +188,7 @@ export class TokenApiService {
     };
 
     const body = { tokenID: nftToken.token_id, uri: nftToken.uri, contractAddress: nftToken.shield_contract_address};
-    const url = config.apiGateway.root + 'nft/burn';
+    const url = config.apiGateway.root + 'burnNFToken';
 
     return this.http
       .post(url, body, httpOptions)
@@ -205,7 +205,7 @@ export class TokenApiService {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
-    let url = config.apiGateway.root + 'nft?';
+    let url = config.apiGateway.root + 'getNFTTokens?';
 
     if (pageNo) {
       url += 'pageNo=' + pageNo + '&';

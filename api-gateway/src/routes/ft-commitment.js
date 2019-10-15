@@ -11,10 +11,10 @@ import {
 
 const router = express.Router();
 
-router.route('/checkCorrectness').post(checkCorrectnessCoin);
+router.route('/checkCorrectnessForFTCommitment').post(checkCorrectnessCoin);
 
 /**
- * @api {post} /coin/mint Mint a ERC-20 commitment
+ * @api {post} /mintFTCommitment Mint a ERC-20 commitment
  * @apiVersion 1.0.0
  * @apiName  Mint a ERC-20 commitment
  * @apiGroup ERC-20 commitment
@@ -44,10 +44,10 @@ router.route('/checkCorrectness').post(checkCorrectnessCoin);
  *		"coin_index":"0"
  *	  }
  */
-router.route('/mint').post(mintCoin);
+router.route('/mintFTCommitment').post(mintCoin);
 
 /**
- * @api {post} /coin/transfer Transfer ERC-20 commitment
+ * @api {post} /transferFTCommitment Transfer ERC-20 commitment
  * @apiVersion 1.0.0
  * @apiName  Transfer ERC-20 commitment
  * @apiGroup ERC-20 commitment
@@ -107,10 +107,10 @@ router.route('/mint').post(mintCoin);
  *		"z_F_index":"3"
  *	  }
  */
-router.route('/transfer').post(transferCoin);
+router.route('/transferFTCommitment').post(transferCoin);
 
 /**
- * @api {post} /coin/burn Burn a ERC-20 commitment
+ * @api {post} /burnFTCommitment Burn a ERC-20 commitment
  * @apiVersion 1.0.0
  * @apiName  Burn a ERC-20 commitment
  * @apiGroup ERC-20 commitment
@@ -146,7 +146,7 @@ router.route('/transfer').post(transferCoin);
  *		"z_C_index":3
  *	  }
  */
-router.route('/burn').post(burnCoin);
+router.route('/burnFTCommitment').post(burnCoin);
 
 router
   .route('/')

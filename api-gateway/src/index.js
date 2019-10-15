@@ -7,9 +7,7 @@
 
 import express, { Router } from 'express';
 import bodyParser from 'body-parser';
-import proxy from 'express-http-proxy';
 import cors from 'cors';
-import config from 'config';
 import logger from './logger';
 import {
   rootRouter,
@@ -36,14 +34,12 @@ app.use(bodyParser.json()); // set up a filter to parse JSON
 app.use(cors()); // cross origin filter
 app.use(authentication);
 
-app.use('/zkp', unlockAccount, proxy(config.zkp.url));
-
 app.use('/', unlockAccount, router);
 app.use('/', rootRouter);
-app.use('/token', nftCommitmentRoutes);
-app.use('/coin', ftCommitmentRoutes);
-app.use('/ft', ftRoutes);
-app.use('/nft', nftRoutes);
+app.use('/', nftCommitmentRoutes);
+app.use('/', ftCommitmentRoutes);
+app.use('/', ftRoutes);
+app.use('/', nftRoutes);
 app.use('/user', userRoutes);
 app.use('/shield', shieldRoutes);
 

@@ -79,14 +79,14 @@ async function burn(req, res, next) {
 }
 
 async function checkCorrectness(req, res, next) {
-  console.log('\nzkp/src/restapi', '\n/coin/checkCorrectness', '\nreq.body', req.body);
+  console.log('\nzkp/src/restapi', '\n/checkCorrectnessForFTCommitment', '\nreq.body', req.body);
 
   try {
     const { address } = req.headers;
     const { E, pk, S_E, z_E, z_E_index } = req.body;
 
     const results = await fTokenController.checkCorrectness(E, pk, S_E, z_E, z_E_index, address);
-    console.log('\nzkp/src/restapi', '\n/coin/checkCorrectness', '\nresults', results);
+    console.log('\nzkp/src/restapi', '\n/checkCorrectnessForFTCommitment', '\nresults', results);
 
     res.data = results;
     next();
@@ -141,14 +141,12 @@ async function unsetCoinShieldAddress(req, res, next) {
   }
 }
 
-router.route('/mint').post(mint);
-router.route('/transfer').post(transfer);
-router.route('/burn').post(burn);
-router.route('/checkCorrectness').post(checkCorrectness);
-router
-  .route('/shield')
-  .post(setCoinShieldAddress)
-  .get(getCoinShieldAddress)
-  .delete(unsetCoinShieldAddress);
+router.post('/mintFTCommitment', mint);
+router.post('/transferFTCommitment', transfer);
+router.post('/burnFTCommitment', burn);
+router.post('/checkCorrectnessForFTCommitment', checkCorrectness);
+router.post('/setFTokenShieldContractAddress', setCoinShieldAddress);
+router.get('/getFTokenShieldContractAddress', getCoinShieldAddress);
+router.delete('/removeFTCommitmentshield', unsetCoinShieldAddress);
 
 export default router;

@@ -31,7 +31,7 @@ export class CoinApiService {
     pk_A
   };
 
-  const url = config.apiGateway.root + 'coin/mint';
+  const url = config.apiGateway.root + 'mintFTCommitment';
 
   return this.http
       .post(url, body, httpOptions)
@@ -52,7 +52,7 @@ export class CoinApiService {
       amount : amount,
       account: account
     };
-    const url = config.apiGateway.root + 'ft/mint';
+    const url = config.apiGateway.root + 'mintFToken';
     return this.http
       .post(url, body, httpOptions)
       .pipe(tap(data => console.log(`Bought Coins.`)), catchError(this.handleError('mintCoin', [])));
@@ -73,7 +73,7 @@ export class CoinApiService {
       amount : amount,
       receiver_name
     };
-    const url = config.apiGateway.root + 'ft/transfer';
+    const url = config.apiGateway.root + 'transferFToken';
     return this.http
       .post(url, body, httpOptions)
       .pipe(tap(data => console.log(`Bought Coins.`)), catchError(this.handleError('mintCoin', [])));
@@ -93,7 +93,7 @@ export class CoinApiService {
       amount : amount,
       account: account
     };
-    const url = config.apiGateway.root + 'ft/burn';
+    const url = config.apiGateway.root + 'burnFToken';
     return this.http
       .post(url, body, httpOptions)
       .pipe(tap(data => console.log(`Bought Coins.`)), catchError(this.handleError('mintCoin', [])));
@@ -143,7 +143,7 @@ export class CoinApiService {
       z_A,
       payTo
     };
-    const url = config.apiGateway.root + 'coin/burn';
+    const url = config.apiGateway.root + 'burnFTCommitment';
     return this.http
       .post(url, body, httpOptions)
       .pipe(tap(data => console.log(data)), catchError(this.handleError('BurnCoin', [])));
@@ -201,7 +201,7 @@ export class CoinApiService {
       receiver_name
     };
 
-    const url = config.apiGateway.root + 'coin/transfer';
+    const url = config.apiGateway.root + 'transferFTCommitment';
     return this.http
       .post(url, body, httpOptions)
       .pipe(tap(data => console.log(data)), catchError(this.handleError('spendCoin', [])));

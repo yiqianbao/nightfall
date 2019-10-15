@@ -75,7 +75,7 @@ async function burn(req, res, next) {
 }
 
 async function checkCorrectness(req, res, next) {
-  console.log('\nzkp/src/restapi', '\n/token/checkCorrectness', '\nreq.body', req.body);
+  console.log('\nzkp/src/restapi', '\n/checkCorrectnessForNFTCommitment', '\nreq.body', req.body);
 
   try {
     const { address } = req.headers;
@@ -135,14 +135,12 @@ async function unsetTokenShieldAddress(req, res, next) {
   }
 }
 
-router.route('/mint').post(mint);
-router.route('/transfer').post(transfer);
-router.route('/burn').post(burn);
-router.route('/checkCorrectness').post(checkCorrectness);
-router
-  .route('/shield')
-  .post(setTokenShieldAddress)
-  .get(getTokenShieldAddress)
-  .delete(unsetTokenShieldAddress);
+router.post('/mintNFTCommitment', mint);
+router.post('/transferNFTCommitment', transfer);
+router.post('/burnNFTCommitment', burn);
+router.post('/checkCorrectnessForNFTCommitment', checkCorrectness);
+router.post('/setNFTCommitmentShieldContractAddress', setTokenShieldAddress);
+router.get('/getNFTCommitmentShieldContractAddress', getTokenShieldAddress);
+router.delete('/removeNFTCommitmentshield', unsetTokenShieldAddress);
 
 export default router;

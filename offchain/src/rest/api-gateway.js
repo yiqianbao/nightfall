@@ -16,7 +16,7 @@ const requestWrapper = options =>
 export default {
   checkCorrectnessCoin(headers, body) {
     const options = {
-      url: `${url}/coin/checkCorrectness`,
+      url: `${url}/checkCorrectnessForFTCommitment`,
       method: 'POST',
       json: true,
       headers,
@@ -26,7 +26,7 @@ export default {
   },
   checkCorrectnessToken(headers, body) {
     const options = {
-      url: `${url}/token/checkCorrectness`,
+      url: `${url}/checkCorrectnessForNFTCommitment`,
       method: 'POST',
       json: true,
       headers,

@@ -11,10 +11,10 @@ import {
 
 const router = express.Router();
 
-router.route('/checkCorrectness').post(checkCorrectnessToken);
+router.route('/checkCorrectnessForNFTCommitment').post(checkCorrectnessToken);
 
 /**
- * @api {post} /token/mint Mint a ERC-721 commitment
+ * @api {post} /mintNFTCommitment Mint a ERC-721 commitment
  * @apiVersion 1.0.0
  * @apiName  Mint a ERC-721 commitment
  * @apiGroup ERC-721 commitment
@@ -44,10 +44,10 @@ router.route('/checkCorrectness').post(checkCorrectnessToken);
  *		"z_A_index":"0"
  *	  }
  */
-router.route('/mint').post(mintToken);
+router.route('/mintNFTCommitment').post(mintToken);
 
 /**
- * @api {post} /token/transfer Transfer a ERC-721 commitment
+ * @api {post} /transferNFTCommitment Transfer a ERC-721 commitment
  * @apiVersion 1.0.0
  * @apiName  Transfer a ERC-721 commitment
  * @apiGroup ERC-721 commitment
@@ -89,10 +89,10 @@ router.route('/mint').post(mintToken);
  *		"z_B_index":"1"
  *	  }
  */
-router.route('/transfer').post(transferToken);
+router.route('/transferNFTCommitment').post(transferToken);
 
 /**
- * @api {post} /token/burn Burn a ERC-721 commitment
+ * @api {post} /burnNFTCommitment Burn a ERC-721 commitment
  * @apiVersion 1.0.0
  * @apiName  Burn a ERC-721 commitment
  * @apiGroup ERC-721 commitment
@@ -126,7 +126,7 @@ router.route('/transfer').post(transferToken);
  *		"message":"burn successful"
  *	  }
  */
-router.route('/burn').post(burnToken);
+router.route('/burnNFTCommitment').post(burnToken);
 
 router
   .route('/')
