@@ -27,3 +27,8 @@ Commit hash : (if `develop`)
 ````
 
 #### Logs
+
+
+````
+[logs]
+````
