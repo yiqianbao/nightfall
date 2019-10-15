@@ -297,45 +297,31 @@ async function mint(A, pkA, S_A, account) {
 }
 
 /**
-This function actually transfers a coin.
-@param {string} C - The value of coin C
-@param {string} D - The value of coin D
-@param {string} E - The value of coin E
-@param {string} F - The value of coin F
-@param {string} pkB - Bob's public key
-@param {string} S_C - Alice's z-coin's serial number as a hex string
-@param {string} S_D - Alice's z-coin's serial number as a hex string
-@param {string} S_E - Bob's z-coin's serial number as a hex string
-@param {string} S_F - Bob's z-coin's serial number as a hex string
-@param {string} skA - Alice's private ('s'ecret) key
-@param {string} zC - Alice's z-coin (commitment)
-@param {integer} zCIndex - the position of zC in the on-chain Merkle Tree
-@param {string} zD - Alice's z-coin (commitment)
-@param {integer} zDIndex - the position of zD in the on-chain Merkle Tree
-@param {string} account - the account that is paying for this
-@returns {string} zE - The token
-@returns {Integer} z_E_index - the index of the token within the Merkle Tree.  This is required for later transfers/joins so that Alice knows which 'chunks' of the Merkle Tree she needs to 'get' from the fTokenShield contract in order to calculate a path.
-@returns {string} zF - The token
-@returns {Integer} z_F_index - the index of the token within the Merkle Tree.  This is required for later transfers/joins so that Alice knows which 'chunks' of the Merkle Tree she needs to 'get' from the fTokenShield contract in order to calculate a path.
-@returns {object} txObj - a promise of a blockchain transaction
-*/
+ * This function actually transfers a coin.
+ * @param {Array} inputCommitments - Array of two commitments owned by the sender.
+ * @param {Array} outputCommitments - Array of two commitments.
+ * Currently the first is sent to the receiverPublicKey, and the second is sent to the sender.
+ * @param {String} receiverPublicKey - Public key of the first outputCommitment
+ * @param {String} senderSecretKey
+ * @param {String} account - Account that is paying for the transactions.
+ * @returns {string} zE - The token
+ * @returns {Integer} z_E_index - the index of the token within the Merkle Tree.  This is required for later transfers/joins so that Alice knows which 'chunks' of the Merkle Tree she needs to 'get' from the fTokenShield contract in order to calculate a path.
+ * @returns {string} zF - The token
+ * @returns {Integer} z_F_index - the index of the token within the Merkle Tree.  This is required for later transfers/joins so that Alice knows which 'chunks' of the Merkle Tree she needs to 'get' from the fTokenShield contract in order to calculate a path.
+ * @returns {object} txObj - a promise of a blockchain transaction
+ */
 async function transfer(
-  C,
-  D,
-  E,
-  F,
-  pkB,
-  S_C,
-  S_D,
-  S_E,
-  S_F,
-  skA,
-  zC,
-  zCIndex,
-  zD,
-  zDIndex,
+  inputCommitments,
+  outputCommitments,
+  receiverPublicKey,
+  senderSecretKey,
   account,
 ) {
+  const { value: C, salt: S_C, commitment: zC, index: zCIndex } = inputCommitments[0];
+  const { value: D, salt: S_D, commitment: zD, index: zDIndex } = inputCommitments[1];
+  const { value: E, salt: S_E } = outputCommitments[0];
+  const { value: F, salt: S_F } = outputCommitments[1];
+
   console.group('\nIN TRANSFER...');
 
   // due to limitations in the size of the adder implemented in the proof dsl,
@@ -368,10 +354,10 @@ async function transfer(
   console.log(`Merkle Root: ${root}`);
 
   // Calculate new arguments for the proof:
-  const pkA = utils.hash(skA);
-  const nC = utils.concatenateThenHash(S_C, skA);
-  const nD = utils.concatenateThenHash(S_D, skA);
-  const zE = utils.concatenateThenHash(E, pkB, S_E);
+  const pkA = utils.hash(senderSecretKey);
+  const nC = utils.concatenateThenHash(S_C, senderSecretKey);
+  const nD = utils.concatenateThenHash(S_D, senderSecretKey);
+  const zE = utils.concatenateThenHash(E, receiverPublicKey, S_E);
   const zF = utils.concatenateThenHash(F, pkA, S_F);
 
   // we need the Merkle path from the token commitment to the root, expressed as Elements
@@ -404,12 +390,12 @@ async function transfer(
   console.log(`D: ${D} : ${utils.hexToFieldPreserve(D, p)}`);
   console.log(`E: ${E} : ${utils.hexToFieldPreserve(E, p)}`);
   console.log(`F: ${F} : ${utils.hexToFieldPreserve(F, p)}`);
-  console.log(`pkB: ${pkB} : ${utils.hexToFieldPreserve(pkB, p)}`);
+  console.log(`pkB: ${receiverPublicKey} : ${utils.hexToFieldPreserve(receiverPublicKey, p)}`);
   console.log(`S_C: ${S_C} : ${utils.hexToFieldPreserve(S_C, p)}`);
   console.log(`S_D: ${S_D} : ${utils.hexToFieldPreserve(S_D, p)}`);
   console.log(`S_E: ${S_E} : ${utils.hexToFieldPreserve(S_E, p)}`);
   console.log(`S_F: ${S_F} : ${utils.hexToFieldPreserve(S_F, p)}`);
-  console.log(`skA: ${skA} : ${utils.hexToFieldPreserve(skA, p)}`);
+  console.log(`skA: ${senderSecretKey} : ${utils.hexToFieldPreserve(senderSecretKey, p)}`);
   console.log(`zC: ${zC} : ${utils.hexToFieldPreserve(zC, p)}`);
   console.log(`zD: ${zD} : ${utils.hexToFieldPreserve(zD, p)}`);
   console.groupEnd();
@@ -448,7 +434,7 @@ async function transfer(
     [
       new Element(publicInputHash, 'field', 248, 1),
       new Element(C, 'field', 128, 1),
-      new Element(skA, 'field'),
+      new Element(senderSecretKey, 'field'),
       new Element(S_C, 'field'),
       ...pathCElements.elements.slice(1),
       pathCElements.positions,
@@ -459,7 +445,7 @@ async function transfer(
       new Element(nC, 'field'),
       new Element(nD, 'field'),
       new Element(E, 'field', 128, 1),
-      new Element(pkB, 'field'),
+      new Element(receiverPublicKey, 'field'),
       new Element(S_E, 'field'),
       new Element(zE, 'field'),
       new Element(F, 'field', 128, 1),
