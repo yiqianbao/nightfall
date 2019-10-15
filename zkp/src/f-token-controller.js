@@ -203,7 +203,7 @@ knows S_A,pkA,n and n so could in fact calculate the token themselves.
 This is required for later transfers/joins so that Alice knows which 'chunks' of the Merkle Tree
 she needs to 'get' from the fTokenShield contract in order to calculate a path.
 */
-async function mint(A, pkA, S_A, account) {
+async function mint(A, pkA, S_A, vkId, account) {
   console.group('\nIN MINT...');
 
   console.log('Finding the relevant Shield and Verifier contracts');
@@ -213,17 +213,6 @@ async function mint(A, pkA, S_A, account) {
   console.log('FTokenShield contract address:', fTokenShield.address);
   console.log('Verifier contract address:', verifier.address);
   console.log('VerifierRegistry contract address:', verifierRegistry.address);
-
-  // get the Mint vkId
-  console.log('Reading vkIds from json file...');
-  const vkIds = await new Promise((resolve, reject) =>
-    jsonfile.readFile(config.VK_IDS, (err, data) => {
-      // doesn't natively support promises
-      if (err) reject(err);
-      else resolve(data);
-    }),
-  );
-  const { vkId } = vkIds.MintCoin;
 
   // Calculate new arguments for the proof:
   const zA = utils.concatenateThenHash(A, pkA, S_A);
@@ -315,6 +304,7 @@ async function transfer(
   outputCommitments,
   receiverPublicKey,
   senderSecretKey,
+  vkId,
   account,
 ) {
   const { value: C, salt: S_C, commitment: zC, index: zCIndex } = inputCommitments[0];
@@ -338,17 +328,6 @@ async function transfer(
   console.log('FTokenShield contract address:', fTokenShield.address);
   console.log('Verifier contract address:', verifier.address);
   console.log('VerifierRegistry contract address:', verifierRegistry.address);
-
-  // get the Transfer vkId
-  console.log('Reading vkIds from json file...');
-  const vkIds = await new Promise((resolve, reject) =>
-    jsonfile.readFile(config.VK_IDS, (err, data) => {
-      // doesn't natively support promises
-      if (err) reject(err);
-      else resolve(data);
-    }),
-  );
-  const { vkId } = vkIds.TransferCoin;
 
   const root = await fTokenShield.latestRoot();
   console.log(`Merkle Root: ${root}`);
@@ -499,7 +478,7 @@ account. All values are hex strings.
 @param {string} account - the that is paying for the transaction
 @param {string} payTo - the account that the paid-out ERC-20 should be sent to (defaults to 'account')
 */
-async function burn(C, skA, S_C, zC, zCIndex, account, _payTo) {
+async function burn(C, skA, S_C, zC, zCIndex, vkId, account, _payTo) {
   let payTo = _payTo;
   if (payTo === undefined) payTo = account; // have the option to pay out to another address
   // before we can burn, we need to deploy a verifying key to mintVerifier (reusing mint for this)
@@ -512,17 +491,6 @@ async function burn(C, skA, S_C, zC, zCIndex, account, _payTo) {
   console.log('FTokenShield contract address:', fTokenShield.address);
   console.log('Verifier contract address:', verifier.address);
   console.log('VerifierRegistry contract address:', verifierRegistry.address);
-
-  // get the Burn vkId
-  console.log('Reading vkIds from json file...');
-  const vkIds = await new Promise((resolve, reject) =>
-    jsonfile.readFile(config.VK_IDS, (err, data) => {
-      // doesn't natively support promises
-      if (err) reject(err);
-      else resolve(data);
-    }),
-  );
-  const { vkId } = vkIds.BurnCoin;
 
   const root = await fTokenShield.latestRoot(); // solidity getter for the public variable latestRoot
   console.log(`Merkle Root: ${root}`);

@@ -3,6 +3,7 @@
 import { Router } from 'express';
 import utils from 'zkp-utils';
 import fTokenController from '../f-token-controller';
+import { getVkId } from '../contractUtils';
 
 const router = Router();
 
@@ -10,9 +11,16 @@ async function mint(req, res, next) {
   const { address } = req.headers;
   const { A: amount, pk_A: ownerPublicKey } = req.body;
   const salt = await utils.rndHex(32);
+  const vkId = await getVkId('MintCoin');
 
   try {
-    const [coin, coin_index] = await fTokenController.mint(amount, ownerPublicKey, salt, address);
+    const [coin, coin_index] = await fTokenController.mint(
+      amount,
+      ownerPublicKey,
+      salt,
+      vkId,
+      address,
+    );
     res.data = {
       coin,
       coin_index,
@@ -40,6 +48,7 @@ async function transfer(req, res, next) {
     z_D,
     z_D_index,
   } = req.body;
+  const vkId = await getVkId('TransferCoin');
 
   const inputCommitments = [
     {
@@ -73,6 +82,7 @@ async function transfer(req, res, next) {
       outputCommitments,
       receiverPublicKey,
       senderSecretKey,
+      vkId,
       address,
     );
     res.data = {
@@ -100,6 +110,7 @@ async function burn(req, res, next) {
     payTo: tokenReceiver,
   } = req.body;
   const { address } = req.headers;
+  const vkId = await getVkId('BurnCoin');
 
   try {
     await fTokenController.burn(
@@ -108,6 +119,7 @@ async function burn(req, res, next) {
       salt,
       commitment,
       commitmentIndex,
+      vkId,
       address,
       tokenReceiver,
     );

@@ -3,6 +3,7 @@
 import { Router } from 'express';
 import utils from 'zkp-utils';
 import nfController from '../nf-token-controller';
+import { getVkId } from '../contractUtils';
 
 const router = Router();
 
@@ -10,9 +11,10 @@ async function mint(req, res, next) {
   const { address } = req.headers;
   const { A: tokenId, pk_A: ownerPublicKey } = req.body;
   const salt = await utils.rndHex(32);
+  const vkId = await getVkId('MintToken');
 
   try {
-    const [z_A, z_A_index] = await nfController.mint(tokenId, ownerPublicKey, salt, address);
+    const [z_A, z_A_index] = await nfController.mint(tokenId, ownerPublicKey, salt, vkId, address);
 
     res.data = {
       z_A,
@@ -36,6 +38,8 @@ async function transfer(req, res, next) {
   } = req.body;
   const newCommitmentSalt = await utils.rndHex(32);
   const { address } = req.headers;
+  const vkId = await getVkId('TransferToken');
+
   try {
     const { z_B, z_B_index, txObj } = await nfController.transfer(
       tokenId,
@@ -45,6 +49,7 @@ async function transfer(req, res, next) {
       senderSecretKey,
       commitment,
       commitmentIndex,
+      vkId,
       address,
     );
     res.data = {
@@ -69,6 +74,8 @@ async function burn(req, res, next) {
     payTo: tokenReceiver,
   } = req.body;
   const { address } = req.headers;
+  const vkId = await getVkId('BurnToken');
+
   try {
     await nfController.burn(
       tokenId,
@@ -76,6 +83,7 @@ async function burn(req, res, next) {
       salt,
       commitment,
       commitmentIndex,
+      vkId,
       address,
       tokenReceiver, // payed to same user.
     );

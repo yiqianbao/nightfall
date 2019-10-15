@@ -224,7 +224,7 @@ This is a convenience because the sender (Alice)
 knows S_A,pk_A,n and n so could in fact calculate the token themselves.
 @returns {Integer} z_A_index - the index of the token within the Merkle Tree.  This is required for later transfers/joins so that Alice knows which 'chunks' of the Merkle Tree she needs to 'get' from the NFTokenShield contract in order to calculate a path.
 */
-async function mint(A, pk_A, S_A, account) {
+async function mint(A, pk_A, S_A, vkId, account) {
   console.group('\nIN MINT...');
 
   console.info('Finding the relevant Shield and Verifier contracts...');
@@ -234,17 +234,6 @@ async function mint(A, pk_A, S_A, account) {
   console.log('NFTokenShield contract address:', nfTokenShield.address);
   console.log('Verifier contract address:', verifier.address);
   console.log('Verifier_Registry contract address:', verifier_registry.address);
-
-  // get the vkId for a Mint
-  console.log('Reading vkIds from json file...');
-  const vkIds = await new Promise((resolve, reject) =>
-    jsonfile.readFile(config.VK_IDS, (err, data) => {
-      // doesn't natively support promises
-      if (err) reject(err);
-      else resolve(data);
-    }),
-  );
-  const { vkId } = vkIds.MintToken;
 
   // Calculate new arguments for the proof:
   const z_A = utils.concatenateThenHash(utils.strip0x(A).slice(-32 * 2), pk_A, S_A);
@@ -326,7 +315,7 @@ This function actually transfers a token, assuming that we have a proof.
 @returns {Integer} z_B_index - the index of the token within the Merkle Tree.  This is required for later transfers/joins so that Alice knows which 'chunks' of the Merkle Tree she needs to 'get' from the NFTokenShield contract in order to calculate a path.
 @returns {object} txObj - a promise of a blockchain transaction
 */
-async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, account) {
+async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, vkId, account) {
   console.group('\nIN TRANSFER...');
 
   console.log('Finding the relevant Shield and Verifier contracts');
@@ -336,17 +325,6 @@ async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, account) {
   console.log('NFTokenShield contract address:', nfTokenShield.address);
   console.log('Verifier contract address:', verifier.address);
   console.log('Verifier_Registry contract address:', verifier_registry.address);
-
-  // get the Transfer vkId
-  console.log('Reading vkIds from json file...');
-  const vkIds = await new Promise((resolve, reject) =>
-    jsonfile.readFile(config.VK_IDS, (err, data) => {
-      // doesn't natively support promises
-      if (err) reject(err);
-      else resolve(data);
-    }),
-  );
-  const { vkId } = vkIds.TransferToken;
 
   // Get token data from the Shield contract:
   const root = await nfTokenShield.latestRoot(); // solidity getter for the public variable latestRoot
