@@ -67,6 +67,8 @@ npm run test || {
 	printf "${RED}*** Integration test failed ***${NC}\n"
 }
 
+printf "${GREEN}*** List all containers with thier Ips ***${NC}\n"
+docker inspect -f '{{.Name}} {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker-compose ps -q)
 
 printf "${GREEN}*** Cleaning up all containers ***${NC}\n"
 docker-compose down -v || {
