@@ -41,7 +41,11 @@ printf "${GREEN}*** Deploying all contracts ***${NC}\n"
 make truffle-migrate
 
 printf "${GREEN}*** Launching containerized microservices ***${NC}\n"
-docker-compose up -d
+docker-compose up -d mongo accounts offchain zkp database api-gateway
+
+# save all test logs to a file in background
+printf "${GREEN}*** Saving the test logs to nightfall_test.log file ***${NC}\n"
+docker-compose logs -f &> nightfall_test.log &disown
 
 # Create a child Terminal to see docker log, while running testcases.
 if [ "${machine}" == "Mac" ]; then
@@ -54,11 +58,7 @@ if [ "${machine}" == "Mac" ]; then
 fi
 
 # delay needed to ensure all container are in running state.
-sleep 10
-
-# save all test logs to a file in background
-printf "${GREEN}*** Saving the test logs to nightfall_test.log file ***${NC}\n"
-docker-compose logs -f &> nightfall_test.log &disown
+sleep 20
 
 # RUN test suits and remove test containers
 printf "${GREEN}*** Run Integration test ***${NC}\n"
@@ -67,8 +67,9 @@ npm run test || {
 	printf "${RED}*** Integration test failed ***${NC}\n"
 }
 
-printf "${GREEN}*** List all containers with thier Ips ***${NC}\n"
+printf "${GREEN}*** List all containers with their Ips ***${NC}\n"
 docker inspect -f '{{.Name}} {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker-compose ps -q)
+
 
 printf "${GREEN}*** Cleaning up all containers ***${NC}\n"
 docker-compose down -v || {
