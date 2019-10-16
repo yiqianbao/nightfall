@@ -3,7 +3,7 @@
 import { Router } from 'express';
 import utils from 'zkp-utils';
 import nfController from '../nf-token-controller';
-import { getVkId } from '../contractUtils';
+import { getVkId, getContract } from '../contractUtils';
 
 const router = Router();
 
@@ -12,9 +12,16 @@ async function mint(req, res, next) {
   const { A: tokenId, pk_A: ownerPublicKey } = req.body;
   const salt = await utils.rndHex(32);
   const vkId = await getVkId('MintToken');
+  const { contractJson: nfTokenShieldJson, contractInstance: nfTokenShield } = await getContract(
+    'NFTokenShield',
+  );
 
   try {
-    const [z_A, z_A_index] = await nfController.mint(tokenId, ownerPublicKey, salt, vkId, address);
+    const [z_A, z_A_index] = await nfController.mint(tokenId, ownerPublicKey, salt, vkId, {
+      nfTokenShieldJson,
+      nfTokenShieldAddress: nfTokenShield.address,
+      account: address,
+    });
 
     res.data = {
       z_A,
@@ -39,6 +46,9 @@ async function transfer(req, res, next) {
   const newCommitmentSalt = await utils.rndHex(32);
   const { address } = req.headers;
   const vkId = await getVkId('TransferToken');
+  const { contractJson: nfTokenShieldJson, contractInstance: nfTokenShield } = await getContract(
+    'NFTokenShield',
+  );
 
   try {
     const { z_B, z_B_index, txObj } = await nfController.transfer(
@@ -50,7 +60,11 @@ async function transfer(req, res, next) {
       commitment,
       commitmentIndex,
       vkId,
-      address,
+      {
+        nfTokenShieldJson,
+        nfTokenShieldAddress: nfTokenShield.address,
+        account: address,
+      },
     );
     res.data = {
       z_B,
@@ -75,18 +89,17 @@ async function burn(req, res, next) {
   } = req.body;
   const { address } = req.headers;
   const vkId = await getVkId('BurnToken');
+  const { contractJson: nfTokenShieldJson, contractInstance: nfTokenShield } = await getContract(
+    'NFTokenShield',
+  );
 
   try {
-    await nfController.burn(
-      tokenId,
-      secretKey,
-      salt,
-      commitment,
-      commitmentIndex,
-      vkId,
-      address,
-      tokenReceiver, // payed to same user.
-    );
+    await nfController.burn(tokenId, secretKey, salt, commitment, commitmentIndex, vkId, {
+      nfTokenShieldJson,
+      nfTokenShieldAddress: nfTokenShield.address,
+      account: address,
+      tokenReceiver,
+    });
     res.data = {
       z_A: commitment,
     };
