@@ -34,9 +34,9 @@ export default {
     };
     return requestWrapper(options);
   },
-  addNFTokenToDB(headers, body) {
+  insertNFTToDb(headers, body) {
     const options = {
-      url: `${url}/nft`,
+      url: `${url}/insertNFTToDb`,
       method: 'POST',
       json: true,
       headers,
@@ -44,9 +44,9 @@ export default {
     };
     return requestWrapper(options);
   },
-  addFTokenToDB(headers, body) {
+  insertFTTransactionToDb(headers, body) {
     const options = {
-      url: `${url}/ft/transactions`,
+      url: `${url}/insertFTTransactionToDb`,
       method: 'POST',
       json: true,
       headers,
@@ -54,9 +54,9 @@ export default {
     };
     return requestWrapper(options);
   },
-  addTokenCommitmentToDB(headers, body) {
+  insertNFTCommitmentToDb(headers, body) {
     const options = {
-      url: `${url}/token`,
+      url: `${url}/insertNFTCommitmentToDb`,
       method: 'POST',
       json: true,
       headers,
@@ -64,9 +64,9 @@ export default {
     };
     return requestWrapper(options);
   },
-  addCoinCommitmentToDB(headers, body) {
+  insertFTCommitmentToDb(headers, body) {
     const options = {
-      url: `${url}/coin`,
+      url: `${url}/insertFTCommitmentToDb`,
       method: 'POST',
       json: true,
       headers,

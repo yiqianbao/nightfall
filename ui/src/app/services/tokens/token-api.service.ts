@@ -111,7 +111,7 @@ export class TokenApiService {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
-    let url = config.apiGateway.root + 'token?';
+    let url = config.apiGateway.root + 'getNFTCommitments?';
 
     if (pageNo) {
       url += 'pageNo=' + pageNo + '&';
@@ -127,19 +127,19 @@ export class TokenApiService {
   }
 
 
-  /**
-   * Method to initiate a HTTP request to get users.
-   */
-  getUsers() {
-    const httpOptions = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-    };
-    const url = config.user.root + 'getAllRegisteredNames';
+  // /**
+  //  * Method to initiate a HTTP request to get users.
+  //  */
+  // getUsers() {
+  //   const httpOptions = {
+  //     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+  //   };
+  //   const url = config.user.root + 'getAllRegisteredNames';
 
-    return this.http
-      .get(url, httpOptions)
-      .pipe(tap(data => console.log(data)), catchError(this.handleError('getUsers', [])));
-  }
+  //   return this.http
+  //     .get(url, httpOptions)
+  //     .pipe(tap(data => console.log(data)), catchError(this.handleError('getUsers', [])));
+  // }
 
  /**
   * Method to initiate a HTTP request to mint ERC-721 token.
@@ -205,7 +205,7 @@ export class TokenApiService {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
-    let url = config.apiGateway.root + 'getNFTTokens?';
+    let url = config.apiGateway.root + 'getNFTokens?';
 
     if (pageNo) {
       url += 'pageNo=' + pageNo + '&';

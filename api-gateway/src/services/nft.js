@@ -67,7 +67,6 @@ export async function getNFTTransactions(req, res, next) {
  * @param {*} res
  */
 export async function mintNFToken(req, res, next) {
-  console.log('mintNFToken req.body.tokenID:', req.body.tokenID);
   const randomHex = `0x${Math.floor(Math.random() * 10e14)
     .toString(16)
     .padEnd(64, '0')}`; // create a random number, left-padded to 64 octets
@@ -75,10 +74,9 @@ export async function mintNFToken(req, res, next) {
     tokenID: req.body.tokenID || randomHex,
     tokenURI: req.body.tokenURI || '',
   };
-  console.log('mintNFToken reqBody.tokenID:', reqBody.tokenID);
 
   try {
-    const { data } = await zkp.mintNFToken(req.user, reqBody);
+    res.data = await zkp.mintNFToken(req.user, reqBody);
 
     const user = await db.fetchUser(req.user);
 
@@ -89,7 +87,6 @@ export async function mintNFToken(req, res, next) {
       isMinted: true,
     });
 
-    res.data = data;
     next();
   } catch (err) {
     next(err);
@@ -118,7 +115,7 @@ export async function transferNFToken(req, res, next) {
 
   try {
     const receiverAddress = await offchain.getAddressFromName(req.body.receiver_name);
-    const { data } = await zkp.transferNFToken(req.user, {
+    res.data = await zkp.transferNFToken(req.user, {
       tokenID,
       to: receiverAddress,
     });
@@ -142,7 +139,6 @@ export async function transferNFToken(req, res, next) {
       for: 'NFTToken',
     }); // send nft token data to BOB side
 
-    res.data = data;
     next();
   } catch (err) {
     next(err);
@@ -168,7 +164,7 @@ export async function transferNFToken(req, res, next) {
 export async function burnNFToken(req, res, next) {
   const { uri, tokenID, contractAddress } = req.body;
   try {
-    const { data } = await zkp.burnNFToken(req.user, { tokenID });
+    res.data = await zkp.burnNFToken(req.user, { tokenID });
 
     await db.updateNFTokenByTokenId(req.user, tokenID, {
       uri,
@@ -177,7 +173,6 @@ export async function burnNFToken(req, res, next) {
       isBurned: true,
     });
 
-    res.data = data;
     next();
   } catch (err) {
     next(err);
@@ -196,13 +191,12 @@ export async function burnNFToken(req, res, next) {
 export async function getNFTokens(req, res, next) {
   try {
     const user = await db.fetchUser(req.user);
-    const data = await db.getNFTokens(req.user, {
+    res.data = await db.getNFTokens(req.user, {
       shieldContractAddress: user.selected_token_shield_contract,
       limit: req.query.limit,
       pageNo: req.query.pageNo,
     });
 
-    res.data = data;
     next();
   } catch (err) {
     next(err);
@@ -232,8 +226,7 @@ export async function getNFTokenAddress(req, res, next) {
  */
 export async function getNFTokenInfo(req, res, next) {
   try {
-    const response = await zkp.getNFTokenInfo(req.user);
-    res.data = response.data;
+    res.data = await zkp.getNFTokenInfo(req.user);
     next();
   } catch (err) {
     next(err);

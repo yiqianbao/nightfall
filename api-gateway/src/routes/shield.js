@@ -31,6 +31,6 @@ const router = express.Router();
  *        }
  *    }
  */
-router.route('/address').get(getShieldAddresses);
+router.get('/getShieldAddresses', getShieldAddresses);
 
 export default router;

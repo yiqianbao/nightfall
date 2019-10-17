@@ -9,7 +9,7 @@ const requestWrapper = options =>
       if (err || res.statusCode !== 200) {
         return reject(err || res.body);
       }
-      return resolve(body);
+      return resolve(body.data);
     });
   });
 

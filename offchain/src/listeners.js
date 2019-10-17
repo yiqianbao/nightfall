@@ -1,31 +1,10 @@
 import apiGateway from './rest/api-gateway';
 
-async function addFToken(data, userData) {
+async function insertNFTToDb(data, userData) {
   try {
-    console.log('\noffchain/src/listeners.js', 'addFToken', '\ndata', data);
+    console.log('\noffchain/src/listeners.js', 'insertNFTToDb', '\ndata', data);
 
-    await apiGateway.addFTokenToDB(
-      {
-        authorization: userData.jwtToken,
-      },
-      {
-        amount: data.amount,
-        shieldContractAddress: data.shieldContractAddress,
-        sender: data.sender,
-        senderAddress: data.senderAddress,
-        isReceived: true,
-      },
-    );
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-async function addNFToken(data, userData) {
-  try {
-    console.log('\noffchain/src/listeners.js', 'addNFToken', '\ndata', data);
-
-    await apiGateway.addNFTokenToDB(
+    await apiGateway.insertNFTToDb(
       {
         authorization: userData.jwtToken,
       },
@@ -43,7 +22,28 @@ async function addNFToken(data, userData) {
   }
 }
 
-async function addTokenCommitment(data, userData) {
+async function insertFTTransactionToDb(data, userData) {
+  try {
+    console.log('\noffchain/src/listeners.js', 'insertFTTransactionToDb', '\ndata', data);
+
+    await apiGateway.insertFTTransactionToDb(
+      {
+        authorization: userData.jwtToken,
+      },
+      {
+        amount: data.amount,
+        shieldContractAddress: data.shieldContractAddress,
+        sender: data.sender,
+        senderAddress: data.senderAddress,
+        isReceived: true,
+      },
+    );
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function insertNFTCommitmentToDb(data, userData) {
   try {
     console.log(
       '\noffchain/src/listeners.js',
@@ -69,12 +69,12 @@ async function addTokenCommitment(data, userData) {
 
     console.log(
       '\noffchain/src/listeners.js',
-      '\naddTokenCommitment',
+      '\ninsertNFTCommitmentToDb',
       '\ncorrectnessChecks',
       correctnessChecks,
     );
 
-    await apiGateway.addTokenCommitmentToDB(
+    await apiGateway.insertNFTCommitmentToDb(
       {
         authorization: userData.jwtToken,
       },
@@ -94,11 +94,11 @@ async function addTokenCommitment(data, userData) {
   }
 }
 
-async function addCoinCommitment(data, userData) {
+async function insertFTCommitmentToDb(data, userData) {
   try {
     console.log(
       '\noffchain/src/listeners.js',
-      '\naddCoinCommitment',
+      '\ninsertFTCommitmentToDb',
       '\ndata',
       data,
       '\nuserData',
@@ -120,12 +120,12 @@ async function addCoinCommitment(data, userData) {
 
     console.log(
       '\noffchain/src/listeners.js',
-      '\naddCoinCommitment',
+      '\ninsertFTCommitmentToDb',
       '\ncorrectnessChecks',
       correctnessChecks,
     );
 
-    await apiGateway.addCoinCommitmentToDB(
+    await apiGateway.insertFTCommitmentToDb(
       {
         authorization: userData.jwtToken,
       },
@@ -150,13 +150,13 @@ function listeners(data, userData) {
   const actualPayload = data.payload;
   switch (actualPayload.for) {
     case 'FTCommitment':
-      return addCoinCommitment(actualPayload, userData);
+      return insertFTCommitmentToDb(actualPayload, userData);
     case 'NFTCommitment':
-      return addTokenCommitment(actualPayload, userData);
+      return insertNFTCommitmentToDb(actualPayload, userData);
     case 'NFTToken':
-      return addNFToken(actualPayload, userData);
+      return insertNFTToDb(actualPayload, userData);
     case 'FToken':
-      return addFToken(actualPayload, userData);
+      return insertFTTransactionToDb(actualPayload, userData);
     default:
       throw Error('payload.for is invalid');
   }
