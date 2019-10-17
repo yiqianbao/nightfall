@@ -5,7 +5,7 @@
 
 **************************************************************************** */
 
-import express, { Router } from 'express';
+import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import logger from './logger';
@@ -20,7 +20,6 @@ import {
 } from './routes';
 import {
   authentication, // Authorization filter to verify Role of the user
-  unlockAccount,
   formatResponse,
   formatError,
   errorHandler,
