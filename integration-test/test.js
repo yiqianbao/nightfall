@@ -65,14 +65,14 @@ describe('****** Integration Test ******\n', function() {
     after(async function() {
       let res;
       res = await request
-        .get('/user/getUserDetails')
+        .get('/getUserDetails')
         .use(prefix(apiServerURL))
         .set('Authorization', alice.token);
 
       alice.sk = res.body.data.secretkey;
 
       res = await request
-        .get('/user/getUserDetails')
+        .get('/getUserDetails')
         .use(prefix(apiServerURL))
         .set('Authorization', bob.token);
 

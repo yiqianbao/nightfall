@@ -80,8 +80,7 @@ export async function getFTCommitmentTransactions(req, res, next) {
 
 export async function checkCorrectnessCoin(req, res, next) {
   try {
-    const { data } = await zkp.checkCorrectnessCoin(req.headers, req.body);
-    res.data = data;
+    res.data = await zkp.checkCorrectnessCoin(req.headers, req.body);
     next();
   } catch (err) {
     next(err);
@@ -105,7 +104,7 @@ export async function checkCorrectnessCoin(req, res, next) {
  */
 export async function mintCoin(req, res, next) {
   try {
-    const { data } = await zkp.mintCoin(req.user, {
+    const data = await zkp.mintCoin(req.user, {
       A: req.body.A,
       pk_A: req.user.pk_A,
     });
@@ -169,7 +168,7 @@ export async function transferCoin(req, res, next) {
     const user = await db.fetchUser(req.user);
     req.body.sk_A = user.secretkey;
 
-    const { data } = await zkp.transferCoin({ address }, req.body);
+    const data = await zkp.transferCoin({ address }, req.body);
     data.z_E_index = parseInt(data.z_E_index, 16);
     data.z_F_index = parseInt(data.z_F_index, 16);
 
@@ -286,7 +285,7 @@ export async function burnCoin(req, res, next) {
     const user = await db.fetchUser(req.user);
     req.body.sk_A = user.secretkey; // get logged in user's secretkey.
 
-    const { data } = await zkp.burnCoin({ ...req.body, payTo: payToAddress }, req.user);
+    res.data = await zkp.burnCoin({ ...req.body, payTo: payToAddress }, req.user);
 
     // update slected coin2 with tansferred data
     await db.updateFTCommitmentByCommitmentHash(req.user, req.body.z_A, {
@@ -318,7 +317,6 @@ export async function burnCoin(req, res, next) {
       });
     }
 
-    res.data = data;
     next();
   } catch (err) {
     next(err);

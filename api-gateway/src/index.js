@@ -5,7 +5,7 @@
 
 **************************************************************************** */
 
-import express, { Router } from 'express';
+import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import logger from './logger';
@@ -20,28 +20,25 @@ import {
 } from './routes';
 import {
   authentication, // Authorization filter to verify Role of the user
-  unlockAccount,
   formatResponse,
   formatError,
   errorHandler,
 } from './middlewares';
 
 const app = express();
-const router = Router();
 
 app.use(bodyParser.json()); // set up a filter to parse JSON
 
 app.use(cors()); // cross origin filter
 app.use(authentication);
 
-app.use('/', unlockAccount, router);
-app.use('/', rootRouter);
-app.use('/', nftCommitmentRoutes);
-app.use('/', ftCommitmentRoutes);
-app.use('/', ftRoutes);
-app.use('/', nftRoutes);
-app.use('/user', userRoutes);
-app.use('/shield', shieldRoutes);
+app.use(rootRouter);
+app.use(nftCommitmentRoutes);
+app.use(ftCommitmentRoutes);
+app.use(ftRoutes);
+app.use(nftRoutes);
+app.use(userRoutes);
+app.use(shieldRoutes);
 
 app.use(formatResponse);
 
