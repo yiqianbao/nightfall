@@ -8,15 +8,15 @@ const router = Router();
 
 async function mint(req, res, next) {
   const { address } = req.headers;
-  const { A, pk_A } = req.body;
-  const S_A = await utils.rndHex(32);
+  const { A: amount, pk_A: ownerPublicKey } = req.body;
+  const salt = await utils.rndHex(32);
 
   try {
-    const [coin, coin_index] = await fTokenController.mint(A, pk_A, S_A, address);
+    const [coin, coin_index] = await fTokenController.mint(amount, ownerPublicKey, salt, address);
     res.data = {
       coin,
       coin_index,
-      S_A,
+      S_A: salt,
     };
     next();
   } catch (err) {
@@ -26,25 +26,53 @@ async function mint(req, res, next) {
 
 async function transfer(req, res, next) {
   const { address } = req.headers;
-  const { C, D, E, F, pk_B, S_C, S_D, sk_A, z_C, z_C_index, z_D, z_D_index } = req.body;
-  const S_E = await utils.rndHex(32);
-  const S_F = await utils.rndHex(32);
+  const {
+    C,
+    D,
+    E,
+    F,
+    pk_B: receiverPublicKey,
+    S_C,
+    S_D,
+    sk_A: senderSecretKey,
+    z_C,
+    z_C_index,
+    z_D,
+    z_D_index,
+  } = req.body;
+
+  const inputCommitments = [
+    {
+      value: C,
+      salt: S_C,
+      commitment: z_C,
+      index: z_C_index,
+    },
+    {
+      value: D,
+      salt: S_D,
+      commitment: z_D,
+      index: z_D_index,
+    },
+  ];
+
+  const outputCommitments = [
+    {
+      value: E,
+      salt: await utils.rndHex(32),
+    },
+    {
+      value: F,
+      salt: await utils.rndHex(32),
+    },
+  ];
+
   try {
     const { z_E, z_E_index, z_F, z_F_index, txObj } = await fTokenController.transfer(
-      C,
-      D,
-      E,
-      F,
-      pk_B,
-      S_C,
-      S_D,
-      S_E,
-      S_F,
-      sk_A,
-      z_C,
-      z_C_index,
-      z_D,
-      z_D_index,
+      inputCommitments,
+      outputCommitments,
+      receiverPublicKey,
+      senderSecretKey,
       address,
     );
     res.data = {
@@ -53,8 +81,8 @@ async function transfer(req, res, next) {
       z_F,
       z_F_index,
       txObj,
-      S_E,
-      S_F,
+      S_E: outputCommitments[0].salt,
+      S_F: outputCommitments[1].salt,
     };
     next();
   } catch (err) {
@@ -63,14 +91,29 @@ async function transfer(req, res, next) {
 }
 
 async function burn(req, res, next) {
-  const { A, sk_A, S_A, z_A, z_A_index, payTo } = req.body;
+  const {
+    A: amount,
+    sk_A: receiverSecretKey,
+    S_A: salt,
+    z_A: commitment,
+    z_A_index: commitmentIndex,
+    payTo: tokenReceiver,
+  } = req.body;
   const { address } = req.headers;
 
   try {
-    await fTokenController.burn(A, sk_A, S_A, z_A, z_A_index, address, payTo);
+    await fTokenController.burn(
+      amount,
+      receiverSecretKey,
+      salt,
+      commitment,
+      commitmentIndex,
+      address,
+      tokenReceiver,
+    );
     res.data = {
-      z_C: z_A,
-      z_C_index: z_A_index,
+      z_C: commitment,
+      z_C_index: commitmentIndex,
     };
     next();
   } catch (err) {
@@ -79,13 +122,26 @@ async function burn(req, res, next) {
 }
 
 async function checkCorrectness(req, res, next) {
-  console.log('\nzkp/src/restapi', '\n/coin/checkCorrectness', '\nreq.body', req.body);
+  console.log('\nzkp/src/restapi', '\n/checkCorrectnessForFTCommitment', '\nreq.body', req.body);
 
   try {
     const { address } = req.headers;
-    const { E, pk, S_E, z_E, z_E_index } = req.body;
+    const {
+      E: value,
+      pk: publicKey,
+      S_E: salt,
+      z_E: commitment,
+      z_E_index: commitmentIndex,
+    } = req.body;
 
-    const results = await fTokenController.checkCorrectness(E, pk, S_E, z_E, z_E_index, address);
+    const results = await fTokenController.checkCorrectness(
+      value,
+      publicKey,
+      salt,
+      commitment,
+      commitmentIndex,
+      address,
+    );
     console.log('\nzkp/src/restapi', '\n/coin/checkCorrectness', '\nresults', results);
 
     res.data = results;
@@ -141,14 +197,12 @@ async function unsetCoinShieldAddress(req, res, next) {
   }
 }
 
-router.route('/mint').post(mint);
-router.route('/transfer').post(transfer);
-router.route('/burn').post(burn);
-router.route('/checkCorrectness').post(checkCorrectness);
-router
-  .route('/shield')
-  .post(setCoinShieldAddress)
-  .get(getCoinShieldAddress)
-  .delete(unsetCoinShieldAddress);
+router.post('/mintFTCommitment', mint);
+router.post('/transferFTCommitment', transfer);
+router.post('/burnFTCommitment', burn);
+router.post('/checkCorrectnessForFTCommitment', checkCorrectness);
+router.post('/setFTokenShieldContractAddress', setCoinShieldAddress);
+router.get('/getFTokenShieldContractAddress', getCoinShieldAddress);
+router.delete('/removeFTCommitmentshield', unsetCoinShieldAddress);
 
 export default router;

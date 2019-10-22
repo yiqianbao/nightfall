@@ -9,7 +9,7 @@ const requestWrapper = options =>
       if (err || res.statusCode !== 200) {
         return reject(err || res.body);
       }
-      return resolve(body);
+      return resolve(body.data);
     });
   });
 
@@ -35,7 +35,7 @@ export default {
   // mint non-fungible token commitment
   mintToken({ address }, body) {
     const options = {
-      url: `${url}/token/mint`,
+      url: `${url}/mintNFTCommitment`,
       method: 'POST',
       json: true,
       headers: { address },
@@ -47,7 +47,7 @@ export default {
   // transfer non-fungible token commitment
   spendToken({ address }, body) {
     const options = {
-      url: `${url}/token/transfer`,
+      url: `${url}/transferNFTCommitment`,
       method: 'POST',
       json: true,
       headers: { address },
@@ -59,7 +59,7 @@ export default {
   // burn non-fungible token commitment
   burnToken({ address }, body) {
     const options = {
-      url: `${url}/token/burn`,
+      url: `${url}/burnNFTCommitment`,
       method: 'POST',
       json: true,
       headers: { address },
@@ -71,7 +71,7 @@ export default {
   // mint fungible token commitment
   mintCoin({ address }, body) {
     const options = {
-      url: `${url}/coin/mint`,
+      url: `${url}/mintFTCommitment`,
       method: 'POST',
       json: true,
       headers: { address },
@@ -83,7 +83,7 @@ export default {
   // transfer fungible token commitment
   transferCoin({ address }, body) {
     const options = {
-      url: `${url}/coin/transfer`,
+      url: `${url}/transferFTCommitment`,
       method: 'POST',
       json: true,
       headers: { address },
@@ -95,7 +95,7 @@ export default {
   // burn fungible token commitment
   burnCoin(body, { address }) {
     const options = {
-      url: `${url}/coin/burn`,
+      url: `${url}/burnFTCommitment`,
       method: 'POST',
       json: true,
       headers: { address },
@@ -107,7 +107,7 @@ export default {
   // mint non-fungible token
   mintNFToken({ address }, body) {
     const options = {
-      url: `${url}/nft/mint`,
+      url: `${url}/mintNFToken`,
       method: 'POST',
       json: true,
       headers: { address },
@@ -119,7 +119,7 @@ export default {
   // transfer non-fungible token
   transferNFToken({ address }, body) {
     const options = {
-      url: `${url}/nft/transfer`,
+      url: `${url}/transferNFToken`,
       method: 'POST',
       json: true,
       headers: { address },
@@ -131,7 +131,7 @@ export default {
   // burn non-fungible token
   burnNFToken({ address }, body) {
     const options = {
-      url: `${url}/nft/burn`,
+      url: `${url}/burnNFToken`,
       method: 'POST',
       json: true,
       headers: { address },
@@ -140,10 +140,32 @@ export default {
     return requestWrapper(options);
   },
 
+  // get non-fungible token address
+  getNFTokenAddress({ address }) {
+    const options = {
+      url: `${url}/getNFTokenContractAddress`,
+      method: 'GET',
+      json: true,
+      headers: { address },
+    };
+    return requestWrapper(options);
+  },
+
+  // get non-fungible token information
+  getNFTokenInfo({ address }) {
+    const options = {
+      url: `${url}/getNFTokenInfo`,
+      method: 'GET',
+      json: true,
+      headers: { address },
+    };
+    return requestWrapper(options);
+  },
+
   // mint fungible token
   mintFToken({ address }, body) {
     const options = {
-      url: `${url}/ft/mint`,
+      url: `${url}/mintFToken`,
       method: 'POST',
       json: true,
       headers: { address },
@@ -155,7 +177,7 @@ export default {
   // transfer fungible token
   transferFToken({ address }, body) {
     const options = {
-      url: `${url}/ft/transfer`,
+      url: `${url}/transferFToken`,
       method: 'POST',
       json: true,
       headers: { address },
@@ -167,7 +189,7 @@ export default {
   // burn fungible token
   burnFToken({ address }, body) {
     const options = {
-      url: `${url}/ft/burn`,
+      url: `${url}/burnFToken`,
       method: 'POST',
       json: true,
       headers: { address },
@@ -176,10 +198,32 @@ export default {
     return requestWrapper(options);
   },
 
+  // get fungible token address
+  getFTokenAddress({ address }) {
+    const options = {
+      url: `${url}/getFTokenContractAddress`,
+      method: 'GET',
+      json: true,
+      headers: { address },
+    };
+    return requestWrapper(options);
+  },
+
+  // get fungible token information
+  getFTokenInfo({ address }) {
+    const options = {
+      url: `${url}/getFTokenInfo`,
+      method: 'GET',
+      json: true,
+      headers: { address },
+    };
+    return requestWrapper(options);
+  },
+
   // check correctness for non-fungible token commitment once received by whisper listener of bob.
   checkCorrectnessToken(headers, body) {
     const options = {
-      url: `${url}/token/checkCorrectness`,
+      url: `${url}/checkCorrectnessForNFTCommitment`,
       method: 'POST',
       json: true,
       headers,
@@ -191,7 +235,7 @@ export default {
   // check correctness for fungible token commitment once received by whisper listener of bob.
   checkCorrectnessCoin(headers, body) {
     const options = {
-      url: `${url}/coin/checkCorrectness`,
+      url: `${url}/checkCorrectnessForFTCommitment`,
       method: 'POST',
       json: true,
       headers,
@@ -203,7 +247,7 @@ export default {
   // set new non-fungible commitment token shield for user address
   setTokenShield({ address }, body) {
     const options = {
-      url: `${url}/token/shield`,
+      url: `${url}/setNFTCommitmentShieldContractAddress`,
       method: 'POST',
       json: true,
       headers: { address },
@@ -215,7 +259,7 @@ export default {
   // get non-fungible commitment token shield address for user address
   getTokenShield({ address }) {
     const options = {
-      url: `${url}/token/shield`,
+      url: `${url}/getNFTCommitmentShieldContractAddress`,
       method: 'GET',
       json: true,
       headers: { address },
@@ -226,7 +270,7 @@ export default {
   // remove non-fungible commitment token shield address for user address
   unSetTokenShield({ address }) {
     const options = {
-      url: `${url}/token/shield`,
+      url: `${url}/removeNFTCommitmentshield`,
       method: 'DELETE',
       json: true,
       headers: { address },
@@ -236,7 +280,7 @@ export default {
   // set new fungible commitment token shield for user address
   setCoinShield({ address }, body) {
     const options = {
-      url: `${url}/coin/shield`,
+      url: `${url}/setFTokenShieldContractAddress`,
       method: 'POST',
       json: true,
       headers: { address },
@@ -245,10 +289,10 @@ export default {
     return requestWrapper(options);
   },
 
-  // get ungible commitment token shield address for user address
+  // get fungible commitment token shield contract address for user address
   getCoinShield({ address }) {
     const options = {
-      url: `${url}/coin/shield`,
+      url: `${url}/getFTokenShieldContractAddress`,
       method: 'GET',
       json: true,
       headers: { address },
@@ -256,10 +300,10 @@ export default {
     return requestWrapper(options);
   },
 
-  // remove ungible commitment token shield address for user address
+  // remove fungible commitment token shield address for user address
   unSetCoinShield({ address }) {
     const options = {
-      url: `${url}/coin/shield`,
+      url: `${url}/removeFTCommitmentshield`,
       method: 'DELETE',
       json: true,
       headers: { address },

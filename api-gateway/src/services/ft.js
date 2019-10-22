@@ -153,3 +153,36 @@ export async function burnFToken(req, res, next) {
     next(err);
   }
 }
+
+/**
+ * This function will get the fungible token contract address from the 
+ * shield contract which is set by the user.
+ * req.body { 
+    address : 0x3915e408fd5cff354fd73549d31a4bc66f7335db59bc4e84001473
+ }
+ * @param {*} req
+ * @param {*} res
+*/
+export async function getFTokenAddress(req, res, next) {
+  try {
+    res.data = await zkp.getFTokenAddress(req.user);
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * This function will retrieve information of the fungible token.
+ * Which will retrieve the balance, name and symbol of the fungible token
+ * @param {*} req
+ * @param {*} res
+ */
+export async function getFTokenInfo(req, res, next) {
+  try {
+    res.data = await zkp.getFTokenInfo(req.user);
+    next();
+  } catch (err) {
+    next(err);
+  }
+}

@@ -120,7 +120,7 @@ function setShieldContract(user, contractAddress) {
  * @param {*} req
  * @param {*} res
 */
-export async function addContract(req, res, next) {
+export async function addContractInfo(req, res, next) {
   const { contractAddress, contractName, isSelected } = req.body;
 
   try {
@@ -165,7 +165,7 @@ export async function addContract(req, res, next) {
  * @param {*} req
  * @param {*} res
 */
-export async function updateContract(req, res, next) {
+export async function updateContractInfo(req, res, next) {
   const { tokenShield, coinShield } = req.body;
 
   try {
@@ -223,7 +223,7 @@ export async function updateContract(req, res, next) {
  * @param {*} req
  * @param {*} res
 */
-export async function deleteContract(req, res, next) {
+export async function deleteContractInfo(req, res, next) {
   const { query } = req;
 
   try {

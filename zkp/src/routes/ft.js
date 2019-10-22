@@ -73,10 +73,10 @@ async function getInfo(req, res, next) {
   }
 }
 
-router.route('/mint').post(mint);
-router.route('/transfer').post(transfer);
-router.route('/burn').post(burn);
-router.route('/address').get(getAddress);
-router.route('/details').get(getInfo);
+router.post('/mintFToken', mint);
+router.post('/transferFToken', transfer);
+router.post('/burnFToken', burn);
+router.get('/getFTokenContractAddress', getAddress);
+router.get('/getFTokenInfo', getInfo);
 
 export default router;

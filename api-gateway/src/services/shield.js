@@ -13,12 +13,12 @@ export async function getShieldAddresses(req, res, next) {
 
     res.data = {
       coinShield: {
-        contract_address: coinShield.data.shieldAddress,
-        contract_name: coinShield.data.name,
+        contract_address: coinShield.shieldAddress,
+        contract_name: coinShield.name,
       },
       tokenShield: {
-        contract_address: tokenShield.data.shieldAddress,
-        contract_name: tokenShield.data.name,
+        contract_address: tokenShield.shieldAddress,
+        contract_name: tokenShield.name,
       },
     };
     next();

@@ -268,7 +268,6 @@ export class UserAccountsComponent extends Config implements OnInit {
         const nftContractDetails  = response[2]['data'];
         const ftContractDetails  = response[3]['data'];
 
-        console.log(response[2], response[3]);
         this.formatedDefaultData = this.formatDefaultShieldContractData(
           defaultContractDetails,
           userContractDetails,

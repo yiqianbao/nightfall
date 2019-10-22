@@ -83,8 +83,7 @@ export async function getNFTCommitmentTransactions(req, res, next) {
 // check correctness
 export async function checkCorrectnessToken(req, res, next) {
   try {
-    const { data } = await zkp.checkCorrectnessToken(req.headers, req.body);
-    res.data = data;
+    res.data = await zkp.checkCorrectnessToken(req.headers, req.body);
     next();
   } catch (err) {
     next(err);
@@ -111,7 +110,7 @@ export async function mintToken(req, res, next) {
   const { uri, tokenID, contractAddress } = req.body;
   try {
     // mint a private 'token commitment' within the shield contract to represent the public NFToken with the specified tokenID
-    const { data } = await zkp.mintToken(req.user, {
+    const data = await zkp.mintToken(req.user, {
       A: tokenID,
       pk_A: req.user.pk_A,
     });
@@ -181,7 +180,7 @@ export async function transferToken(req, res, next) {
     // Transfer the token under zero-knowledge:
     // Nullify the sender's 'token commitment' within the shield contract.
     // Add a new token commitment to the shield contract to represent that the token is now owned by the receiver.
-    const { data } = await zkp.spendToken({ address }, req.body);
+    const data = await zkp.spendToken({ address }, req.body);
 
     // Update the sender's token db.
     await db.updateNFTCommitmentByTokenId(req.user, req.body.A, {

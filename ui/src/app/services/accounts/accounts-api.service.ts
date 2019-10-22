@@ -35,7 +35,7 @@ export class AccountsApiService {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
-    const url = config.user.root + 'getAllRegisteredNames';
+    const url = config.apiGateway.root + 'getAllRegisteredNames';
 
     return this.http
       .get(url, httpOptions)
@@ -51,7 +51,7 @@ export class AccountsApiService {
    * Method to initiate a HTTP request to get a user.
    */
   getUser() {
-    const url = config.apiGateway.root + 'user/getUserDetails';
+    const url = config.apiGateway.root + 'getUserDetails';
     return this.http.get(url).pipe(
       tap(data => {}),
       catchError(err => {
@@ -70,13 +70,13 @@ export class AccountsApiService {
   getTransactions(type: string, pageNo: number, limit: number) {
     let url;
     if (type === 'tokens') {
-      url = config.apiGateway.root + 'token/transactions?pageNo=' + pageNo + '&limit=' + limit;
+      url = config.apiGateway.root + 'getNFTCommitmentTransactions?pageNo=' + pageNo + '&limit=' + limit;
     } else if (type === 'publictokens') {
-      url = config.apiGateway.root + 'nft/transactions?pageNo=' + pageNo + '&limit=' + limit;
+      url = config.apiGateway.root + 'getNFTTransactions?pageNo=' + pageNo + '&limit=' + limit;
  } else if (type === 'publiccoins') {
-      url = config.apiGateway.root + 'ft/transactions?&pageNo=' + pageNo + '&limit=' + limit;
+      url = config.apiGateway.root + 'getFTTransactions?&pageNo=' + pageNo + '&limit=' + limit;
  } else {
-      url = config.apiGateway.root + 'coin/transactions?pageNo=' + pageNo + '&limit=' + limit;
+      url = config.apiGateway.root + 'getFTCommitmentTransactions?pageNo=' + pageNo + '&limit=' + limit;
  }
 
     return this.http.get(url).pipe(
@@ -92,7 +92,7 @@ export class AccountsApiService {
    * Method to initiate a HTTP request to get ERC-20 token commitments of logged in user.
    */
   getCoins() {
-    const url = config.zkp.root + 'ft/details';
+    const url = config.apiGateway.root + 'getFTokenInfo';
     return this.http.get(url).pipe(
       map((data: any) => {
         console.log('coins', data);
@@ -110,7 +110,7 @@ export class AccountsApiService {
    * Method to initiate a HTTP request to get ERC-721 tokens of logged in user.
    */
   getNFTBalance() {
-    const url = config.zkp.root + 'nft/details';
+    const url = config.apiGateway.root + 'getNFTokenInfo';
     return this.http.get(url).pipe(
       tap(data => {}),
       catchError(err => {
@@ -191,7 +191,7 @@ export class AccountsApiService {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
-    const url = config.apiGateway.root + 'user/contractAddress';
+    const url = config.apiGateway.root + 'addContractInfo';
     const body = {
       contractAddress: account.contractAdd,
       contractName: account.contractName,
@@ -207,7 +207,7 @@ export class AccountsApiService {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
-    const url = config.apiGateway.root + 'user/contractAddress';
+    const url = config.apiGateway.root + 'updateContractInfo';
     const body = {};
     if (account.coinShield) {
       body['coinShield'] = {
@@ -223,7 +223,7 @@ export class AccountsApiService {
         isSelected: account.selection
       };
     }
-    return this.http.put(url, body, httpOptions).pipe(tap(data => console.log('update ERC-20 Account')));
+    return this.http.post(url, body, httpOptions).pipe(tap(data => console.log('update ERC-20 Account')));
   }
 
   /**
@@ -233,20 +233,20 @@ export class AccountsApiService {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
-    let url = config.apiGateway.root + 'user/contractAddress?';
+    let url = config.apiGateway.root + 'deleteContractInfo?';
     if (account.coinShield) {
       url = url + 'coin_shield=' + account.contractAdd;
     } else if (account.tokenShield) {
       url = url + 'token_shield=' + account.contractAdd;
     }
-    return this.http.delete(url, httpOptions).pipe(tap(data => console.log('update ERC-20 Account')));
+    return this.http.post(url, httpOptions).pipe(tap(data => console.log('update ERC-20 Account')));
   }
 
   /**
    * Method to initiate a HTTP request to get the default shield contract address
    */
   getDefaultShieldAddress() {
-    const url = config.apiGateway.root + 'shield/address';
+    const url = config.apiGateway.root + 'getShieldAddresses';
     return this.http.get(url).pipe(
       tap(data => console.log(''))
     );
@@ -257,7 +257,7 @@ export class AccountsApiService {
    * Method to initiate a HTTP request to get the ERC-721 contract address
    */
   getNFTAddress() {
-    const url = config.zkp.root  + 'nft/address';
+    const url = config.apiGateway.root  + 'getNFTokenContractAddress';
     return this.http.get(url).pipe(
       tap(data => console.log(''))
     );
@@ -267,7 +267,7 @@ export class AccountsApiService {
    * Method to initiate a HTTP request to get the ERC-20 contract address
    */
   getFTAddress() {
-    const url = config.zkp.root + 'ft/address';
+    const url = config.apiGateway.root + 'getFTokenContractAddress';
     return this.http.get(url).pipe(
       tap(data => console.log(''))
     );

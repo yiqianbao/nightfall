@@ -1,8 +1,8 @@
 import express from 'express';
 import {
-  addContract,
-  updateContract,
-  deleteContract,
+  addContractInfo,
+  updateContractInfo,
+  deleteContractInfo,
   getAllRegisteredNames,
   getUserDetails,
 } from '../services/api-gateway';
@@ -10,7 +10,7 @@ import {
 const router = express.Router();
 
 /**
- * @api {post} /user/contractAddress Add shield contract information
+ * @api {post} /addContractInfo Add shield contract information
  * @apiVersion 1.0.0
  * @apiName  Add & set shield contract
  * @apiGroup Sheild Contract
@@ -36,10 +36,10 @@ const router = express.Router();
  *		"message":"Added of type coin"
  *	  }
  */
-router.route('/contractAddress').post(addContract);
+router.post('/addContractInfo', addContractInfo);
 
 /**
- * @api {put} /user/contractAddress update shield contract information
+ * @api {put} /updateContractInfo update shield contract information
  * @apiVersion 1.0.0
  * @apiName  update AND/OR set shield contract
  * @apiGroup Sheild Contract
@@ -73,10 +73,10 @@ router.route('/contractAddress').post(addContract);
  *		"message":"Contract Address updated"
  *	  }
  */
-router.route('/contractAddress').put(updateContract);
+router.post('/updateContractInfo', updateContractInfo);
 
 /**
- * @api {delete} /user/contractAddress Add shield contract information
+ * @api {delete} /deleteContractInfo Add shield contract information
  * @apiVersion 1.0.0
  * @apiName  Add & set shield contract
  * @apiGroup Sheild Contract
@@ -102,7 +102,7 @@ router.route('/contractAddress').put(updateContract);
  *		"message":"Contract Address Removed"
  *	  }
  */
-router.route('/contractAddress').delete(deleteContract);
+router.post('/deleteContractInfo', deleteContractInfo);
 
 /**
  * @api {get} /user/getAllRegisteredNames List all registered users
