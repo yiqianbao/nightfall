@@ -3,6 +3,7 @@
 import { Router } from 'express';
 import utils from 'zkp-utils';
 import fTokenController from '../f-token-controller';
+import { getVkId, getContract } from '../contractUtils';
 
 const router = Router();
 
@@ -10,9 +11,17 @@ async function mint(req, res, next) {
   const { address } = req.headers;
   const { A: amount, pk_A: ownerPublicKey } = req.body;
   const salt = await utils.rndHex(32);
+  const vkId = await getVkId('MintCoin');
+  const { contractJson: fTokenShieldJson, contractInstance: fTokenShield } = await getContract(
+    'FTokenShield',
+  );
 
   try {
-    const [coin, coin_index] = await fTokenController.mint(amount, ownerPublicKey, salt, address);
+    const [coin, coin_index] = await fTokenController.mint(amount, ownerPublicKey, salt, vkId, {
+      fTokenShieldJson,
+      fTokenShieldAddress: fTokenShield.address,
+      account: address,
+    });
     res.data = {
       coin,
       coin_index,
@@ -40,6 +49,10 @@ async function transfer(req, res, next) {
     z_D,
     z_D_index,
   } = req.body;
+  const vkId = await getVkId('TransferCoin');
+  const { contractJson: fTokenShieldJson, contractInstance: fTokenShield } = await getContract(
+    'FTokenShield',
+  );
 
   const inputCommitments = [
     {
@@ -73,7 +86,12 @@ async function transfer(req, res, next) {
       outputCommitments,
       receiverPublicKey,
       senderSecretKey,
-      address,
+      vkId,
+      {
+        fTokenShieldJson,
+        fTokenShieldAddress: fTokenShield.address,
+        account: address,
+      },
     );
     res.data = {
       z_E,
@@ -100,6 +118,10 @@ async function burn(req, res, next) {
     payTo: tokenReceiver,
   } = req.body;
   const { address } = req.headers;
+  const vkId = await getVkId('BurnCoin');
+  const { contractJson: fTokenShieldJson, contractInstance: fTokenShield } = await getContract(
+    'FTokenShield',
+  );
 
   try {
     await fTokenController.burn(
@@ -108,8 +130,13 @@ async function burn(req, res, next) {
       salt,
       commitment,
       commitmentIndex,
-      address,
-      tokenReceiver,
+      vkId,
+      {
+        fTokenShieldJson,
+        fTokenShieldAddress: fTokenShield.address,
+        account: address,
+        tokenReceiver,
+      },
     );
     res.data = {
       z_C: commitment,
