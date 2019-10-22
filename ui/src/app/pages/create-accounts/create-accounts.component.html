@@ -20,6 +20,7 @@
           placeholder="Your full name"
           class="input-field"
           (keypress)="utilService.allowLowercase($event)"
+          (paste)="utilService.allowLowercase($event)"
           formControlName="accountName"
         />
         <input type="email" placeholder="Enter email" class="input-field" formControlName="email" />
