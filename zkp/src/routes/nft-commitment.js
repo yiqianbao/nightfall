@@ -8,16 +8,16 @@ const router = Router();
 
 async function mint(req, res, next) {
   const { address } = req.headers;
-  const { A, pk_A } = req.body;
-  const S_A = await utils.rndHex(32);
+  const { A: tokenId, pk_A: ownerPublicKey } = req.body;
+  const salt = await utils.rndHex(32);
 
   try {
-    const [z_A, z_A_index] = await nfController.mint(A, pk_A, S_A, address);
+    const [z_A, z_A_index] = await nfController.mint(tokenId, ownerPublicKey, salt, address);
 
     res.data = {
       z_A,
       z_A_index,
-      S_A,
+      S_A: salt,
     };
     next();
   } catch (err) {
@@ -26,25 +26,32 @@ async function mint(req, res, next) {
 }
 
 async function transfer(req, res, next) {
-  const { A, pk_B, S_A, sk_A, z_A, z_A_index } = req.body;
-  const S_B = await utils.rndHex(32);
+  const {
+    A: tokenId,
+    pk_B: receiverPublicKey,
+    S_A: originalCommitmentSalt,
+    sk_A: senderSecretKey,
+    z_A: commitment,
+    z_A_index: commitmentIndex,
+  } = req.body;
+  const newCommitmentSalt = await utils.rndHex(32);
   const { address } = req.headers;
   try {
     const { z_B, z_B_index, txObj } = await nfController.transfer(
-      A,
-      pk_B,
-      S_A,
-      S_B,
-      sk_A,
-      z_A,
-      z_A_index,
+      tokenId,
+      receiverPublicKey,
+      originalCommitmentSalt,
+      newCommitmentSalt,
+      senderSecretKey,
+      commitment,
+      commitmentIndex,
       address,
     );
     res.data = {
       z_B,
       z_B_index,
       txObj,
-      S_B,
+      S_B: newCommitmentSalt,
     };
     next();
   } catch (err) {
@@ -53,20 +60,27 @@ async function transfer(req, res, next) {
 }
 
 async function burn(req, res, next) {
-  const { A, S_A, Sk_A, z_A, z_A_index, payTo } = req.body;
+  const {
+    A: tokenId,
+    S_A: salt,
+    Sk_A: secretKey,
+    z_A: commitment,
+    z_A_index: commitmentIndex,
+    payTo: tokenReceiver,
+  } = req.body;
   const { address } = req.headers;
   try {
     await nfController.burn(
-      A,
-      Sk_A,
-      S_A,
-      z_A,
-      z_A_index,
+      tokenId,
+      secretKey,
+      salt,
+      commitment,
+      commitmentIndex,
       address,
-      payTo, // payed to same user.
+      tokenReceiver, // payed to same user.
     );
     res.data = {
-      z_A,
+      z_A: commitment,
     };
     next();
   } catch (err) {
@@ -79,9 +93,22 @@ async function checkCorrectness(req, res, next) {
 
   try {
     const { address } = req.headers;
-    const { A, pk, S_A, z_A, z_A_index } = req.body;
+    const {
+      A: tokenId,
+      pk: ownerPublicKey,
+      S_A: salt,
+      z_A: commitment,
+      z_A_index: commitmentIndex,
+    } = req.body;
 
-    const results = await nfController.checkCorrectness(A, pk, S_A, z_A, z_A_index, address);
+    const results = await nfController.checkCorrectness(
+      tokenId,
+      ownerPublicKey,
+      salt,
+      commitment,
+      commitmentIndex,
+      address,
+    );
     res.data = results;
     next();
   } catch (err) {
