@@ -224,27 +224,21 @@ This is a convenience because the sender (Alice)
 knows S_A,pk_A,n and n so could in fact calculate the token themselves.
 @returns {Integer} z_A_index - the index of the token within the Merkle Tree.  This is required for later transfers/joins so that Alice knows which 'chunks' of the Merkle Tree she needs to 'get' from the NFTokenShield contract in order to calculate a path.
 */
-async function mint(A, pk_A, S_A, account) {
+async function mint(A, pk_A, S_A, vkId, blockchainOptions) {
+  const { account, nfTokenShieldJson, nfTokenShieldAddress } = blockchainOptions;
+
+  const nfTokenShield = contract(nfTokenShieldJson);
+  nfTokenShield.setProvider(Web3.connect());
+  const nfTokenShieldInstance = await nfTokenShield.at(nfTokenShieldAddress);
+
   console.group('\nIN MINT...');
 
   console.info('Finding the relevant Shield and Verifier contracts...');
-  const nfTokenShield = shield[account] ? shield[account] : await NFTokenShield.deployed();
   const verifier = await Verifier.deployed();
   const verifier_registry = await Verifier_Registry.deployed();
-  console.log('NFTokenShield contract address:', nfTokenShield.address);
+  console.log('NFTokenShield contract address:', nfTokenShieldInstance.address);
   console.log('Verifier contract address:', verifier.address);
   console.log('Verifier_Registry contract address:', verifier_registry.address);
-
-  // get the vkId for a Mint
-  console.log('Reading vkIds from json file...');
-  const vkIds = await new Promise((resolve, reject) =>
-    jsonfile.readFile(config.VK_IDS, (err, data) => {
-      // doesn't natively support promises
-      if (err) reject(err);
-      else resolve(data);
-    }),
-  );
-  const { vkId } = vkIds.MintToken;
 
   // Calculate new arguments for the proof:
   const z_A = utils.concatenateThenHash(utils.strip0x(A).slice(-32 * 2), pk_A, S_A);
@@ -301,9 +295,10 @@ async function mint(A, pk_A, S_A, account) {
   console.log('Check that a registry has actually been registered:', registry);
 
   // make token shield contract an approver to transfer this token on behalf of the owner (to comply with the standard as msg.sender has to be owner or approver)
-  await addApproverNFToken(nfTokenShield.address, A, account);
+  await addApproverNFToken(nfTokenShieldInstance.address, A, account);
+
   // with the pre-compute done we can mint the token, which is now a reasonably light-weight calculation
-  const z_A_index = await zkp.mint(proof, inputs, vkId, A, z_A, account, nfTokenShield);
+  const z_A_index = await zkp.mint(proof, inputs, vkId, A, z_A, account, nfTokenShieldInstance);
 
   console.log('Mint output: [z_A, z_A_index]:', z_A, z_A_index.toString());
   console.log('MINT COMPLETE\n');
@@ -326,30 +321,22 @@ This function actually transfers a token, assuming that we have a proof.
 @returns {Integer} z_B_index - the index of the token within the Merkle Tree.  This is required for later transfers/joins so that Alice knows which 'chunks' of the Merkle Tree she needs to 'get' from the NFTokenShield contract in order to calculate a path.
 @returns {object} txObj - a promise of a blockchain transaction
 */
-async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, account) {
-  console.group('\nIN TRANSFER...');
+async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, vkId, blockchainOptions) {
+  const { account, nfTokenShieldJson, nfTokenShieldAddress } = blockchainOptions;
+
+  const nfTokenShield = contract(nfTokenShieldJson);
+  nfTokenShield.setProvider(Web3.connect());
+  const nfTokenShieldInstance = await nfTokenShield.at(nfTokenShieldAddress);
 
   console.log('Finding the relevant Shield and Verifier contracts');
-  const nfTokenShield = shield[account] ? shield[account] : await NFTokenShield.deployed();
-  const verifier = await Verifier.at(await nfTokenShield.getVerifier.call());
+  const verifier = await Verifier.at(await nfTokenShieldInstance.getVerifier.call());
   const verifier_registry = await Verifier_Registry.at(await verifier.getRegistry.call());
-  console.log('NFTokenShield contract address:', nfTokenShield.address);
+  console.log('NFTokenShield contract address:', nfTokenShieldInstance.address);
   console.log('Verifier contract address:', verifier.address);
   console.log('Verifier_Registry contract address:', verifier_registry.address);
 
-  // get the Transfer vkId
-  console.log('Reading vkIds from json file...');
-  const vkIds = await new Promise((resolve, reject) =>
-    jsonfile.readFile(config.VK_IDS, (err, data) => {
-      // doesn't natively support promises
-      if (err) reject(err);
-      else resolve(data);
-    }),
-  );
-  const { vkId } = vkIds.TransferToken;
-
   // Get token data from the Shield contract:
-  const root = await nfTokenShield.latestRoot(); // solidity getter for the public variable latestRoot
+  const root = await nfTokenShieldInstance.latestRoot(); // solidity getter for the public variable latestRoot
   console.log(`Merkle Root: ${root}`);
 
   // Calculate new arguments for the proof:
@@ -361,7 +348,7 @@ async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, account) {
   );
 
   // we need the Merkle path from the token commitment to the root, expressed as Elements
-  const path = await cv.computePath(account, nfTokenShield, z_A, z_A_index).then(result => {
+  const path = await cv.computePath(account, nfTokenShieldInstance, z_A, z_A_index).then(result => {
     return {
       elements: result.path.map(
         element => new Element(element, 'field', config.MERKLE_HASHLENGTH * 8, 1),
@@ -442,7 +429,7 @@ async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, account) {
     n,
     z_B,
     account,
-    nfTokenShield,
+    nfTokenShieldInstance,
   );
 
   console.log('TRANSFER COMPLETE\n');
@@ -459,7 +446,18 @@ async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, account) {
 this function burns a token, i.e. it recovers real NF Token (ERC 721) into the
 account specified by payTo
 */
-async function burn(A, Sk_A, S_A, z_A, z_A_index, account, payTo) {
+async function burn(A, Sk_A, S_A, z_A, z_A_index, vkId, blockchainOptions) {
+  const {
+    account,
+    nfTokenShieldJson,
+    nfTokenShieldAddress,
+    tokenReceiver: payTo,
+  } = blockchainOptions;
+
+  const nfTokenShield = contract(nfTokenShieldJson);
+  nfTokenShield.setProvider(Web3.connect());
+  const nfTokenShieldInstance = await nfTokenShield.at(nfTokenShieldAddress);
+
   const payToOrDefault = payTo || account; // have the option to pay out to another address
   console.group('\nIN BURN...');
   console.log('A', A);
@@ -471,32 +469,20 @@ async function burn(A, Sk_A, S_A, z_A, z_A_index, account, payTo) {
   console.log('payTo', payToOrDefault);
 
   console.log('Finding the relevant Shield and Verifier contracts');
-  const nfTokenShield = shield[account] ? shield[account] : await NFTokenShield.deployed();
   const verifier = await Verifier.deployed();
   const verifier_registry = await Verifier_Registry.deployed();
-  console.log('NFTokenShield contract address:', nfTokenShield.address);
+  console.log('NFTokenShield contract address:', nfTokenShieldInstance.address);
   console.log('Verifier contract address:', verifier.address);
   console.log('Verifier_Registry contract address:', verifier_registry.address);
 
-  // get the Burn vkId
-  console.log('Reading vkIds from json file...');
-  const vkIds = await new Promise((resolve, reject) =>
-    jsonfile.readFile(config.VK_IDS, (err, data) => {
-      // doesn't natively support promises
-      if (err) reject(err);
-      else resolve(data);
-    }),
-  );
-  const { vkId } = vkIds.BurnToken;
-
-  const root = await nfTokenShield.latestRoot(); // solidity getter for the public variable latestRoot
+  const root = await nfTokenShieldInstance.latestRoot(); // solidity getter for the public variable latestRoot
   console.log(`Merkle Root: ${root}`);
 
   // Calculate new arguments for the proof:
   const Na = utils.concatenateThenHash(S_A, Sk_A);
 
   // we need the Merkle path from the token commitment to the root, expressed as Elements
-  const path = await cv.computePath(account, nfTokenShield, z_A, z_A_index).then(result => {
+  const path = await cv.computePath(account, nfTokenShieldInstance, z_A, z_A_index).then(result => {
     return {
       elements: result.path.map(
         element => new Element(element, 'field', config.MERKLE_HASHLENGTH * 8, 1),
@@ -568,7 +554,7 @@ async function burn(A, Sk_A, S_A, z_A, z_A_index, account, payTo) {
 
   // with the pre-compute done we can burn the token, which is now a reasonably
   // light-weight calculation
-  await zkp.burn(proof, inputs, vkId, root, Na, A, payTo, account, nfTokenShield);
+  await zkp.burn(proof, inputs, vkId, root, Na, A, payTo, account, nfTokenShieldInstance);
 
   console.log('BURN COMPLETE\n');
   console.groupEnd();
