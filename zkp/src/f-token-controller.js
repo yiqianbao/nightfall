@@ -191,19 +191,19 @@ async function computeProof(elements, hostDir) {
 }
 
 /**
-Mint a coin
-@param {string} S_A - Alice's token serial number as a hex string
-@param {string} pkA - Alice's public key
-@param {string} A - the value of the coin
-@param {string} account - the account from which the payment for the coin will be made
-@returns {string} zA - The token
-This is a convenience because the sender (Alice)
-knows S_A,pkA,n and n so could in fact calculate the token themselves.
-@returns {Integer} zAIndex - the index of the token within the Merkle Tree.
-This is required for later transfers/joins so that Alice knows which 'chunks' of the Merkle Tree
-she needs to 'get' from the fTokenShield contract in order to calculate a path.
-*/
-async function mint(A, pkA, S_A, vkId, blockchainOptions) {
+ * Mint a coin
+ * @param {String} amount - the value of the coin
+ * @param {String} ownerPublicKey - Alice's public key
+ * @param {String} salt - Alice's token serial number as a hex string
+ * @param {String} vkId
+ * @param {Object} blockchainOptions
+ * @param {String} blockchainOptions.fTokenShieldJson - ABI of fTokenShield
+ * @param {String} blockchainOptions.fTokenShieldAddress - Address of deployed fTokenShieldContract
+ * @param {String} blockchainOptions.account - Account that is sending these transactions
+ * @returns {String} commitment - Commitment of the minted coins
+ * @returns {Number} commitmentIndex
+ */
+async function mint(amount, ownerPublicKey, salt, vkId, blockchainOptions) {
   const { account, fTokenShieldJson, fTokenShieldAddress } = blockchainOptions;
 
   const fTokenShield = contract(fTokenShieldJson);
@@ -220,21 +220,21 @@ async function mint(A, pkA, S_A, vkId, blockchainOptions) {
   console.log('VerifierRegistry contract address:', verifierRegistry.address);
 
   // Calculate new arguments for the proof:
-  const zA = utils.concatenateThenHash(A, pkA, S_A);
+  const commitment = utils.concatenateThenHash(amount, ownerPublicKey, salt);
 
   console.group('Existing Proof Variables:');
   const p = config.ZOKRATES_PACKING_SIZE;
   const pt = Math.ceil((config.INPUTS_HASHLENGTH * 8) / config.ZOKRATES_PACKING_SIZE); // packets in bits
-  console.log('A: ', `${A} : `, utils.hexToFieldPreserve(A, p, 1));
-  console.log('pkA: ', pkA, ' : ', utils.hexToFieldPreserve(pkA, p, pt));
-  console.log('S_A: ', S_A, ' : ', utils.hexToFieldPreserve(S_A, p, pt));
+  console.log('A: ', `${amount} : `, utils.hexToFieldPreserve(amount, p, 1));
+  console.log('pkA: ', ownerPublicKey, ' : ', utils.hexToFieldPreserve(ownerPublicKey, p, pt));
+  console.log('S_A: ', salt, ' : ', utils.hexToFieldPreserve(salt, p, pt));
   console.groupEnd();
 
   console.group('New Proof Variables:');
-  console.log('zA: ', zA, ' : ', utils.hexToFieldPreserve(zA, p, pt));
+  console.log('zA: ', commitment, ' : ', utils.hexToFieldPreserve(commitment, p, pt));
   console.groupEnd();
 
-  const publicInputHash = utils.concatenateThenHash(A, zA);
+  const publicInputHash = utils.concatenateThenHash(amount, commitment);
   console.log('publicInputHash:', publicInputHash);
 
   const inputs = cv.computeVectors([new Element(publicInputHash, 'field', 248, 1)]);
@@ -253,10 +253,10 @@ async function mint(A, pkA, S_A, vkId, blockchainOptions) {
   let proof = await computeProof(
     [
       new Element(publicInputHash, 'field', 248, 1),
-      new Element(A, 'field', 128, 1),
-      new Element(pkA, 'field'),
-      new Element(S_A, 'field'),
-      new Element(zA, 'field'),
+      new Element(amount, 'field', 128, 1),
+      new Element(ownerPublicKey, 'field'),
+      new Element(salt, 'field'),
+      new Element(commitment, 'field'),
     ],
     hostDir,
   );
@@ -272,22 +272,30 @@ async function mint(A, pkA, S_A, vkId, blockchainOptions) {
   // account to pay for the minted coin
   console.log('Approving ERC-20 spend from: ', fTokenShieldInstance.address);
   const fToken = await FToken.at(await fTokenShieldInstance.getFToken.call());
-  await fToken.approve(fTokenShieldInstance.address, parseInt(A, 16), {
+  await fToken.approve(fTokenShieldInstance.address, parseInt(amount, 16), {
     from: account,
     gas: 4000000,
     gasPrice: config.GASPRICE,
   });
-  console.log('ERC-20 spend approved!', parseInt(A, 16));
+  console.log('ERC-20 spend approved!', parseInt(amount, 16));
   console.log('Balance of account', account, (await getBalance(account)).toNumber());
 
   // with the pre-compute done, and the funds approved, we can mint the token,
   // which is now a reasonably light-weight calculation
-  const zAIndex = await zkp.mint(proof, inputs, vkId, A, zA, account, fTokenShieldInstance);
+  const commitmentIndex = await zkp.mint(
+    proof,
+    inputs,
+    vkId,
+    amount,
+    commitment,
+    account,
+    fTokenShieldInstance,
+  );
 
-  console.log('Mint output: [zA, zAIndex]:', zA, zAIndex.toString());
+  console.log('Mint output: [zA, zAIndex]:', commitment, commitmentIndex.toString());
   console.log('MINT COMPLETE\n');
   console.groupEnd();
-  return [zA, zAIndex];
+  return { commitment, commitmentIndex };
 }
 
 /**
@@ -297,12 +305,12 @@ async function mint(A, pkA, S_A, vkId, blockchainOptions) {
  * Currently the first is sent to the receiverPublicKey, and the second is sent to the sender.
  * @param {String} receiverPublicKey - Public key of the first outputCommitment
  * @param {String} senderSecretKey
- * @param {String} account - Account that is paying for the transactions.
- * @returns {string} zE - The token
- * @returns {Integer} z_E_index - the index of the token within the Merkle Tree.  This is required for later transfers/joins so that Alice knows which 'chunks' of the Merkle Tree she needs to 'get' from the fTokenShield contract in order to calculate a path.
- * @returns {string} zF - The token
- * @returns {Integer} z_F_index - the index of the token within the Merkle Tree.  This is required for later transfers/joins so that Alice knows which 'chunks' of the Merkle Tree she needs to 'get' from the fTokenShield contract in order to calculate a path.
- * @returns {object} txObj - a promise of a blockchain transaction
+ * @param {Object} blockchainOptions
+ * @param {String} blockchainOptions.fTokenShieldJson - ABI of fTokenShield
+ * @param {String} blockchainOptions.fTokenShieldAddress - Address of deployed fTokenShieldContract
+ * @param {String} blockchainOptions.account - Account that is sending these transactions
+ * @returns {Object[]} outputCommitments - Updated outputCommitments with their commitments and indexes.
+ * @returns {Object} Transaction object
  */
 async function transfer(
   inputCommitments,
@@ -312,11 +320,6 @@ async function transfer(
   vkId,
   blockchainOptions,
 ) {
-  const { value: C, salt: S_C, commitment: zC, index: zCIndex } = inputCommitments[0];
-  const { value: D, salt: S_D, commitment: zD, index: zDIndex } = inputCommitments[1];
-  const { value: E, salt: S_E } = outputCommitments[0];
-  const { value: F, salt: S_F } = outputCommitments[1];
-
   const { account, fTokenShieldJson, fTokenShieldAddress } = blockchainOptions;
 
   const fTokenShield = contract(fTokenShieldJson);
@@ -328,8 +331,8 @@ async function transfer(
   // due to limitations in the size of the adder implemented in the proof dsl,
   // we need C+D and E+F to easily fit in <128 bits (16 bytes). They could of course
   // be bigger than we allow here.
-  const c = parseInt(C, 16) + parseInt(D, 16);
-  const e = parseInt(E, 16) + parseInt(F, 16);
+  const c = parseInt(inputCommitments[0].value, 16) + parseInt(inputCommitments[1].value, 16);
+  const e = parseInt(outputCommitments[0].value, 16) + parseInt(outputCommitments[1].value, 16);
   if (c > 0xffffffff || e > 0xffffffff) throw new Error('Coin values are too large');
 
   console.log('Finding the relevant Shield and Verifier contracts');
@@ -344,13 +347,22 @@ async function transfer(
 
   // Calculate new arguments for the proof:
   const pkA = utils.hash(senderSecretKey);
-  const nC = utils.concatenateThenHash(S_C, senderSecretKey);
-  const nD = utils.concatenateThenHash(S_D, senderSecretKey);
-  const zE = utils.concatenateThenHash(E, receiverPublicKey, S_E);
-  const zF = utils.concatenateThenHash(F, pkA, S_F);
+  const nC = utils.concatenateThenHash(inputCommitments[0].salt, senderSecretKey);
+  const nD = utils.concatenateThenHash(inputCommitments[1].salt, senderSecretKey);
+  const zE = utils.concatenateThenHash(
+    outputCommitments[0].value,
+    receiverPublicKey,
+    outputCommitments[0].salt,
+  );
+  const zF = utils.concatenateThenHash(outputCommitments[1].value, pkA, outputCommitments[1].salt);
 
   // we need the Merkle path from the token commitment to the root, expressed as Elements
-  const pathC = await cv.computePath(account, fTokenShieldInstance, zC, zCIndex);
+  const pathC = await cv.computePath(
+    account,
+    fTokenShieldInstance,
+    inputCommitments[0].commitment,
+    inputCommitments[0].index,
+  );
   const pathCElements = {
     elements: pathC.path.map(
       element => new Element(element, 'field', config.MERKLE_HASHLENGTH * 8, 1),
@@ -359,7 +371,12 @@ async function transfer(
   };
   // console.log(`pathCElements.path:`, pathCElements.elements);
   // console.log(`pathCElements.positions:`, pathCElements.positions);
-  const pathD = await cv.computePath(account, fTokenShieldInstance, zD, zDIndex);
+  const pathD = await cv.computePath(
+    account,
+    fTokenShieldInstance,
+    inputCommitments[1].commitment,
+    inputCommitments[1].index,
+  );
   const pathDElements = {
     elements: pathD.path.map(
       element => new Element(element, 'field', config.MERKLE_HASHLENGTH * 8, 1),
@@ -370,23 +387,49 @@ async function transfer(
   // console.log(`pathDlements.positions:`, pathDElements.positions);
 
   // Although we only strictly need the root to be reconciled within zokrates, it's easier to check and intercept any errors in js; so we'll first try to reconcole here:
-  cv.checkRoot(zC, pathC, root);
-  cv.checkRoot(zD, pathD, root);
+  cv.checkRoot(inputCommitments[0].commitment, pathC, root);
+  cv.checkRoot(inputCommitments[1].commitment, pathD, root);
 
   console.group('Existing Proof Variables:');
   const p = config.ZOKRATES_PACKING_SIZE;
-  console.log(`C: ${C} : ${utils.hexToFieldPreserve(C, p)}`);
-  console.log(`D: ${D} : ${utils.hexToFieldPreserve(D, p)}`);
-  console.log(`E: ${E} : ${utils.hexToFieldPreserve(E, p)}`);
-  console.log(`F: ${F} : ${utils.hexToFieldPreserve(F, p)}`);
+  console.log(
+    `C: ${inputCommitments[0].value} : ${utils.hexToFieldPreserve(inputCommitments[0].value, p)}`,
+  );
+  console.log(
+    `D: ${inputCommitments[1].value} : ${utils.hexToFieldPreserve(inputCommitments[1].value, p)}`,
+  );
+  console.log(
+    `E: ${outputCommitments[0].value} : ${utils.hexToFieldPreserve(outputCommitments[0].value, p)}`,
+  );
+  console.log(
+    `F: ${outputCommitments[1].value} : ${utils.hexToFieldPreserve(outputCommitments[1].value, p)}`,
+  );
   console.log(`pkB: ${receiverPublicKey} : ${utils.hexToFieldPreserve(receiverPublicKey, p)}`);
-  console.log(`S_C: ${S_C} : ${utils.hexToFieldPreserve(S_C, p)}`);
-  console.log(`S_D: ${S_D} : ${utils.hexToFieldPreserve(S_D, p)}`);
-  console.log(`S_E: ${S_E} : ${utils.hexToFieldPreserve(S_E, p)}`);
-  console.log(`S_F: ${S_F} : ${utils.hexToFieldPreserve(S_F, p)}`);
+  console.log(
+    `S_C: ${inputCommitments[0].salt} : ${utils.hexToFieldPreserve(inputCommitments[0].salt, p)}`,
+  );
+  console.log(
+    `S_D: ${inputCommitments[1].salt} : ${utils.hexToFieldPreserve(inputCommitments[1].salt, p)}`,
+  );
+  console.log(
+    `S_E: ${outputCommitments[0].salt} : ${utils.hexToFieldPreserve(outputCommitments[0].salt, p)}`,
+  );
+  console.log(
+    `S_F: ${outputCommitments[1].salt} : ${utils.hexToFieldPreserve(outputCommitments[1].salt, p)}`,
+  );
   console.log(`skA: ${senderSecretKey} : ${utils.hexToFieldPreserve(senderSecretKey, p)}`);
-  console.log(`zC: ${zC} : ${utils.hexToFieldPreserve(zC, p)}`);
-  console.log(`zD: ${zD} : ${utils.hexToFieldPreserve(zD, p)}`);
+  console.log(
+    `zC: ${inputCommitments[0].commitment} : ${utils.hexToFieldPreserve(
+      inputCommitments[0].commitment,
+      p,
+    )}`,
+  );
+  console.log(
+    `zD: ${inputCommitments[1].commitment} : ${utils.hexToFieldPreserve(
+      inputCommitments[1].commitment,
+      p,
+    )}`,
+  );
   console.groupEnd();
 
   console.group('New Proof Variables:');
@@ -422,23 +465,23 @@ async function transfer(
   let proof = await computeProof(
     [
       new Element(publicInputHash, 'field', 248, 1),
-      new Element(C, 'field', 128, 1),
+      new Element(inputCommitments[0].value, 'field', 128, 1),
       new Element(senderSecretKey, 'field'),
-      new Element(S_C, 'field'),
+      new Element(inputCommitments[0].salt, 'field'),
       ...pathCElements.elements.slice(1),
       pathCElements.positions,
-      new Element(D, 'field', 128, 1),
-      new Element(S_D, 'field'),
+      new Element(inputCommitments[1].value, 'field', 128, 1),
+      new Element(inputCommitments[1].salt, 'field'),
       ...pathDElements.elements.slice(1),
       pathDElements.positions,
       new Element(nC, 'field'),
       new Element(nD, 'field'),
-      new Element(E, 'field', 128, 1),
+      new Element(outputCommitments[0].value, 'field', 128, 1),
       new Element(receiverPublicKey, 'field'),
-      new Element(S_E, 'field'),
+      new Element(outputCommitments[0].salt, 'field'),
       new Element(zE, 'field'),
-      new Element(F, 'field', 128, 1),
-      new Element(S_F, 'field'),
+      new Element(outputCommitments[1].value, 'field', 128, 1),
+      new Element(outputCommitments[1].salt, 'field'),
       new Element(zF, 'field'),
       new Element(root, 'field'),
     ],
@@ -469,26 +512,45 @@ async function transfer(
   console.log('TRANSFER COMPLETE\n');
   console.groupEnd();
   return {
-    z_E: zE,
-    z_E_index: zEIndex,
-    z_F: zF,
-    z_F_index: zFIndex,
+    outputCommitments: [
+      {
+        commitment: zE,
+        index: zEIndex,
+        salt: outputCommitments[0].salt,
+      },
+      {
+        commitment: zF,
+        index: zFIndex,
+        salt: outputCommitments[1].salt,
+      },
+    ],
     txObj,
   };
 }
 
 /**
-This function burns a commitment, i.e. it recovers ERC-20 into your
-account. All values are hex strings.
-@param {string} C - the value of the commitment in hex (i.e. the amount you are burning)
-@param {string} skA - the secret key of the person doing the burning (in hex)
-@param {string} S_C - the random nonce used in the commitment
-@param {string} zC - the value of the commitment being burned
-@param {string} zCIndex - the index of the commitment in the Merkle Tree
-@param {string} account - the that is paying for the transaction
-@param {string} payTo - the account that the paid-out ERC-20 should be sent to (defaults to 'account')
-*/
-async function burn(C, skA, S_C, zC, zCIndex, vkId, blockchainOptions) {
+ * This function burns a commitment, i.e. it recovers ERC-20 into your
+ * account. All values are hex strings.
+ * @param {string} amount - the value of the commitment in hex (i.e. the amount you are burning)
+ * @param {string} receiverSecretKey - the secret key of the person doing the burning (in hex)
+ * @param {string} salt - the random nonce used in the commitment
+ * @param {string} commitment - the value of the commitment being burned
+ * @param {string} commitmentIndex - the index of the commitment in the Merkle Tree
+ * @param {Object} blockchainOptions
+ * @param {String} blockchainOptions.fTokenShieldJson - ABI of fTokenShield
+ * @param {String} blockchainOptions.fTokenShieldAddress - Address of deployed fTokenShieldContract
+ * @param {String} blockchainOptions.account - Account that is sending these transactions
+ * @param {String} blockchainOptions.tokenReceiver - Account that will receive the tokens
+ */
+async function burn(
+  amount,
+  receiverSecretKey,
+  salt,
+  commitment,
+  commitmentIndex,
+  vkId,
+  blockchainOptions,
+) {
   const {
     account,
     fTokenShieldJson,
@@ -516,10 +578,10 @@ async function burn(C, skA, S_C, zC, zCIndex, vkId, blockchainOptions) {
   console.log(`Merkle Root: ${root}`);
 
   // Calculate new arguments for the proof:
-  const Nc = utils.concatenateThenHash(S_C, skA);
+  const Nc = utils.concatenateThenHash(salt, receiverSecretKey);
 
   // We need the Merkle path from the commitment to the root, expressed as Elements
-  const path = await cv.computePath(account, fTokenShieldInstance, zC, zCIndex);
+  const path = await cv.computePath(account, fTokenShieldInstance, commitment, commitmentIndex);
   const pathElements = {
     elements: path.path.map(
       element => new Element(element, 'field', config.MERKLE_HASHLENGTH * 8, 1),
@@ -530,14 +592,14 @@ async function burn(C, skA, S_C, zC, zCIndex, vkId, blockchainOptions) {
   // console.log(`pathElements.positions:`, pathElements.positions);
 
   // Although we only strictly need the root to be reconciled within zokrates, it's easier to check and intercept any errors in js; so we'll first try to reconcole here:
-  cv.checkRoot(zC, path, root);
+  cv.checkRoot(commitment, path, root);
 
   // Summarise values in the console:
   console.group('Existing Proof Variables:');
   const p = config.ZOKRATES_PACKING_SIZE;
-  console.log(`C: ${C} : ${utils.hexToFieldPreserve(C, p)}`);
-  console.log(`skA: ${skA} : ${utils.hexToFieldPreserve(skA, p)}`);
-  console.log(`S_C: ${S_C} : ${utils.hexToFieldPreserve(S_C, p)}`);
+  console.log(`C: ${amount} : ${utils.hexToFieldPreserve(amount, p)}`);
+  console.log(`skA: ${receiverSecretKey} : ${utils.hexToFieldPreserve(receiverSecretKey, p)}`);
+  console.log(`S_C: ${salt} : ${utils.hexToFieldPreserve(salt, p)}`);
   console.log(`payTo: ${payTo} : ${utils.hexToFieldPreserve(payTo, p)}`);
   const payToLeftPadded = utils.leftPadHex(payTo, config.INPUTS_HASHLENGTH * 2); // left-pad the payToAddress with 0's to fill all 256 bits (64 octets) (so the sha256 function is hashing the same thing as inside the zokrates proof)
   console.log(`payToLeftPadded: ${payToLeftPadded}`);
@@ -545,11 +607,11 @@ async function burn(C, skA, S_C, zC, zCIndex, vkId, blockchainOptions) {
 
   console.group('New Proof Variables:');
   console.log(`Nc: ${Nc} : ${utils.hexToFieldPreserve(Nc, p)}`);
-  console.log(`zC: ${zC} : ${utils.hexToFieldPreserve(zC, p)}`);
+  console.log(`zC: ${commitment} : ${utils.hexToFieldPreserve(commitment, p)}`);
   console.log(`root: ${root} : ${utils.hexToFieldPreserve(root, p)}`);
   console.groupEnd();
 
-  const publicInputHash = utils.concatenateThenHash(root, Nc, C, payToLeftPadded); // notice we're using the version of payTo which has been padded to 256-bits; to match our derivation of publicInputHash within our zokrates proof.
+  const publicInputHash = utils.concatenateThenHash(root, Nc, amount, payToLeftPadded); // notice we're using the version of payTo which has been padded to 256-bits; to match our derivation of publicInputHash within our zokrates proof.
   console.log('publicInputHash:', publicInputHash);
 
   const inputs = cv.computeVectors([new Element(publicInputHash, 'field', 248, 1)]);
@@ -569,9 +631,9 @@ async function burn(C, skA, S_C, zC, zCIndex, vkId, blockchainOptions) {
     [
       new Element(publicInputHash, 'field', 248, 1),
       new Element(payTo, 'field'),
-      new Element(C, 'field', 128, 1),
-      new Element(skA, 'field'),
-      new Element(S_C, 'field'),
+      new Element(amount, 'field', 128, 1),
+      new Element(receiverSecretKey, 'field'),
+      new Element(salt, 'field'),
       ...pathElements.elements.slice(1),
       pathElements.positions,
       new Element(Nc, 'field'),
@@ -589,11 +651,11 @@ async function burn(C, skA, S_C, zC, zCIndex, vkId, blockchainOptions) {
 
   // with the pre-compute done we can burn the token, which is now a reasonably
   // light-weight calculation
-  await zkp.burn(proof, inputs, vkId, root, Nc, C, payTo, account, fTokenShieldInstance);
+  await zkp.burn(proof, inputs, vkId, root, Nc, amount, payTo, account, fTokenShieldInstance);
 
   console.log('BURN COMPLETE\n');
   console.groupEnd();
-  return { z_C: zC, z_C_index: zCIndex };
+  return { z_C: commitment, z_C_index: commitmentIndex };
 }
 
 async function checkCorrectness(C, pk, S, z, zIndex, account) {
