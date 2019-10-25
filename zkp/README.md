@@ -2,47 +2,43 @@
 
 *This module is part of Nightfall. Most users will only be interested in using the application as a whole, we direct those readers to [the main README](../../README.md). This file provides additional information on how this module works so you can learn about, tinker and improve it.*
 
-This module is responsbile for setting up cryptographic key pairs which, relying on the magic of zk-SNARKs, allow one party to perform a computation and another to confirm it while avoiding information flow from the former to the latter. Nightfall exploits this to allow transfer of tokens while hiding the origin, destination, and even identity of these tokens.
-
 ## Tasks you can perform
-
-### Generate key pairs
-
-You will need key pairs to run the full application. And the `setupAll` script does indeed perform this step as part of the demonstration [in the main project README](../README.md). Generating the key pairs uses randomness as an input, so every time you setup, the pairs will be different. **If you are attaching Nightfall to an existing deployment then you will import those keys and you will NOT generate your own key pairs** since yours would be incompatible with the deployed application.
-
-⚠️ This task will run approximately one to three hours depending on your machine.
-
-📖 ​This task has a recipe in [the Nightfall makefile](../Makefile), execute it using `make zkp-generate-keys` from the top-level folder. Or you can directly run:
-
-```sh
-docker-compose run --rm zkp --env NODE_ENV=setup npx babel-node code/index.js
-```
 
 ### Run zkp service unit tests
 
-*Requires key pairs to be generated already.*
+Before running these tests, you will need to have completed the trusted setup. This is done simply
+by running (from the Nightfall root):
 
-After following the steps from [the main README.md](../README.md), "Installing Nightfall"' section,
+```sh
+npm run setupAll
+```
+If you have previously run the Nightfall application, you will already have completed this step and there is no need to repeat it (it takes about and hour so it's worth avoiding where possible!).
 
-There is a volume conflict sometimes, please run `docker volume rm nightfall_zkp-code`
+_Alternatively_, if you change one of the proofs in the Nightfall suite, then you can perform the
+trusted setup for just that proof, which is a lot faster. You need to change to the zkp sub directory
+to do that:
 
-Then run
+```sh
+cd zkp
+npm run setup -- -i gm17/<dir containing your proof>
+cd ..
+```
+
+After your trusted setup is complete run:
 
 ```sh
 make truffle-compile truffle-migrate
-npm run generate-keys
 ```
 
-and wait until you see the message `VK setup complete` in the console.
+This will run up ganache in a container and load all of the nightfall contracts.
 
-To run tests of ZKP service, open another terminal and run
+To run the zkp unit tests:
 
 ```sh
 make zkp-test
 ```
 
-The relevant files for these tests can be found under `zkp/__tests__` and `offchain/__tests__`
-directories.
+The relevant files for these tests can be found under `zkp/__tests__`.
 
 - `f-token-controller.test.js` - These are units tests to verify mint, transfer and burn of ERC-20
   tokens and ERC-20 commitments
@@ -50,7 +46,7 @@ directories.
   tokens and ERC-721 commitments
 - `utils.test.js` - These are unit tests for utils used for running the tests.
 
-Note that, the zkp service tests take a while to run (approx. 2 hours)
+Note that the zkp service tests take a while to run (approx. 1 hour)
 
 
 ### Development
