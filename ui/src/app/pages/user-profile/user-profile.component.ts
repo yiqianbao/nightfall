@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { AccountsApiService } from '../../services/accounts/accounts-api.service';
+import UserService from '../../services/user.service';
 import {Config} from '../../config/config';
 
 /**
@@ -10,7 +10,7 @@ import {Config} from '../../config/config';
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.css'],
-  providers: [AccountsApiService]
+  providers: [UserService]
 })
 export class UserProfileComponent extends Config implements OnInit {
 
@@ -25,20 +25,20 @@ export class UserProfileComponent extends Config implements OnInit {
 
   constructor(
     private toastr: ToastrService,
-    private accountService: AccountsApiService
+    private userService: UserService
   ) {
     super('');
   }
 
   ngOnInit(): void {
-    this.getUser();
+    this.getUserDetails();
   }
 
   /**
    * Get the current logged in user details
    */
-  getUser() {
-    this.accountService.getUser().subscribe(
+  getUserDetails() {
+    this.userService.getUserDetails().subscribe(
       data => {
         console.log('data', data);
         this.user = data['data'];
