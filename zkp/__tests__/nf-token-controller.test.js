@@ -87,27 +87,39 @@ describe('nf-token-controller.js tests', () => {
   });
 
   test('Should mint an ERC 721 commitment for Alice for asset A  (Z_A_A)', async () => {
-    const [zTest, zIndex] = await controller.mint(A, pkA, S_A_A, await getVkId('MintToken'), {
-      account: accounts[0],
-      nfTokenShieldJson,
-      nfTokenShieldAddress,
-    });
+    const { commitment: zTest, commitmentIndex: zIndex } = await controller.mint(
+      A,
+      pkA,
+      S_A_A,
+      await getVkId('MintToken'),
+      {
+        account: accounts[0],
+        nfTokenShieldJson,
+        nfTokenShieldAddress,
+      },
+    );
     zIndA = parseInt(zIndex, 10);
     expect(Z_A_A).toEqual(zTest);
   });
 
   test('Should mint an ERC 721 commitment for Alice for asset G (Z_A_G)', async () => {
-    const [zTest, zIndex] = await controller.mint(G, pkA, S_A_G, await getVkId('MintToken'), {
-      account: accounts[0],
-      nfTokenShieldJson,
-      nfTokenShieldAddress,
-    });
+    const { commitment: zTest, commitmentIndex: zIndex } = await controller.mint(
+      G,
+      pkA,
+      S_A_G,
+      await getVkId('MintToken'),
+      {
+        account: accounts[0],
+        nfTokenShieldJson,
+        nfTokenShieldAddress,
+      },
+    );
     zIndG = parseInt(zIndex, 10);
     expect(Z_A_G).toEqual(zTest);
   });
 
   test('Should transfer the ERC 721 commitment Z_A_A from Alice to Bob, creating Z_B_A', async () => {
-    const response = await controller.transfer(
+    const { outputCommitment } = await controller.transfer(
       A,
       pkB,
       S_A_A,
@@ -122,11 +134,11 @@ describe('nf-token-controller.js tests', () => {
         nfTokenShieldAddress,
       },
     );
-    expect(response.z_B).toEqual(Z_B_A);
+    expect(outputCommitment).toEqual(Z_B_A);
   });
 
   test('Should transfer the ERC 721 commitment Z_A_G from Alice to Bob, creating Z_B_G', async () => {
-    const response = await controller.transfer(
+    const { outputCommitment } = await controller.transfer(
       G,
       pkB,
       S_A_G,
@@ -141,11 +153,11 @@ describe('nf-token-controller.js tests', () => {
         nfTokenShieldAddress,
       },
     );
-    expect(response.z_B).toEqual(Z_B_G);
+    expect(outputCommitment).toEqual(Z_B_G);
   });
 
   test('Should burn the ERC 721 commitment for Bob for asset Z_B_A to return A ERC-721 Token', async () => {
-    const response = await controller.burn(
+    const { commitment } = await controller.burn(
       A,
       skB,
       sAToBA,
@@ -159,7 +171,7 @@ describe('nf-token-controller.js tests', () => {
         nfTokenShieldAddress,
       },
     );
-    expect(Z_B_A).toEqual(response.z_A);
+    expect(Z_B_A).toEqual(commitment);
     expect((await controller.getOwner(A, '')).toLowerCase()).toEqual(accounts[2].toLowerCase());
   });
 });

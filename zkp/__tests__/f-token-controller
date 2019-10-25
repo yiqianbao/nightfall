@@ -110,22 +110,34 @@ describe('f-token-controller.js tests', () => {
 
   test('Should mint an ERC-20 commitment Z_A_C for Alice for asset C', async () => {
     console.log('Alices account ', (await controller.getBalance(accounts[0])).toNumber());
-    const [zTest, zIndex] = await controller.mint(C, pkA, S_A_C, await getVkId('MintCoin'), {
-      account: accounts[0],
-      fTokenShieldJson,
-      fTokenShieldAddress,
-    });
+    const { commitment: zTest, commitmentIndex: zIndex } = await controller.mint(
+      C,
+      pkA,
+      S_A_C,
+      await getVkId('MintCoin'),
+      {
+        account: accounts[0],
+        fTokenShieldJson,
+        fTokenShieldAddress,
+      },
+    );
     zInd1 = parseInt(zIndex, 10);
     expect(Z_A_C).toEqual(zTest);
     console.log(`Alice's account `, (await controller.getBalance(accounts[0])).toNumber());
   });
 
   test('Should mint another ERC-20 commitment Z_A_D for Alice for asset D', async () => {
-    const [zTest, zIndex] = await controller.mint(D, pkA, S_A_D, await getVkId('MintCoin'), {
-      account: accounts[0],
-      fTokenShieldJson,
-      fTokenShieldAddress,
-    });
+    const { commitment: zTest, commitmentIndex: zIndex } = await controller.mint(
+      D,
+      pkA,
+      S_A_D,
+      await getVkId('MintCoin'),
+      {
+        account: accounts[0],
+        fTokenShieldJson,
+        fTokenShieldAddress,
+      },
+    );
     zInd2 = parseInt(zIndex, 10);
     expect(Z_A_D).toEqual(zTest);
     console.log(`Alice's account `, (await controller.getBalance(accounts[0])).toNumber());
@@ -154,11 +166,17 @@ describe('f-token-controller.js tests', () => {
   });
 
   test('Should mint another ERC-20 commitment Z_B_G for Bob for asset G', async () => {
-    const [zTest, zIndex] = await controller.mint(G, pkB, S_B_G, await getVkId('MintCoin'), {
-      account: accounts[1],
-      fTokenShieldJson,
-      fTokenShieldAddress,
-    });
+    const { commitment: zTest, commitmentIndex: zIndex } = await controller.mint(
+      G,
+      pkB,
+      S_B_G,
+      await getVkId('MintCoin'),
+      {
+        account: accounts[1],
+        fTokenShieldJson,
+        fTokenShieldAddress,
+      },
+    );
     zInd3 = parseInt(zIndex, 10);
     expect(Z_B_G).toEqual(zTest);
   });
