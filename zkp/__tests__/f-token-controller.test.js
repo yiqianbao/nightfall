@@ -1,10 +1,11 @@
 /* eslint-disable import/no-unresolved */
 
 import utils from 'zkp-utils';
-import AccountUtils from '../src/account-utils/account-utils';
+import bc from '../src/web3';
 
 import controller from '../src/f-token-controller';
 import vk from '../src/vk-controller';
+import { getVkId, getContract } from '../src/contractUtils';
 
 jest.setTimeout(7200000);
 
@@ -37,7 +38,17 @@ let zInd1;
 let zInd2;
 let zInd3;
 
+let accounts;
+let fTokenShieldJson;
+let fTokenShieldAddress;
+
 beforeAll(async () => {
+  if (!(await bc.isConnected())) await bc.connect();
+  accounts = await (await bc.connection()).eth.getAccounts();
+  const { contractJson, contractInstance } = await getContract('FTokenShield');
+  fTokenShieldAddress = contractInstance.address;
+  fTokenShieldJson = contractJson;
+  // blockchainOptions = { account, fTokenShieldJson, fTokenShieldAddress };
   await vk.runController;
   S_A_C = await utils.rndHex(32);
   S_A_D = await utils.rndHex(32);
@@ -64,7 +75,6 @@ describe('f-token-controller.js tests', () => {
 
   test('Should create 10000 tokens in accounts[0] and accounts[1]', async () => {
     // fund some accounts with FToken
-    const accounts = await AccountUtils.getEthAccounts();
     const AMOUNT = 10000;
     const bal1 = await controller.getBalance(accounts[0]);
     await controller.buyFToken(AMOUNT, accounts[0]);
@@ -75,7 +85,6 @@ describe('f-token-controller.js tests', () => {
 
   test('Should move 1 ERC-20 token from accounts[0] to accounts[1]', async () => {
     const AMOUNT = 1;
-    const accounts = await AccountUtils.getEthAccounts();
     const bal1 = await controller.getBalance(accounts[0]);
     const bal3 = await controller.getBalance(accounts[1]);
     await controller.transferFToken(AMOUNT, accounts[0], accounts[1]);
@@ -87,7 +96,6 @@ describe('f-token-controller.js tests', () => {
 
   test('Should burn 1 ERC-20 from accounts[1]', async () => {
     const AMOUNT = 1;
-    const accounts = await AccountUtils.getEthAccounts();
     const bal1 = await controller.getBalance(accounts[1]);
     await controller.burnFToken(AMOUNT, accounts[1]);
     const bal2 = await controller.getBalance(accounts[1]);
@@ -95,24 +103,29 @@ describe('f-token-controller.js tests', () => {
   });
 
   test('Should get the ERC-20 metadata', async () => {
-    const accounts = await AccountUtils.getEthAccounts();
     const { symbol, name } = await controller.getTokenInfo(accounts[0]);
     expect('OPS').toEqual(symbol);
     expect('EY OpsCoin').toEqual(name);
   });
 
   test('Should mint an ERC-20 commitment Z_A_C for Alice for asset C', async () => {
-    const accounts = await AccountUtils.getEthAccounts();
     console.log('Alices account ', (await controller.getBalance(accounts[0])).toNumber());
-    const [zTest, zIndex] = await controller.mint(C, pkA, S_A_C, accounts[0]);
+    const [zTest, zIndex] = await controller.mint(C, pkA, S_A_C, await getVkId('MintCoin'), {
+      account: accounts[0],
+      fTokenShieldJson,
+      fTokenShieldAddress,
+    });
     zInd1 = parseInt(zIndex, 10);
     expect(Z_A_C).toEqual(zTest);
     console.log(`Alice's account `, (await controller.getBalance(accounts[0])).toNumber());
   });
 
   test('Should mint another ERC-20 commitment Z_A_D for Alice for asset D', async () => {
-    const accounts = await AccountUtils.getEthAccounts();
-    const [zTest, zIndex] = await controller.mint(D, pkA, S_A_D, accounts[0]);
+    const [zTest, zIndex] = await controller.mint(D, pkA, S_A_D, await getVkId('MintCoin'), {
+      account: accounts[0],
+      fTokenShieldJson,
+      fTokenShieldAddress,
+    });
     zInd2 = parseInt(zIndex, 10);
     expect(Z_A_D).toEqual(zTest);
     console.log(`Alice's account `, (await controller.getBalance(accounts[0])).toNumber());
@@ -120,63 +133,69 @@ describe('f-token-controller.js tests', () => {
 
   test('Should transfer a ERC-20 commitment to Bob (two coins get nullified, two created; one coin goes to Bob, the other goes back to Alice as change)', async () => {
     // E becomes Bob's, F is change returned to Alice
-    const accounts = await AccountUtils.getEthAccounts();
+    const inputCommitments = [
+      { value: C, salt: S_A_C, commitment: Z_A_C, index: zInd1 },
+      { value: D, salt: S_A_D, commitment: Z_A_D, index: zInd2 },
+    ];
+    const outputCommitments = [{ value: E, salt: sAToBE }, { value: F, salt: sAToAF }];
     await controller.transfer(
-      C,
-      D,
-      E,
-      F,
+      inputCommitments,
+      outputCommitments,
       pkB,
-      S_A_C,
-      S_A_D,
-      sAToBE,
-      sAToAF,
       skA,
-      Z_A_C,
-      zInd1,
-      Z_A_D,
-      zInd2,
-      accounts[0],
+      await getVkId('TransferCoin'),
+      {
+        account: accounts[0],
+        fTokenShieldJson,
+        fTokenShieldAddress,
+      },
     );
     // now Bob should have 40 (E) ETH
   });
 
   test('Should mint another ERC-20 commitment Z_B_G for Bob for asset G', async () => {
-    const accounts = await AccountUtils.getEthAccounts();
-    const [zTest, zIndex] = await controller.mint(G, pkB, S_B_G, accounts[1]);
+    const [zTest, zIndex] = await controller.mint(G, pkB, S_B_G, await getVkId('MintCoin'), {
+      account: accounts[1],
+      fTokenShieldJson,
+      fTokenShieldAddress,
+    });
     zInd3 = parseInt(zIndex, 10);
     expect(Z_B_G).toEqual(zTest);
   });
 
   test('Should transfer an ERC-20 commitment to Eve', async () => {
     // H becomes Eve's, I is change returned to Bob
-    const accounts = await AccountUtils.getEthAccounts();
+    const inputCommitments = [
+      { value: E, salt: sAToBE, commitment: Z_B_E, index: zInd1 + 2 },
+      { value: G, salt: S_B_G, commitment: Z_B_G, index: zInd3 },
+    ];
+    const outputCommitments = [{ value: H, salt: sBToEH }, { value: I, salt: sBToBI }];
+
     await controller.transfer(
-      E,
-      G,
-      H,
-      I,
+      inputCommitments,
+      outputCommitments,
       pkE,
-      sAToBE,
-      S_B_G,
-      sBToEH,
-      sBToBI,
       skB,
-      Z_B_E,
-      zInd1 + 2,
-      Z_B_G,
-      zInd3,
-      accounts[1],
+      await getVkId('TransferCoin'),
+      {
+        account: accounts[1],
+        fTokenShieldJson,
+        fTokenShieldAddress,
+      },
     );
   });
 
   test(`Should burn Alice's remaining ERC-20 commitment`, async () => {
-    const accounts = await AccountUtils.getEthAccounts();
     const bal1 = await controller.getBalance(accounts[3]);
     const bal = await controller.getBalance(accounts[0]);
     console.log('accounts[3]', bal1.toNumber());
     console.log('accounts[0]', bal.toNumber());
-    await controller.burn(F, skA, sAToAF, Z_A_F, zInd2 + 2, accounts[0], accounts[3]);
+    await controller.burn(F, skA, sAToAF, Z_A_F, zInd2 + 2, await getVkId('BurnCoin'), {
+      account: accounts[0],
+      tokenReceiver: accounts[3],
+      fTokenShieldJson,
+      fTokenShieldAddress,
+    });
     const bal2 = await controller.getBalance(accounts[3]);
     console.log('accounts[3]', bal2.toNumber());
     expect(parseInt(F, 16)).toEqual(bal2 - bal1);
