@@ -214,17 +214,26 @@ async function computeProof(elements, hostDir) {
 }
 
 /**
-Mint a token
-@param {string} S_A - Alice's token serial number as a hex string
-@param {string} pk_A - Alice's public key
-@param {string} A - the asset token
-@param {string} account - the account from which the payment for the coin will be made
-@returns {string} z_A - The token
-This is a convenience because the sender (Alice)
-knows S_A,pk_A,n and n so could in fact calculate the token themselves.
-@returns {Integer} z_A_index - the index of the token within the Merkle Tree.  This is required for later transfers/joins so that Alice knows which 'chunks' of the Merkle Tree she needs to 'get' from the NFTokenShield contract in order to calculate a path.
-*/
-async function mint(A, pk_A, S_A, vkId, blockchainOptions) {
+ * Mint a commitment
+ * @param {string} tokenId - the asset token
+ * @param {string} ownerPublicKey - Address of the token owner
+ * @param {string} salt - Alice's token serial number as a hex string
+ * @param {Object} vkId - vkId for NFT's MintToken
+ * @param {Object} blockchainOptions
+ * @param {String} blockchainOptions.nfTokenShieldJson - ABI of nfTokenShield
+ * @param {String} blockchainOptions.nfTokenShieldAddress - Address of deployed nfTokenShieldContract
+ * @param {String} blockchainOptions.account - Account that is sending these transactions
+ * @param {Object} zokratesOptions
+ * @param {String} zokratesOptions.codePath - Location of compiled code (without the .code suffix)
+ * @param {String} [zokratesOptions.outputDirectory=./] - Directory to output all generated files
+ * @param {String} [zokratesOptions.witnessName=witness] - Name of witness file
+ * @param {String} [zokratesOptions.pkPath] - Location of the proving key file
+ * @param {Boolean} zokratesOptions.createProofJson - Whether or not to create a proof.json file
+ * @param {String} [zokratesOptions.proofName=proof.json] - Name of generated proof JSON.
+ * @returns {String} commitment
+ * @returns {Number} commitmentIndex - the index of the token within the Merkle Tree.  This is required for later transfers/joins so that Alice knows which 'chunks' of the Merkle Tree she needs to 'get' from the NFTokenShield contract in order to calculate a path.
+ */
+async function mint(tokenId, ownerPublicKey, salt, vkId, blockchainOptions) {
   const { account, nfTokenShieldJson, nfTokenShieldAddress } = blockchainOptions;
 
   const nfTokenShield = contract(nfTokenShieldJson);
@@ -241,22 +250,26 @@ async function mint(A, pk_A, S_A, vkId, blockchainOptions) {
   console.log('Verifier_Registry contract address:', verifier_registry.address);
 
   // Calculate new arguments for the proof:
-  const z_A = utils.concatenateThenHash(utils.strip0x(A).slice(-32 * 2), pk_A, S_A);
+  const commitment = utils.concatenateThenHash(
+    utils.strip0x(tokenId).slice(-32 * 2),
+    ownerPublicKey,
+    salt,
+  );
 
   // Summarise values in the console:
   console.group('Existing Proof Variables:');
   const p = config.ZOKRATES_PACKING_SIZE; // packing size in bits
   const pt = Math.ceil((config.INPUTS_HASHLENGTH * 8) / config.ZOKRATES_PACKING_SIZE); // packets in bits
-  console.log('A:', A, ' : ', utils.hexToFieldPreserve(A, p, pt));
-  console.log('pk_A:', pk_A, ' : ', utils.hexToFieldPreserve(pk_A, p, pt));
-  console.log('S_A:', S_A, ' : ', utils.hexToFieldPreserve(S_A, p, pt));
+  console.log('A:', tokenId, ' : ', utils.hexToFieldPreserve(tokenId, p, pt));
+  console.log('pk_A:', ownerPublicKey, ' : ', utils.hexToFieldPreserve(ownerPublicKey, p, pt));
+  console.log('S_A:', salt, ' : ', utils.hexToFieldPreserve(salt, p, pt));
   console.groupEnd();
 
   console.group('New Proof Variables:');
-  console.log('z_A:', z_A, ' : ', utils.hexToFieldPreserve(z_A, p, pt));
+  console.log('z_A:', commitment, ' : ', utils.hexToFieldPreserve(commitment, p, pt));
   console.groupEnd();
 
-  const publicInputHash = utils.concatenateThenHash(A, z_A);
+  const publicInputHash = utils.concatenateThenHash(tokenId, commitment);
   console.log('publicInputHash:', publicInputHash);
 
   const inputs = cv.computeVectors([new Element(publicInputHash, 'field', 248, 1)]);
@@ -275,10 +288,10 @@ async function mint(A, pk_A, S_A, vkId, blockchainOptions) {
   let proof = await computeProof(
     [
       new Element(publicInputHash, 'field', 248, 1),
-      new Element(A, 'field'),
-      new Element(pk_A, 'field'),
-      new Element(S_A, 'field'),
-      new Element(z_A, 'field'),
+      new Element(tokenId, 'field'),
+      new Element(ownerPublicKey, 'field'),
+      new Element(salt, 'field'),
+      new Element(commitment, 'field'),
     ],
     hostDir,
   );
@@ -295,33 +308,55 @@ async function mint(A, pk_A, S_A, vkId, blockchainOptions) {
   console.log('Check that a registry has actually been registered:', registry);
 
   // make token shield contract an approver to transfer this token on behalf of the owner (to comply with the standard as msg.sender has to be owner or approver)
-  await addApproverNFToken(nfTokenShieldInstance.address, A, account);
+  await addApproverNFToken(nfTokenShieldInstance.address, tokenId, account);
 
   // with the pre-compute done we can mint the token, which is now a reasonably light-weight calculation
-  const z_A_index = await zkp.mint(proof, inputs, vkId, A, z_A, account, nfTokenShieldInstance);
+  const commitmentIndex = await zkp.mint(
+    proof,
+    inputs,
+    vkId,
+    tokenId,
+    commitment,
+    account,
+    nfTokenShieldInstance,
+  );
 
-  console.log('Mint output: [z_A, z_A_index]:', z_A, z_A_index.toString());
+  console.log('Mint output: [z_A, z_A_index]:', commitment, commitmentIndex.toString());
   console.log('MINT COMPLETE\n');
   console.groupEnd();
 
-  return [z_A, z_A_index];
+  return { commitment, commitmentIndex };
 }
 
 /**
-This function actually transfers a token, assuming that we have a proof.
-@param {string} S_A - Alice's token commitment's serial number as a hex string
-@param {string} S_B - Bob's token commitment's serial number as a hex string
-@param {string} A - the token's unique id (this is a full 256 bits)
-@param {string} pk_B - Bob's public key
-@param {string} sk_A - Alice's private key
-@param {string} z_A - Alice's token commitment (commitment)
-@param {Integer} z_A_index - the position of z_A in the on-chain Merkle Tree
-@param {string} account - the account that is paying for this
-@returns {string} z_B - The token
-@returns {Integer} z_B_index - the index of the token within the Merkle Tree.  This is required for later transfers/joins so that Alice knows which 'chunks' of the Merkle Tree she needs to 'get' from the NFTokenShield contract in order to calculate a path.
-@returns {object} txObj - a promise of a blockchain transaction
-*/
-async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, vkId, blockchainOptions) {
+ * This function actually transfers a token, assuming that we have a proof.
+ * @param {String} tokenId - the token's unique id (this is a full 256 bits)
+ * @param {String} receiverPublicKey
+ * @param {String} originalCommitmentSalt
+ * @param {String} newCommitmentSalt
+ * @param {String} senderSecretKey
+ * @param {String} commitment - Commitment of token being sent
+ * @param {Integer} commitmentIndex - the position of commitment in the on-chain Merkle Tree
+ * @param {String} vkId
+ * @param {Object} blockchainOptions
+ * @param {String} blockchainOptions.nfTokenShieldJson - ABI of nfTokenShield
+ * @param {String} blockchainOptions.nfTokenShieldAddress - Address of deployed nfTokenShieldContract
+ * @param {String} blockchainOptions.account - Account that is sending these transactions
+ * @returns {String} outputCommitment - New commitment
+ * @returns {Number} outputCommitmentIndex - the index of the token within the Merkle Tree.  This is required for later transfers/joins so that Alice knows which 'chunks' of the Merkle Tree she needs to 'get' from the NFTokenShield contract in order to calculate a path.
+ * @returns {Object} txObj - a promise of a blockchain transaction
+ */
+async function transfer(
+  tokenId,
+  receiverPublicKey,
+  originalCommitmentSalt,
+  newCommitmentSalt,
+  senderSecretKey,
+  commitment,
+  commitmentIndex,
+  vkId,
+  blockchainOptions,
+) {
   const { account, nfTokenShieldJson, nfTokenShieldAddress } = blockchainOptions;
 
   const nfTokenShield = contract(nfTokenShieldJson);
@@ -340,22 +375,24 @@ async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, vkId, blockchai
   console.log(`Merkle Root: ${root}`);
 
   // Calculate new arguments for the proof:
-  const n = utils.concatenateThenHash(S_A, sk_A);
-  const z_B = utils.concatenateThenHash(
-    utils.strip0x(A).slice(-config.INPUTS_HASHLENGTH * 2),
-    pk_B,
-    S_B,
+  const n = utils.concatenateThenHash(originalCommitmentSalt, senderSecretKey);
+  const outputCommitment = utils.concatenateThenHash(
+    utils.strip0x(tokenId).slice(-config.INPUTS_HASHLENGTH * 2),
+    receiverPublicKey,
+    newCommitmentSalt,
   );
 
   // we need the Merkle path from the token commitment to the root, expressed as Elements
-  const path = await cv.computePath(account, nfTokenShieldInstance, z_A, z_A_index).then(result => {
-    return {
-      elements: result.path.map(
-        element => new Element(element, 'field', config.MERKLE_HASHLENGTH * 8, 1),
-      ),
-      positions: new Element(result.positions, 'field', 128, 1),
-    };
-  });
+  const path = await cv
+    .computePath(account, nfTokenShieldInstance, commitment, commitmentIndex)
+    .then(result => {
+      return {
+        elements: result.path.map(
+          element => new Element(element, 'field', config.MERKLE_HASHLENGTH * 8, 1),
+        ),
+        positions: new Element(result.positions, 'field', 128, 1),
+      };
+    });
 
   // check the path and root match:
   if (path.elements[0].hex !== root) {
@@ -366,21 +403,36 @@ async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, vkId, blockchai
   console.group('Existing Proof Variables:');
   const p = config.ZOKRATES_PACKING_SIZE;
   const pt = Math.ceil((config.INPUTS_HASHLENGTH * 8) / config.ZOKRATES_PACKING_SIZE);
-  console.log('A: ', A, ' : ', utils.hexToFieldPreserve(A, p, pt));
-  console.log('S_A: ', S_A, ' : ', utils.hexToFieldPreserve(S_A, p, pt));
-  console.log('S_B: ', S_B, ' : ', utils.hexToFieldPreserve(S_B, p, pt));
-  console.log('sk_A: ', sk_A, ' : ', utils.hexToFieldPreserve(sk_A, p, pt));
-  console.log('pk_B: ', pk_B, ' : ', utils.hexToFieldPreserve(pk_B, p, pt));
-  console.log('z_A: ', z_A, ' : ', utils.hexToFieldPreserve(z_A, p, pt));
+  console.log('A: ', tokenId, ' : ', utils.hexToFieldPreserve(tokenId, p, pt));
+  console.log(
+    'S_A: ',
+    originalCommitmentSalt,
+    ' : ',
+    utils.hexToFieldPreserve(originalCommitmentSalt, p, pt),
+  );
+  console.log(
+    'S_B: ',
+    newCommitmentSalt,
+    ' : ',
+    utils.hexToFieldPreserve(newCommitmentSalt, p, pt),
+  );
+  console.log('sk_A: ', senderSecretKey, ' : ', utils.hexToFieldPreserve(senderSecretKey, p, pt));
+  console.log(
+    'pk_B: ',
+    receiverPublicKey,
+    ' : ',
+    utils.hexToFieldPreserve(receiverPublicKey, p, pt),
+  );
+  console.log('z_A: ', commitment, ' : ', utils.hexToFieldPreserve(commitment, p, pt));
   console.groupEnd();
 
   console.group('New Proof Variables:');
   console.log('n: ', n, ' : ', utils.hexToFieldPreserve(n, p, pt));
-  console.log('z_B: ', z_B, ' : ', utils.hexToFieldPreserve(z_B, p, pt));
+  console.log('z_B: ', outputCommitment, ' : ', utils.hexToFieldPreserve(outputCommitment, p, pt));
   console.log('root: ', root, ' : ', utils.hexToFieldPreserve(root, p));
   console.groupEnd();
 
-  const publicInputHash = utils.concatenateThenHash(root, n, z_B);
+  const publicInputHash = utils.concatenateThenHash(root, n, outputCommitment);
   console.log('publicInputHash:', publicInputHash);
 
   const inputs = cv.computeVectors([new Element(publicInputHash, 'field', 248, 1)]);
@@ -399,16 +451,16 @@ async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, vkId, blockchai
   let proof = await computeProof(
     [
       new Element(publicInputHash, 'field', 248, 1),
-      new Element(A, 'field'),
+      new Element(tokenId, 'field'),
       ...path.elements.slice(1),
       path.positions,
       new Element(n, 'field'),
-      new Element(pk_B, 'field'),
-      new Element(S_A, 'field'),
-      new Element(S_B, 'field'),
-      new Element(sk_A, 'field'),
+      new Element(receiverPublicKey, 'field'),
+      new Element(originalCommitmentSalt, 'field'),
+      new Element(newCommitmentSalt, 'field'),
+      new Element(senderSecretKey, 'field'),
       new Element(root, 'field'),
-      new Element(z_B, 'field'),
+      new Element(outputCommitment, 'field'),
     ],
     hostDir,
   );
@@ -421,13 +473,13 @@ async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, vkId, blockchai
   console.groupEnd();
 
   // send the token to Bob by transforming the commitment
-  const [z_B_index, txObj] = await zkp.transfer(
+  const [outputCommitmentIndex, txObj] = await zkp.transfer(
     proof,
     inputs,
     vkId,
     root,
     n,
-    z_B,
+    outputCommitment,
     account,
     nfTokenShieldInstance,
   );
@@ -436,17 +488,34 @@ async function transfer(A, pk_B, S_A, S_B, sk_A, z_A, z_A_index, vkId, blockchai
   console.groupEnd();
 
   return {
-    z_B,
-    z_B_index,
+    outputCommitment,
+    outputCommitmentIndex,
     txObj,
   };
 }
 
 /**
-this function burns a token, i.e. it recovers real NF Token (ERC 721) into the
-account specified by payTo
-*/
-async function burn(A, Sk_A, S_A, z_A, z_A_index, vkId, blockchainOptions) {
+ * Burns a commitment and returns the token balance to blockchainOptions.tokenReceiver
+ * @param {String} tokenId - ID of token
+ * @param {String} secretKey
+ * @param {String} salt - salt of token
+ * @param {String} commitment
+ * @param {String} commitmentIndex
+ * @param {String} vkId
+ * @param {Object} blockchainOptions
+ * @param {String} blockchainOptions.nfTokenShieldJson - ABI of nfTokenShield
+ * @param {String} blockchainOptions.nfTokenShieldAddress - Address of deployed nfTokenShieldContract
+ * @param {String} blockchainOptions.account - Account that is sending these transactions
+ */
+async function burn(
+  tokenId,
+  secretKey,
+  salt,
+  commitment,
+  commitmentIndex,
+  vkId,
+  blockchainOptions,
+) {
   const {
     account,
     nfTokenShieldJson,
@@ -460,11 +529,11 @@ async function burn(A, Sk_A, S_A, z_A, z_A_index, vkId, blockchainOptions) {
 
   const payToOrDefault = payTo || account; // have the option to pay out to another address
   console.group('\nIN BURN...');
-  console.log('A', A);
-  console.log('Sk_A', Sk_A);
-  console.log('S_A', S_A);
-  console.log('z_A', z_A);
-  console.log('z_A_index', z_A_index);
+  console.log('A', tokenId);
+  console.log('Sk_A', secretKey);
+  console.log('S_A', salt);
+  console.log('z_A', commitment);
+  console.log('z_A_index', commitmentIndex);
   console.log('account', account);
   console.log('payTo', payToOrDefault);
 
@@ -479,17 +548,19 @@ async function burn(A, Sk_A, S_A, z_A, z_A_index, vkId, blockchainOptions) {
   console.log(`Merkle Root: ${root}`);
 
   // Calculate new arguments for the proof:
-  const Na = utils.concatenateThenHash(S_A, Sk_A);
+  const Na = utils.concatenateThenHash(salt, secretKey);
 
   // we need the Merkle path from the token commitment to the root, expressed as Elements
-  const path = await cv.computePath(account, nfTokenShieldInstance, z_A, z_A_index).then(result => {
-    return {
-      elements: result.path.map(
-        element => new Element(element, 'field', config.MERKLE_HASHLENGTH * 8, 1),
-      ),
-      positions: new Element(result.positions, 'field', 128, 1),
-    };
-  });
+  const path = await cv
+    .computePath(account, nfTokenShieldInstance, commitment, commitmentIndex)
+    .then(result => {
+      return {
+        elements: result.path.map(
+          element => new Element(element, 'field', config.MERKLE_HASHLENGTH * 8, 1),
+        ),
+        positions: new Element(result.positions, 'field', 128, 1),
+      };
+    });
 
   // check the path and root match:
   if (path.elements[0].hex !== root) {
@@ -500,10 +571,10 @@ async function burn(A, Sk_A, S_A, z_A, z_A_index, vkId, blockchainOptions) {
   console.group('Existing Proof Variables:');
   const p = config.ZOKRATES_PACKING_SIZE;
   const pt = Math.ceil((config.INPUTS_HASHLENGTH * 8) / config.ZOKRATES_PACKING_SIZE);
-  console.log(`A: ${A} : ${utils.hexToFieldPreserve(A, p, pt)}`);
-  console.log(`sk_A: ${Sk_A} : ${utils.hexToFieldPreserve(Sk_A, p, pt)}`);
-  console.log(`S_A: ${S_A} : ${utils.hexToFieldPreserve(S_A, p, pt)}`);
-  console.log(`z_A: ${z_A} : ${utils.hexToFieldPreserve(z_A, p, pt)}`);
+  console.log(`A: ${tokenId} : ${utils.hexToFieldPreserve(tokenId, p, pt)}`);
+  console.log(`sk_A: ${secretKey} : ${utils.hexToFieldPreserve(secretKey, p, pt)}`);
+  console.log(`S_A: ${salt} : ${utils.hexToFieldPreserve(salt, p, pt)}`);
+  console.log(`z_A: ${commitment} : ${utils.hexToFieldPreserve(commitment, p, pt)}`);
   console.log(`payTo: ${payToOrDefault}`);
   const payToLeftPadded = utils.leftPadHex(payToOrDefault, config.INPUTS_HASHLENGTH * 2); // left-pad the payToAddress with 0's to fill all 256 bits (64 octets) (so the sha256 function is hashing the same thing as inside the zokrates proof)
   console.log(`payToLeftPadded: ${payToLeftPadded}`);
@@ -514,7 +585,7 @@ async function burn(A, Sk_A, S_A, z_A, z_A_index, vkId, blockchainOptions) {
   console.log(`root: ${root} : ${utils.hexToFieldPreserve(root, p, pt)}`);
   console.groupEnd();
 
-  const publicInputHash = utils.concatenateThenHash(root, Na, A, payToLeftPadded); // notice we're using the version of payTo which has been padded to 256-bits; to match our derivation of publicInputHash within our zokrates proof.
+  const publicInputHash = utils.concatenateThenHash(root, Na, tokenId, payToLeftPadded); // notice we're using the version of payTo which has been padded to 256-bits; to match our derivation of publicInputHash within our zokrates proof.
   console.log('publicInputHash:', publicInputHash);
 
   const inputs = cv.computeVectors([new Element(publicInputHash, 'field', 248, 1)]);
@@ -534,9 +605,9 @@ async function burn(A, Sk_A, S_A, z_A, z_A_index, vkId, blockchainOptions) {
     [
       new Element(publicInputHash, 'field', 248, 1),
       new Element(payTo, 'field'),
-      new Element(A, 'field'),
-      new Element(Sk_A, 'field'),
-      new Element(S_A, 'field'),
+      new Element(tokenId, 'field'),
+      new Element(secretKey, 'field'),
+      new Element(salt, 'field'),
       ...path.elements.slice(1),
       path.positions,
       new Element(Na, 'field'),
@@ -554,11 +625,11 @@ async function burn(A, Sk_A, S_A, z_A, z_A_index, vkId, blockchainOptions) {
 
   // with the pre-compute done we can burn the token, which is now a reasonably
   // light-weight calculation
-  await zkp.burn(proof, inputs, vkId, root, Na, A, payTo, account, nfTokenShieldInstance);
+  await zkp.burn(proof, inputs, vkId, root, Na, tokenId, payTo, account, nfTokenShieldInstance);
 
   console.log('BURN COMPLETE\n');
   console.groupEnd();
-  return { z_A };
+  return { commitment };
 }
 
 async function checkCorrectness(A, pk, S, z, zIndex, account) {
