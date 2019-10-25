@@ -3,13 +3,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs/Observable';
 
-import { config } from '../../shared/config';
+import { config } from '../shared/config';
 
 /**
  * Coin services, which accomodated all ERC-20 related methods.
  */
 @Injectable()
-export class CoinApiService {
+export default class FtCommitmentService {
 
  constructor(private http: HttpClient) {
 
@@ -21,7 +21,7 @@ export class CoinApiService {
   * @param pk_A {String} Public key of Alice
   * @param S_A {String} Random Serial number
   */
- mintCoin(A: string, pk_A: string) {
+ mintFTCommitment(A: string, pk_A: string) {
   const httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
   };
@@ -36,74 +36,13 @@ export class CoinApiService {
   return this.http
       .post(url, body, httpOptions)
       .pipe(tap(data => console.log(`Coin minted `)), catchError(this.handleError('mintCoin', [])));
-
  }
-
- /**
-  * Method to initiate a HTTP request to mint ERC-20 token.
-  * @param account {Object} Account object
-  * @param amount {Number} Amount to mint
-  */
- mintPublicCoin(account, amount) {
-    const httpOptions = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-    };
-    const body = {
-      amount : amount,
-      account: account
-    };
-    const url = config.apiGateway.root + 'mintFToken';
-    return this.http
-      .post(url, body, httpOptions)
-      .pipe(tap(data => console.log(`Bought Coins.`)), catchError(this.handleError('mintCoin', [])));
-  }
-
-  /**
-   *  Method to initiate a HTTP request to transfer ERC-20 token.
-   *
-   * @param amount {Number} Amount to transfer
-   * @param account {Object} Account object
-   * @param receiver_name {String} Receiver name
-   */
-  transferPublicCoin(amount, account, receiver_name) {
-    const httpOptions = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-    };
-    const body = {
-      amount : amount,
-      receiver_name
-    };
-    const url = config.apiGateway.root + 'transferFToken';
-    return this.http
-      .post(url, body, httpOptions)
-      .pipe(tap(data => console.log(`Bought Coins.`)), catchError(this.handleError('mintCoin', [])));
-  }
-
-  /**
-   * Method to initiate a HTTP request to burn ERC-20 token.
-   *
-   * @param account {Object} Account details
-   * @param amount {Number} Amount to burn
-   */
-  burnPublicCoin(account, amount) {
-    const httpOptions = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-    };
-    const body = {
-      amount : amount,
-      account: account
-    };
-    const url = config.apiGateway.root + 'burnFToken';
-    return this.http
-      .post(url, body, httpOptions)
-      .pipe(tap(data => console.log(`Bought Coins.`)), catchError(this.handleError('mintCoin', [])));
-  }
 
   /**
    * Method to initiate a HTTP request to fetch ERC-20 token commitments.
    *
    */
-  fetchCoins() {
+  getFTCommitments() {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
@@ -123,7 +62,7 @@ export class CoinApiService {
    * @param z_A {String} Token commitment
    * @param pk_A {String} Public key of Alice
    */
-  burnCoin (
+  burnFTCommitment (
     A: string,
     S_A: string,
     z_A_index: string,
@@ -169,7 +108,7 @@ export class CoinApiService {
    * @param pk_A {String} Public key of Alice
    * @param receiver_name {String} Rceiver name
    */
-  transferCoin (
+  transferFTCommitment (
     C: string,
     D: string,
     E: string,
@@ -225,5 +164,4 @@ export class CoinApiService {
       return error;
     };
   }
-
 }

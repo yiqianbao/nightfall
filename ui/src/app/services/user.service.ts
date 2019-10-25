@@ -1,4 +1,4 @@
-import { api } from './../../shared/config';
+import { api } from '../shared/config';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { HttpClient } from '@angular/common/http';
@@ -6,13 +6,13 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/forkJoin';
 import { HttpHeaders } from '@angular/common/http';
 import { catchError, tap, map } from 'rxjs/operators';
-import { config } from '../../shared/config';
+import { config } from '../shared/config';
 
 /**
  * Account services, which accomodated all account related methods.
  */
 @Injectable()
-export class AccountsApiService {
+export default class UserService {
 
   root = config.apiGateway.root;
   searchAPI = 'asset';
@@ -31,7 +31,7 @@ export class AccountsApiService {
   /**
    * Method to initiate a HTTP request to get all users.
    */
-  getUsers() {
+  getAllRegisteredNames() {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
@@ -50,7 +50,7 @@ export class AccountsApiService {
   /**
    * Method to initiate a HTTP request to get a user.
    */
-  getUser() {
+  getUserDetails() {
     const url = config.apiGateway.root + 'getUserDetails';
     return this.http.get(url).pipe(
       tap(data => {}),
@@ -91,7 +91,7 @@ export class AccountsApiService {
   /**
    * Method to initiate a HTTP request to get ERC-20 token commitments of logged in user.
    */
-  getCoins() {
+  getFTokenInfo() {
     const url = config.apiGateway.root + 'getFTokenInfo';
     return this.http.get(url).pipe(
       map((data: any) => {
@@ -187,7 +187,7 @@ export class AccountsApiService {
   /**
    * Method to initiate a HTTP request to Add shield contract address
    */
-  addContractAddress(account) {
+  addContractInfo(account) {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
@@ -203,7 +203,7 @@ export class AccountsApiService {
   /**
    * Method to initiate a HTTP request to update shield contract address
    */
-  updateContractAccounts(account) {
+  updateContractInfo(account) {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
@@ -229,7 +229,7 @@ export class AccountsApiService {
   /**
    * Method to initiate a HTTP request to delete shield contract address
    */
-  deleteContractAddress(account) {
+  deleteContractInfo(account) {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
