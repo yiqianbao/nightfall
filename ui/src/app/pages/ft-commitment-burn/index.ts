@@ -133,7 +133,7 @@ export default class FtCommitmentBurnComponent implements OnInit , AfterContentI
         this.toastr.success('Burned Coin ' + coin['coin_commitment']);
         transactions.splice(Number(index), 1);
         this.selectedCoin = undefined;
-        this.router.navigate(['/overview'], { queryParams: { selectedTab: 'coins' } });
+        this.router.navigate(['/overview'], { queryParams: { selectedTab: 'ft-commitment' } });
       }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');

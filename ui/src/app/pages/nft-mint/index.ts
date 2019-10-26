@@ -47,7 +47,7 @@ export default class NftMintComponent implements OnInit {
         this.isRequesting = false;
         this.toastr.success('Token Minted is Successfully');
         this.tokenURI = undefined;
-        this.router.navigate(['/overview'], { queryParams: { selectedTab: 'publictokens' } });
+        this.router.navigate(['/overview'], { queryParams: { selectedTab: 'nft' } });
       }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');

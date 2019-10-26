@@ -87,7 +87,7 @@ export default class FtTransferComponent implements OnInit {
     this.ftService.transferFToken(this.amount, localStorage.getItem('address'), this.receiverName).subscribe(transaction => {
       this.isRequesting = false;
       this.toastr.success('Public Coin transferred Successfully.');
-      this.router.navigate(['/overview'], { queryParams: { selectedTab: 'publiccoins' } });
+      this.router.navigate(['/overview'], { queryParams: { selectedTab: 'ft' } });
     }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');

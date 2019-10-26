@@ -6,7 +6,7 @@ import UserService from '../../services/user.service';
 import { UtilService } from '../../services/utils/util.service';
 
 /**
- * Burn public coin component, which is used for rendering the page of burn public coin.
+ * Burn fungible token component, which is used for rendering the page of burn fungible token.
  */
 @Component({
   selector: 'ft-burn',
@@ -77,8 +77,8 @@ export default class FtBurnComponent implements OnInit {
     this.isRequesting = true;
     this.ftService.burnFToken(localStorage.getItem('address'), this.amount).subscribe(transaction => {
       this.isRequesting = false;
-      this.toastr.success('Public Coin Burned Successfully.');
-      this.router.navigate(['/overview'], { queryParams: { selectedTab: 'publiccoins' } });
+      this.toastr.success('fungible token Burned Successfully.');
+      this.router.navigate(['/overview'], { queryParams: { selectedTab: 'ft' } });
     }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');

@@ -50,7 +50,7 @@ export default class FtMintComponent implements OnInit {
     this.ftService.mintFToken(localStorage.getItem('address'), this.amount).subscribe(transaction => {
       this.isRequesting = false;
       this.toastr.success('Public coin minted successfully.');
-      this.router.navigate(['/overview'], { queryParams: { selectedTab: 'publiccoins' } });
+      this.router.navigate(['/overview'], { queryParams: { selectedTab: 'ft' } });
     }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');

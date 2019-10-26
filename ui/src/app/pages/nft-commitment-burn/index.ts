@@ -103,7 +103,7 @@ export default class NftCommitmentBurnComponent implements OnInit, AfterContentI
         this.toastr.success('Token burned successfully.');
         transactions.splice(Number(index), 1);
         this.selectedToken = undefined;
-        this.router.navigate(['/overview'], { queryParams: { selectedTab: 'tokens' } });
+        this.router.navigate(['/overview'], { queryParams: { selectedTab: 'nft-commitment' } });
       }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');

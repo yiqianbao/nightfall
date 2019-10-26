@@ -90,7 +90,7 @@ export default class FtCommitmentMintComponent implements OnInit {
     this.ftCommitmentService.mintFTCommitment(hexString, localStorage.getItem('publickey')).subscribe(tokenDetails => {
       this.isRequesting = false;
       this.toastr.success('Coin Minted is ' + tokenDetails['data']['coin']);
-      this.router.navigate(['/overview'], { queryParams: { selectedTab: 'coins' } });
+      this.router.navigate(['/overview'], { queryParams: { selectedTab: 'ft-commitment' } });
     }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');

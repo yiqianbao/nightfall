@@ -6,7 +6,7 @@
       <div class="col-md-12">
         <div class="row">
           <div class="col-md-3">
-            <a [routerLink]="['/token/public/list']">
+            <a [routerLink]="['/nft/list']">
               <div class="card">
                 <div class="card-body">
                   <h3 *ngIf="count">{{ nftBalance }}</h3>
@@ -20,7 +20,7 @@
           </div>
 
           <div class="col-md-3">
-            <a [routerLink]="['/token/list']">
+            <a [routerLink]="['/nft-commitment/list']">
               <div class="card">
                 <div class="card-body">
                   <h3 *ngIf="count">{{ count.nftCommitmentCount ? count.nftCommitmentCount : '0' }}</h3>
@@ -42,7 +42,7 @@
           </div>
 
           <div class="col-md-3">
-            <a [routerLink]="['/coin/list']">
+            <a [routerLink]="['/ft-commitment/list']">
               <div class="card">
                 <div class="card-body">
                   <h3 *ngIf="count">{{ count.ftCommitmentCount ? count.ftCommitmentCount : '0' }}</h3>
@@ -60,49 +60,49 @@
         <h3 class="mb-2">Actions</h3>
         <div class="row mb-3">
           <div class="col-md-3">
-            <a class="btn btn-primary btn-list" [routerLink]="['/token/public/mint']"
+            <a class="btn btn-primary btn-list" [routerLink]="['/nft/mint']"
               >Mint {{ nftName || 'Public Token' }}</a
             >
-            <a class="btn btn-primary btn-list" [routerLink]="['/token/public/transfer']"
+            <a class="btn btn-primary btn-list" [routerLink]="['/nft/transfer']"
               >Transfer {{ nftName || 'Public Token' }}</a
             >
-            <a class="btn btn-primary btn-list" [routerLink]="['/token/public/burn']"
+            <a class="btn btn-primary btn-list" [routerLink]="['/nft/burn']"
               >Burn {{ nftName || 'Public Token' }}</a
             >
           </div>
 
           <div class="col-md-3">
-            <a class="btn btn-primary btn-list" [routerLink]="['/token/mint']"
+            <a class="btn btn-primary btn-list" [routerLink]="['/nft-commitment/mint']"
               >Mint {{ nftName }} Commitment</a
             >
-            <a class="btn btn-primary btn-list" [routerLink]="['/token/transfer']"
+            <a class="btn btn-primary btn-list" [routerLink]="['/nft-commitment/transfer']"
               >Transfer {{ nftName }} Commitment</a
             >
-            <a class="btn btn-primary btn-list" [routerLink]="['/token/burn']"
+            <a class="btn btn-primary btn-list" [routerLink]="['/nft-commitment/burn']"
               >Burn {{ nftName }} Commitment</a
             >
           </div>
 
           <div class="col-md-3">
-            <a class="btn btn-primary btn-list" [routerLink]="['/coin/public/mint']"
+            <a class="btn btn-primary btn-list" [routerLink]="['/ft/mint']"
               >Mint {{ ftName || '' }}</a
             >
-            <a class="btn btn-primary btn-list" [routerLink]="['/coin/public/transfer']"
+            <a class="btn btn-primary btn-list" [routerLink]="['/ft/transfer']"
               >Transfer {{ ftName || '' }}</a
             >
-            <a class="btn btn-primary btn-list" [routerLink]="['/coin/public/burn']"
+            <a class="btn btn-primary btn-list" [routerLink]="['/ft/burn']"
               >Burn {{ ftName || '' }}</a
             >
           </div>
 
           <div class="col-md-3">
-            <a class="btn btn-primary btn-list" [routerLink]="['/coin/mint']"
+            <a class="btn btn-primary btn-list" [routerLink]="['/ft-commitment/mint']"
               >Mint {{ ftName }} Commitment</a
             >
-            <a class="btn btn-primary btn-list" [routerLink]="['/coin/transfer']"
+            <a class="btn btn-primary btn-list" [routerLink]="['/ft-commitment/transfer']"
               >Transfer {{ ftName }} Commitment</a
             >
-            <a class="btn btn-primary btn-list" [routerLink]="['/coin/burn']"
+            <a class="btn btn-primary btn-list" [routerLink]="['/ft-commitment/burn']"
               >Burn {{ ftName }} Commitment</a
             >
           </div>
@@ -113,9 +113,9 @@
       <div class="col-sm-12">
         <h3 class="mb-2">Transactions History</h3>
         <ngb-tabset activeId="{{ selectedTab }}">
-          <ngb-tab id="publictokens">
+          <ngb-tab id="nft">
             <ng-template ngbTabTitle>
-              <div (click)="getTransactions('publictokens')">
+              <div (click)="getTransactions('nft')">
                 <strong>{{ nftName }}</strong>
               </div>
             </ng-template>
@@ -168,9 +168,9 @@
             </ng-template>
           </ngb-tab>
 
-          <ngb-tab id="tokens">
+          <ngb-tab id="nft-commitment">
             <ng-template ngbTabTitle>
-              <div (click)="getTransactions('tokens')">
+              <div (click)="getTransactions('nft-commitment')">
                 <strong>{{ nftName }} Commitment</strong>
               </div>
             </ng-template>
@@ -209,9 +209,9 @@
             </ng-template>
           </ngb-tab>
 
-          <ngb-tab id="publiccoins">
+          <ngb-tab id="ft">
             <ng-template ngbTabTitle>
-              <div (click)="getTransactions('publiccoins')">
+              <div (click)="getTransactions('ft')">
                 <strong>{{ ftName }}</strong>
               </div>
             </ng-template>
@@ -249,9 +249,9 @@
             </ng-template>
           </ngb-tab>
 
-          <ngb-tab id="coins">
+          <ngb-tab id="ft-commitment">
             <ng-template ngbTabTitle>
-              <div (click)="getTransactions('coins')">
+              <div (click)="getTransactions('ft-commitment')">
                 <strong>{{ ftName }} Commitment</strong>
               </div>
             </ng-template>

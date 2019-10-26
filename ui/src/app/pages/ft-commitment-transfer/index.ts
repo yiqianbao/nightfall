@@ -172,7 +172,7 @@ export default class FtCommitmentTrasnferComponent implements OnInit , AfterCont
         transactions.splice(Number(coin1['id']), 1);
         transactions.splice(Number(coin2['id']) - 1, 1);
         this.getFTCommitments();
-        this.router.navigate(['/overview'], { queryParams: { selectedTab: 'coins' } });
+        this.router.navigate(['/overview'], { queryParams: { selectedTab: 'ft-commitment' } });
       }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');

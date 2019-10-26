@@ -72,7 +72,7 @@ export default class NftBurnComponent implements OnInit , AfterContentInit {
         this.isRequesting = false;
         this.toastr.success('Burn Successful');
         this.selectedToken = undefined;
-        this.router.navigate(['/overview'], { queryParams: { selectedTab: 'publictokens' } });
+        this.router.navigate(['/overview'], { queryParams: { selectedTab: 'nft' } });
       }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');

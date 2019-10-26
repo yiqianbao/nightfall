@@ -80,7 +80,7 @@ export default class NftCommitmentMintComponent implements OnInit, AfterContentI
         console.log('Token Minted is ' + tokenDetails['data']['z_A']);
         this.isRequesting = false;
         this.toastr.success('Token Minted is ' + tokenDetails['data']['z_A'].slice(0, 20) + '...');
-        this.router.navigate(['/overview'], { queryParams: { selectedTab: 'tokens' } });
+        this.router.navigate(['/overview'], { queryParams: { selectedTab: 'nft-commitment' } });
       }, error => {
         this.isRequesting = false;
         this.toastr.error('Please try again', 'Error');
