@@ -4,8 +4,8 @@ import LoginComponent from '../pages/login';
 import CreateAccountsComponent from '../pages/create-accounts';
 import OverviewComponent from '../pages/overview';
 import { AuthService } from '../services/auth/auth.service';
-import { UserSettingsComponent } from '../pages/user-settings/user-settings.component';
-import { UserProfileComponent } from '../pages/user-profile/user-profile.component';
+import UserSettingsComponent from '../pages/user-settings';
+import UserProfileComponent from '../pages/user-profile';
 import { UserAccountsComponent } from '../pages/user-accounts/user-accounts.component';
 
 import NftMintComponent from '../pages/nft-mint';
@@ -40,21 +40,26 @@ export const appRoutes: Routes = [
     canActivate: [AuthService]
   },
   { path: 'overview', component: OverviewComponent, canActivate: [AuthService] },
-  { path: 'token/mint', component: NftCommitmentMintComponent , canActivate: [AuthService]},
-  { path: 'token/public/mint', component: NftMintComponent , canActivate: [AuthService]},
-  { path: 'token/public/transfer', component: NftTransferComponent , canActivate: [AuthService]},
-  { path: 'token/burn', component: NftCommitmentBurnComponent , canActivate: [AuthService]},
-  { path: 'token/public/burn', component: NftBurnComponent , canActivate: [AuthService]},
-  { path: 'token/public/list', component: NftListComponent , canActivate: [AuthService]},
-  { path: 'token/list', component: NftCommitmentListComponent , canActivate: [AuthService]},
-  { path: 'coin/list' , component: FtCommitmentListComponent, canActivate: [AuthService] },
-  { path: 'coin/mint' , component: FtCommitmentMintComponent, canActivate: [AuthService] },
-  { path: 'token/transfer', component: NftCommitmentTransferComponent, canActivate: [AuthService] },
-  { path: 'coin/transfer', component: FtCommitmentTrasnferComponent, canActivate: [AuthService] },
-  { path: 'coin/burn', component: FtCommitmentBurnComponent, canActivate: [AuthService] },
-  { path: 'coin/public/mint', component: FtMintComponent, canActivate: [AuthService] },
-  { path: 'coin/public/transfer', component: FtTransferComponent, canActivate: [AuthService] },
-  { path: 'coin/public/burn', component: FtBurnComponent, canActivate: [AuthService] },
+
+  { path: 'nft-commitment/mint', component: NftCommitmentMintComponent , canActivate: [AuthService]},
+  { path: 'nft-commitment/transfer', component: NftCommitmentTransferComponent, canActivate: [AuthService] },
+  { path: 'nft-commitment/burn', component: NftCommitmentBurnComponent , canActivate: [AuthService]},
+  { path: 'nft-commitment/list', component: NftCommitmentListComponent , canActivate: [AuthService]},
+
+  { path: 'nft/mint', component: NftMintComponent , canActivate: [AuthService]},
+  { path: 'nft/transfer', component: NftTransferComponent , canActivate: [AuthService]},
+  { path: 'nft/burn', component: NftBurnComponent , canActivate: [AuthService]},
+  { path: 'nft/list', component: NftListComponent , canActivate: [AuthService]},
+  
+  { path: 'ft-commitment/mint' , component: FtCommitmentMintComponent, canActivate: [AuthService] },
+  { path: 'ft-commitment/transfer', component: FtCommitmentTrasnferComponent, canActivate: [AuthService] },
+  { path: 'ft-commitment/burn', component: FtCommitmentBurnComponent, canActivate: [AuthService] },
+  { path: 'ft-commitment/list' , component: FtCommitmentListComponent, canActivate: [AuthService] },
+
+  { path: 'ft/mint', component: FtMintComponent, canActivate: [AuthService] },
+  { path: 'ft/transfer', component: FtTransferComponent, canActivate: [AuthService] },
+  { path: 'ft/burn', component: FtBurnComponent, canActivate: [AuthService] },
+
   { path: '**', redirectTo: '/login', pathMatch: 'full' },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];

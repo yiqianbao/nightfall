@@ -20,9 +20,9 @@ import { AuthService } from './services/auth/auth.service';
 import OverviewComponent from './pages/overview';
 import { NgSelectModule } from '@ng-select/ng-select';
 
-import { UserSettingsComponent } from './pages/user-settings/user-settings.component';
+import UserSettingsComponent from './pages/user-settings';
+import UserProfileComponent from './pages/user-profile';
 import { UserAccountsComponent } from './pages/user-accounts/user-accounts.component';
-import { UserProfileComponent } from './pages/user-profile/user-profile.component';
 import { CustomSelectionComponent } from './pages/user-accounts/custom-selection-component';
 import { CustomTextComponent } from './pages/user-accounts/custom-text-component';
 
