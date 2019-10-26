@@ -4,20 +4,22 @@ import UserService from '../../services/user.service';
 import {Config} from '../../config/config';
 
 /**
- * Component to show the user profile details.
+ * User Settings Component is a container componet, which loads user profile component and account components
+ * as child.
  */
 @Component({
-  selector: 'app-user-profile',
-  templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.css'],
+  selector: 'app-user-settings',
+  templateUrl: './index.html',
+  styleUrls: ['./index.css'],
   providers: [UserService]
 })
-export class UserProfileComponent extends Config implements OnInit {
+export default class UserSettingsComponent extends Config implements OnInit {
 
   /**
    * To store user details
    */
   user: any;
+
   /**
    * Flag for http request status
    */
