@@ -6,7 +6,7 @@ import UserService from '../../services/user.service';
 import FtCommitmentService from '../../services/ft-commitment.service';
 import { UtilService } from '../../services/utils/util.service';
 /**
- *  Mint coin component, which is used for rendering the page of Mint ERC-20 token commitment.
+ *  This component, which is used for rendering the page of Mint ERC-20 token commitment.
  */
 @Component({
   selector: 'ft-commitment-mint',
@@ -26,11 +26,11 @@ export default class FtCommitmentMintComponent implements OnInit {
   /**
    * Form object to collect mint details.
    */
-  mintCoinForm: FormGroup;
+  ftCommitmentMintForm: FormGroup;
   /**
    * To store the ERC-20 token count.
    */
-  coinCount;
+  ftBalance;
   /**
    * Fungeble Token name , read from ERC-20 contract.
    */
@@ -57,7 +57,7 @@ export default class FtCommitmentMintComponent implements OnInit {
   getFTokenInfo() {
     this.userService.getFTokenInfo().subscribe(
       data => {
-        this.coinCount = data['data']['balance'];
+        this.ftBalance = data['data']['balance'];
       },
       error => {
         console.log('error in user get', error);
@@ -69,7 +69,7 @@ export default class FtCommitmentMintComponent implements OnInit {
    * Method to create Mint form
    */
   createForm() {
-    this.mintCoinForm = this.fb.group({
+    this.ftCommitmentMintForm = this.fb.group({
       A: ['', Validators.required],
     });
   }
@@ -78,18 +78,18 @@ export default class FtCommitmentMintComponent implements OnInit {
    * Method to Mint ERC-20 token commitemnt.
    */
   mintFTCommitment() {
-    const coinToMint = this.mintCoinForm.controls['A'].value;
-    if (!coinToMint) { return; }
-    if (coinToMint > this.coinCount) {
+    const amountToMint = this.ftCommitmentMintForm.controls['A'].value;
+    if (!amountToMint) { return; }
+    if (amountToMint > this.ftBalance) {
       return this.toastr.error('You do not have enough ERC-20 tokens');
     }
     this.isRequesting = true;
-    const hexValue = (this.mintCoinForm.controls['A'].value).toString(16);
+    const hexValue = (this.ftCommitmentMintForm.controls['A'].value).toString(16);
     const hexString = '0x' + hexValue.padStart(32, '0');
     console.log('Hexstring::', hexString);
     this.ftCommitmentService.mintFTCommitment(hexString, localStorage.getItem('publickey')).subscribe(tokenDetails => {
       this.isRequesting = false;
-      this.toastr.success('Coin Minted is ' + tokenDetails['data']['coin']);
+      this.toastr.success('ft-commitment Minted is ' + tokenDetails['data']['coin']);
       this.router.navigate(['/overview'], { queryParams: { selectedTab: 'ft-commitment' } });
     }, error => {
         this.isRequesting = false;

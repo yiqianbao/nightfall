@@ -38,7 +38,7 @@
                       [virtualScroll]="true"
                       [loading]="loading"
                       [multiple]="true"
-                      [(ngModel)]="selectedTokenList"
+                      [(ngModel)]="selectedCommitmentList"
                       [maxSelectedItems]="1"
                       [searchFn]="customSearchFn"
                       placeholder="Select Token Id"
@@ -76,7 +76,7 @@
               <div class="row">
                 <div class="form-group col-md-6">
                   <button
-                    [disabled]="!selectedTokenList.length || !receiverName"
+                    [disabled]="!selectedCommitmentList.length || !receiverName"
                     type="button"
                     class="btn btn-md btn-primary"
                     (click)="initiateSpend()"

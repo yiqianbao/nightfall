@@ -29,11 +29,11 @@ export default class NftCommitmentMintComponent implements OnInit, AfterContentI
   /**
    * Selected Token List
    */
-  selectedTokenList: any = [];
+  selectedCommitmentList: any = [];
   /**
    * To store user selected token.
    */
-  selectedToken;
+  selectedCommitment;
 
   /**
    * To store ERC-721 tokens
@@ -60,7 +60,7 @@ export default class NftCommitmentMintComponent implements OnInit, AfterContentI
 
 
   ngOnInit() {
-    this.getTokenList();
+    this.getNFTokens();
     this.nftName = localStorage.getItem('nftName');
   }
 
@@ -75,8 +75,8 @@ export default class NftCommitmentMintComponent implements OnInit, AfterContentI
    */
   mintNFTCommitment() {
       this.isRequesting = true;
-      this.selectedToken = this.selectedTokenList[0];
-      this.nftCommitmentService.mintNFTCommitment(this.selectedToken).subscribe(tokenDetails => {
+      this.selectedCommitment = this.selectedCommitmentList[0];
+      this.nftCommitmentService.mintNFTCommitment(this.selectedCommitment).subscribe(tokenDetails => {
         console.log('Token Minted is ' + tokenDetails['data']['z_A']);
         this.isRequesting = false;
         this.toastr.success('Token Minted is ' + tokenDetails['data']['z_A'].slice(0, 20) + '...');
@@ -93,12 +93,12 @@ export default class NftCommitmentMintComponent implements OnInit, AfterContentI
    * @param item {Object} Item to be removed.
    */
   onRemove(item) {
-    console.log('selected items', this.selectedTokenList, item);
-    const newList = this.selectedTokenList.filter((it) => {
+    console.log('selected items', this.selectedCommitmentList, item);
+    const newList = this.selectedCommitmentList.filter((it) => {
       return item._id !== it._id;
     });
-    this.selectedTokenList = newList;
-    console.log('selected new items', this.selectedTokenList);
+    this.selectedCommitmentList = newList;
+    console.log('selected new items', this.selectedCommitmentList);
   }
 
   /**
@@ -120,13 +120,13 @@ export default class NftCommitmentMintComponent implements OnInit, AfterContentI
   /**
    * Method to list down all ERC-721 tokens.
    */
-  getTokenList() {
-    this.nftService.getNFTTokens().subscribe( (data: any) => {
+  getNFTokens() {
+    this.nftService.getNFTokens().subscribe( (data: any) => {
       this.isRequesting = false;
       this.tokenList = data['data'];
     }, error => {
       this.isRequesting = false;
-      console.log('getTokenList error', error);
+      console.log('getNFTokens error', error);
   });
   }
 

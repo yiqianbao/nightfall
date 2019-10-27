@@ -4,7 +4,7 @@ import FtService from '../../services/ft.service';
 import { Router } from '@angular/router';
 import { UtilService } from '../../services/utils/util.service';
 /**
- * Mint public coin component, which is used for rendering the page of mint ERC-20 token.
+ * Mint fungible token component, which is used for rendering the page of mint ERC-20 token.
  */
 @Component({
   selector: 'ft-mint',
@@ -49,7 +49,7 @@ export default class FtMintComponent implements OnInit {
     this.isRequesting = true;
     this.ftService.mintFToken(localStorage.getItem('address'), this.amount).subscribe(transaction => {
       this.isRequesting = false;
-      this.toastr.success('Public coin minted successfully.');
+      this.toastr.success('fungible token minted successfully.');
       this.router.navigate(['/overview'], { queryParams: { selectedTab: 'ft' } });
     }, error => {
         this.isRequesting = false;

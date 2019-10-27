@@ -76,7 +76,7 @@ export default class NftService {
    * @param pageNo {Number} Page number
    * @param limit {Number} Page limit
    */
-  getNFTTokens(pageNo?: number, limit?: number) {
+  getNFTokens(pageNo?: number, limit?: number) {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };

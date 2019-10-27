@@ -69,11 +69,11 @@ export default class UserService {
    */
   getTransactions(type: string, pageNo: number, limit: number) {
     let url;
-    if (type === 'tokens') {
+    if (type === 'nft-commitment') {
       url = config.apiGateway.root + 'getNFTCommitmentTransactions?pageNo=' + pageNo + '&limit=' + limit;
-    } else if (type === 'publictokens') {
+    } else if (type === 'nft') {
       url = config.apiGateway.root + 'getNFTTransactions?pageNo=' + pageNo + '&limit=' + limit;
- } else if (type === 'publiccoins') {
+ } else if (type === 'ft') {
       url = config.apiGateway.root + 'getFTTransactions?&pageNo=' + pageNo + '&limit=' + limit;
  } else {
       url = config.apiGateway.root + 'getFTCommitmentTransactions?pageNo=' + pageNo + '&limit=' + limit;

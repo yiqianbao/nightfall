@@ -5,7 +5,7 @@ import NftService from '../../services/nft.service';
 import { NgSelectComponent } from '@ng-select/ng-select';
 
 /**
- * Burn public token component, which is used for rendering the page of burn ERC-721 token.
+ * Burn non-fungible token component, which is used for rendering the page of burn ERC-721 token.
  */
 @Component({
   selector: 'nft-burn',
@@ -19,11 +19,11 @@ export default class NftBurnComponent implements OnInit , AfterContentInit {
   /**
    * Selected Token List
    */
-  selectedTokenList: any = [];
+  selectedCommitmentList: any = [];
   /**
    * Used to identify the selected ERC-721 token.
    */
-  selectedToken;
+  selectedCommitment;
 
   /**
    * Flag for http request
@@ -33,7 +33,7 @@ export default class NftBurnComponent implements OnInit , AfterContentInit {
   /**
    *  List of all ERC-721 tokens.
    */
-  tokenList: any = [];
+  nfTokens: any = [];
 
   /**
    * Non Fungeble Token name , read from ERC-721 contract.
@@ -52,7 +52,7 @@ export default class NftBurnComponent implements OnInit , AfterContentInit {
   ) { }
 
   ngOnInit() {
-    this.getTokenList();
+    this.getNFTokens();
     this.nftName = localStorage.getItem('nftName');
   }
 
@@ -67,11 +67,11 @@ export default class NftBurnComponent implements OnInit , AfterContentInit {
    */
   burnToken () {
     this.isRequesting = true;
-    this.selectedToken = this.selectedTokenList[0];
-    this.nftService.burnNFToken(this.selectedToken).subscribe( data => {
+    this.selectedCommitment = this.selectedCommitmentList[0];
+    this.nftService.burnNFToken(this.selectedCommitment).subscribe( data => {
         this.isRequesting = false;
         this.toastr.success('Burn Successful');
-        this.selectedToken = undefined;
+        this.selectedCommitment = undefined;
         this.router.navigate(['/overview'], { queryParams: { selectedTab: 'nft' } });
       }, error => {
         this.isRequesting = false;
@@ -82,15 +82,13 @@ export default class NftBurnComponent implements OnInit , AfterContentInit {
   /**
    * Method to list down all ERC-721 tokens.
    */
-  getTokenList() {
-    this.nftService.getNFTTokens().subscribe( (data: any) => {
+  getNFTokens() {
+    this.nftService.getNFTokens().subscribe( (data: any) => {
       this.isRequesting = false;
-      this.tokenList = data['data'];
-      console.log('getTokenList', data);
+      this.nfTokens = data['data'];
 
     }, error => {
       this.isRequesting = false;
-      console.log('getTokenList error', error);
     });
   }
 
@@ -99,12 +97,12 @@ export default class NftBurnComponent implements OnInit , AfterContentInit {
    * @param item {Object} Item to be removed.
    */
   onRemove(item) {
-    console.log('selected items', this.selectedTokenList, item);
-    const newList = this.selectedTokenList.filter((it) => {
+    console.log('selected items', this.selectedCommitmentList, item);
+    const newList = this.selectedCommitmentList.filter((it) => {
       return item._id !== it._id;
     });
-    this.selectedTokenList = newList;
-    console.log('selected new items', this.selectedTokenList);
+    this.selectedCommitmentList = newList;
+    console.log('selected new items', this.selectedCommitmentList);
   }
 
   /**

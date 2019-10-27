@@ -7,7 +7,7 @@ import { UtilService } from '../../services/utils/util.service';
 import { NgSelectComponent } from '@ng-select/ng-select';
 
 /**
- *  Spend coin component, which is used for rendering the page of transfer ERC-20 token commitments to the selected receipent.
+ *  ft-commitment trasfer component, which is used for rendering the page of transfer ERC-20 token commitments to the selected receipent.
  */
 @Component({
   selector: 'ft-commitment-transfer',
@@ -26,7 +26,7 @@ export default class FtCommitmentTrasnferComponent implements OnInit , AfterCont
   /**
    * To store the selected ERC-20 token commitments
    */
-  selectedCoinList: any = [];
+  selectedCommitmentList: any = [];
 
   /**
    * Flag for http request
@@ -37,11 +37,6 @@ export default class FtCommitmentTrasnferComponent implements OnInit , AfterCont
    * Amount to transfer
    */
   transferValue: number;
-
-  /**
-   * If no coins are available, set this property as false;
-   */
-  noCoin = false;
 
   /**
    * To store all users
@@ -90,20 +85,18 @@ export default class FtCommitmentTrasnferComponent implements OnInit , AfterCont
    * Method list down all ERC-20 commitments.
    */
   getFTCommitments() {
-    this.transactions = null;
     this.isRequesting = true;
     this.ftCommitmentService.getFTCommitments()
       .subscribe(
         (data) => {
         this.isRequesting = false;
+        console.log(data['data']);
         if (data && data['data'].length ) {
           this.transactions = data['data'].map((tx, indx) => {
             tx.selected = false;
             tx.id = indx;
             return tx;
           });
-        } else {
-          this.noCoin = true;
         }
       }, (error) => {
         console.log('error', error);
@@ -131,13 +124,13 @@ export default class FtCommitmentTrasnferComponent implements OnInit , AfterCont
    * Method to transfer two ERC-20 token commitement to selected user.
    */
   initiateTransfer () {
-    const count = this.selectedCoinList.length;
-    console.log('count', count, this.selectedCoinList);
+    const count = this.selectedCommitmentList.length;
+    console.log('count', count, this.selectedCommitmentList);
     if (!count || count !== 2) {
-      this.toastr.error('Invalid Coin Selection.');
+      this.toastr.error('Invalid commitment Selection.');
       return;
     }
-    const [coin1, coin2] = this.selectedCoinList;
+    const [coin1, coin2] = this.selectedCommitmentList;
     const {
       transferValue,
       transactions
@@ -184,12 +177,12 @@ export default class FtCommitmentTrasnferComponent implements OnInit , AfterCont
    * @param item {Object} Item to be removed.
    */
   onRemove(item) {
-    console.log('selected items', this.selectedCoinList, item);
-    const newList = this.selectedCoinList.filter((it) => {
+    console.log('selected items', this.selectedCommitmentList, item);
+    const newList = this.selectedCommitmentList.filter((it) => {
       return item._id !== it._id;
     });
-    this.selectedCoinList = newList;
-    console.log('selected new items', this.selectedCoinList);
+    this.selectedCommitmentList = newList;
+    console.log('selected new items', this.selectedCommitmentList);
   }
 
   /**

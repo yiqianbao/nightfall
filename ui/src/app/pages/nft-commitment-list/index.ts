@@ -26,7 +26,7 @@ export default class NftCommitmentListComponent implements OnInit {
   /**
    * If no tokens are available, set this property as false;
    */
-  noToken = false;
+  noCommitment = false;
 
   /**
    * For pagination purpose
@@ -88,7 +88,7 @@ export default class NftCommitmentListComponent implements OnInit {
         if (this.totalCollection) { return; }
         this.totalCollection = Promise.resolve(parseInt(data['data']['totalCount'], 10));
       } else {
-        this.noToken = true;
+        this.noCommitment = true;
       }
     }, error => {
       this.isRequesting = false;

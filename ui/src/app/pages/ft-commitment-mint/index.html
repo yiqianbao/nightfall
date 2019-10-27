@@ -23,17 +23,17 @@
         <div class="box-body">
           <div class="row form-group">
             <div class="col-sm-12">
-              <label>Public {{ ftName }} Balance : {{ coinCount || 0 }}</label>
+              <label>Public {{ ftName }} Balance : {{ ftBalance || 0 }}</label>
             </div>
           </div>
-          <div class="row form-group" *ngIf="coinCount == 0">
+          <div class="row form-group" *ngIf="ftBalance == 0">
             <div class="col-sm-12">
               <p>Not Enough Public {{ ftName }} To Mint.</p>
             </div>
           </div>
-          <div class="row" *ngIf="coinCount > 0">
+          <div class="row" *ngIf="ftBalance > 0">
             <div class="col-md-6">
-              <form [formGroup]="mintCoinForm">
+              <form [formGroup]="ftCommitmentMintForm">
                 <div class="form-group">
                   <div class="row col-sm-12">
                     <input
@@ -53,7 +53,7 @@
                       <button
                         type="button"
                         class="btn btn-md btn-primary"
-                        [disabled]="mintCoinForm.invalid"
+                        [disabled]="ftCommitmentMintForm.invalid"
                         (click)="mintFTCommitment()"
                       >
                         Mint {{ ftName }} Commitment

@@ -21,10 +21,7 @@ export default class NftListComponent implements OnInit {
    *  Transaction list
    */
   transactions: any;
-  /**
-   * If no tokens are available, set this property as false;
-   */
-  noToken = false;
+
   /**
    * For pagination purpose
    */
@@ -70,7 +67,7 @@ export default class NftListComponent implements OnInit {
   fetchTokens () {
     this.transactions = null;
     this.isRequesting = true;
-    this.nftService.getNFTTokens(this.pageNo, this.pageSize)
+    this.nftService.getNFTokens(this.pageNo, this.pageSize)
     .subscribe( data => {
       this.isRequesting = false;
       if (data &&
@@ -81,8 +78,6 @@ export default class NftListComponent implements OnInit {
 
       if (this.totalCollection) { return; }
         this.totalCollection = Promise.resolve(parseInt(data['data']['totalCount'], 10));
-      } else {
-        this.noToken = true;
       }
     }, error => {
       this.isRequesting = false;

@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { UtilService } from '../../services/utils/util.service';
 
 /**
- *  Spend public coin component, which is used for rendering the page of transfer ERC-20 token to the selected receipent.
+ *  Spend fungible token component, which is used for rendering the page of transfer ERC-20 token to the selected receipent.
  */
 @Component({
   selector: 'ft-transfer',
@@ -86,7 +86,7 @@ export default class FtTransferComponent implements OnInit {
     this.isRequesting = true;
     this.ftService.transferFToken(this.amount, localStorage.getItem('address'), this.receiverName).subscribe(transaction => {
       this.isRequesting = false;
-      this.toastr.success('Public Coin transferred Successfully.');
+      this.toastr.success('fungible token transferred Successfully.');
       this.router.navigate(['/overview'], { queryParams: { selectedTab: 'ft' } });
     }, error => {
         this.isRequesting = false;

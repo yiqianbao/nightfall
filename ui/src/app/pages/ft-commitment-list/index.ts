@@ -22,10 +22,6 @@ export default class FtCommitmentListComponent implements OnInit {
    */
   isRequesting = false;
   /**
-   * If no coins are available, set this property as false;
-   */
-  noCoin = false;
-  /**
    * Fungeble Token name , read from ERC-20 contract.
    */
   ftName: string;
@@ -52,15 +48,12 @@ export default class FtCommitmentListComponent implements OnInit {
       .subscribe( data => {
         this.isRequesting = false;
         if (data &&
-          data['data']) {
+          data['data'] && data['data'].length) {
           this.transactions = data['data'].map((tx, indx) => {
             tx.selected = false;
             tx.id = indx;
             return tx;
           });
-        } else {
-          this.noCoin = true;
-          // this.toastr.error('No Coin found.');
         }
       }, error => {
         this.isRequesting = false;

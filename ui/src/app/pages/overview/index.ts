@@ -171,7 +171,7 @@ export default class OverviewComponent extends Config implements OnInit {
     this.isPagination = false;
     this.userService.getTransactions(type, this.pageNo, this.pageSize).subscribe(
       data => {
-        console.log('getTransactions', data);
+        console.log('getTransactions', data, type);
         if (type === 'nft-commitment') {
           this.currentType = 'nft-commitment';
           this.tokenTransactions = data['data']['data'].length > 0 ? data['data']['data'] : [];

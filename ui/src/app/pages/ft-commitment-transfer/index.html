@@ -18,12 +18,13 @@
       </ol>
     </nav>
     <div class="box">
+      <div>
       <div class="box-header">
         <h3>Transfer {{ this.ftName }} Commitment</h3>
       </div>
 
-      <div class="box-body">
-        <div class="form-group" *ngIf="transactions && transactions.length">
+      <div class="box-body" *ngIf="transactions">
+        <div class="form-group">
           <label for="name mb-1">Select Two {{ this.ftName }} To Transfer</label>
           <div class="row col-sm-12">
             <ng-select
@@ -33,7 +34,7 @@
               [virtualScroll]="true"
               [loading]="loading"
               [multiple]="true"
-              [(ngModel)]="selectedCoinList"
+              [(ngModel)]="selectedCommitmentList"
               [maxSelectedItems]="2"
               [searchFn]="customSearchFn"
               placeholder="Select Coins"
@@ -69,7 +70,7 @@
           </div>
         </div>
 
-        <div class="form-group" *ngIf="!noCoin">
+        <div class="form-group">
           <label for="publickey">Select Receiver</label>
           <div class="row">
             <div class="col-sm-6">
@@ -87,14 +88,14 @@
           </div>
         </div>
 
-        <div class="row form-group" *ngIf="!noCoin">
+        <div class="row form-group">
           <div class="col-md-6">
             <button
               type="button"
               [disabled]="
                 !transactions ||
                 !transactions.length ||
-                !(selectedCoinList.length == 2) ||
+                !(selectedCommitmentList.length == 2) ||
                 !transferValue ||
                 !receiverName
               "
@@ -105,8 +106,8 @@
             </button>
           </div>
         </div>
-        <div class="text-center" *ngIf="noCoin">No {{ this.ftName }} Commitment's Found</div>
       </div>
+      <div class="text-center box-body" *ngIf="!transactions">No {{ this.ftName }} Commitment's Found</div>
     </div>
   </div>
 </div>

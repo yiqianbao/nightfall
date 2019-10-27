@@ -38,7 +38,7 @@
               [virtualScroll]="true"
               [loading]="loading"
               [multiple]="true"
-              [(ngModel)]="selectedTokenList"
+              [(ngModel)]="selectedCommitmentList"
               [maxSelectedItems]="1"
               [searchFn]="customSearchFn"
               placeholder="Select Public Token"
@@ -61,7 +61,7 @@
           <div class="row">
             <button
               class="btn btn-md btn-primary"
-              [disabled]="!selectedTokenList.length"
+              [disabled]="!selectedCommitmentList.length"
               type="button"
               (click)="mintNFTCommitment()"
             >

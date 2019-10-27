@@ -6,7 +6,7 @@ import {UtilService} from '../../services/utils/util.service';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import UserService from '../../services/user.service';
 /**
- *  Burn coin component, which is used for rendering the page of burn private coin.
+ *  Burn ft-commitment component, which is used for rendering the page of burn fungible token commitment.
  */
 @Component({
   selector: 'ft-commitment-burn',
@@ -22,15 +22,11 @@ export default class FtCommitmentBurnComponent implements OnInit , AfterContentI
   /**
    * Seleceted ERC-20 commitment
    */
-  selectedCoin: any;
+  selectedCommitment: any;
   /**
    * Seleceted list of ERC-20 commitment
    */
-  selectedCoinList: any = [];
-  /**
-   * If no coins are available, set this property as false;
-   */
-  nocoin = false;
+  selectedCommitmentList: any = [];
   /**
    * Flag for http request
    */
@@ -100,8 +96,6 @@ export default class FtCommitmentBurnComponent implements OnInit , AfterContentI
             tx.id = indx;
             return tx;
           });
-        } else {
-          this.nocoin = true;
         }
       }, error => {
         this.isRequesting = false;
@@ -112,9 +106,9 @@ export default class FtCommitmentBurnComponent implements OnInit , AfterContentI
    * Method to burn a private coin, this will revert back to public
    */
   initiateBurn () {
-    this.selectedCoin = this.selectedCoinList[0];
-    console.log(this.selectedCoin, 'selected coin');
-    const coin = this.selectedCoin;
+    this.selectedCommitment = this.selectedCommitmentList[0];
+    console.log(this.selectedCommitment, 'selected coin');
+    const coin = this.selectedCommitment;
     if (!coin) { return; }
     const {
       transactions,
@@ -132,7 +126,7 @@ export default class FtCommitmentBurnComponent implements OnInit , AfterContentI
         this.isRequesting = false;
         this.toastr.success('Burned Coin ' + coin['coin_commitment']);
         transactions.splice(Number(index), 1);
-        this.selectedCoin = undefined;
+        this.selectedCommitment = undefined;
         this.router.navigate(['/overview'], { queryParams: { selectedTab: 'ft-commitment' } });
       }, error => {
         this.isRequesting = false;
@@ -145,12 +139,12 @@ export default class FtCommitmentBurnComponent implements OnInit , AfterContentI
    * @param item {Object} Item to be removed.
    */
   onRemove(item) {
-    console.log('selected items', this.selectedCoinList, item);
-    const newList = this.selectedCoinList.filter((it) => {
+    console.log('selected items', this.selectedCommitmentList, item);
+    const newList = this.selectedCommitmentList.filter((it) => {
       return item._id !== it._id;
     });
-    this.selectedCoinList = newList;
-    console.log('selected new items', this.selectedCoinList);
+    this.selectedCommitmentList = newList;
+    console.log('selected new items', this.selectedCommitmentList);
   }
 
   /**

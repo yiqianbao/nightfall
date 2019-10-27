@@ -41,7 +41,7 @@
             </div>
           </div>
           <ngb-pagination
-            *ngIf="!noToken"
+            *ngIf="!noCommitment"
             class="d-flex justify-content-end zkp-pagination"
             (pageChange)="pageChanged($event)"
             [collectionSize]="totalCollection | async"
@@ -50,8 +50,8 @@
             aria-label="Default pagination"
           >
           </ngb-pagination>
-          <div class="text-center" *ngIf="noToken">
-            No Tokens Found
+          <div class="text-center" *ngIf="noCommitment">
+            No Commitments Found
           </div>
         </div>
       </div>

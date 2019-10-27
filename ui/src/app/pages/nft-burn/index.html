@@ -27,12 +27,12 @@
               <label for="publickey">Enter token Id</label>
               <ng-select
                 #select
-                [items]="tokenList"
+                [items]="nfTokens"
                 class="custom"
                 [virtualScroll]="true"
                 [loading]="loading"
                 [multiple]="true"
-                [(ngModel)]="selectedTokenList"
+                [(ngModel)]="selectedCommitmentList"
                 [maxSelectedItems]="1"
                 [searchFn]="customSearchFn"
                 placeholder="Select Token Id"
@@ -54,7 +54,7 @@
             <div class="row">
               <button
                 class="btn btn-md btn-primary"
-                [disabled]="!selectedTokenList.length"
+                [disabled]="!selectedCommitmentList.length"
                 type="button"
                 (click)="burnToken()"
               >

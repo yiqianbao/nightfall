@@ -48,8 +48,8 @@
             aria-label="Default pagination"
           >
           </ngb-pagination>
-          <div class="text-center" *ngIf="noToken">
-            No Tokens Found
+          <div class="text-center" *ngIf="!transactions">
+            No non-fungible token Found
           </div>
         </div>
       </div>

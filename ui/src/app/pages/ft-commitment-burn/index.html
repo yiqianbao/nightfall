@@ -35,7 +35,7 @@
                     [loading]="loading"
                     [maxSelectedItems]="1"
                     [searchFn]="customSearchFn"
-                    [(ngModel)]="selectedCoinList"
+                    [(ngModel)]="selectedCommitmentList"
                     placeholder="Select Private {{ ftName }}"
                     style="width:50%;"
                   >
@@ -77,7 +77,7 @@
                   <button
                     type="submit"
                     class="btn btn-md btn-primary"
-                    [disabled]="!selectedCoinList.length || !receiverName"
+                    [disabled]="!selectedCommitmentList.length || !receiverName"
                     (click)="initiateBurn()"
                   >
                     Burn {{ ftName }} Commitment

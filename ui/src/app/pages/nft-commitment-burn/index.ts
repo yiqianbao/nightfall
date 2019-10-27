@@ -22,11 +22,11 @@ export default class NftCommitmentBurnComponent implements OnInit, AfterContentI
   /**
    * Selected Token List
    */
-  selectedTokenList: any = [];
+  selectedCommitmentList: any = [];
   /**
    * Used to identify the selected ERC-721 token commitment.
    */
-  selectedToken: any;
+  selectedCommitment: any;
   /**
    * Flag for http request
    */
@@ -84,25 +84,25 @@ export default class NftCommitmentBurnComponent implements OnInit, AfterContentI
       index,
       transactions
     } = this;
-    const selectedToken = this.selectedTokenList[0];
-    if (!selectedToken) {
+    const selectedCommitment = this.selectedCommitmentList[0];
+    if (!selectedCommitment) {
       this.toastr.error('All fields are mandatory');
       return;
     }
     this.isRequesting = true;
     this.nftCommitmentService.burnNFTCommitment(
-      selectedToken.token_id,
-      selectedToken.token_uri,
-      selectedToken.shield_contract_address,
-      selectedToken.salt,
-      selectedToken.token_commitment,
-      selectedToken.token_commitment_index,
+      selectedCommitment.token_id,
+      selectedCommitment.token_uri,
+      selectedCommitment.shield_contract_address,
+      selectedCommitment.salt,
+      selectedCommitment.token_commitment,
+      selectedCommitment.token_commitment_index,
       this.receiverName
     ).subscribe( data => {
         this.isRequesting = false;
         this.toastr.success('Token burned successfully.');
         transactions.splice(Number(index), 1);
-        this.selectedToken = undefined;
+        this.selectedCommitment = undefined;
         this.router.navigate(['/overview'], { queryParams: { selectedTab: 'nft-commitment' } });
       }, error => {
         this.isRequesting = false;
@@ -135,12 +135,12 @@ export default class NftCommitmentBurnComponent implements OnInit, AfterContentI
    * @param item {Object} Item to be removed.
    */
   onRemove(item) {
-    console.log('selected items', this.selectedTokenList, item);
-    const newList = this.selectedTokenList.filter((it) => {
+    console.log('selected items', this.selectedCommitmentList, item);
+    const newList = this.selectedCommitmentList.filter((it) => {
       return item._id !== it._id;
     });
-    this.selectedTokenList = newList;
-    console.log('selected new items', this.selectedTokenList);
+    this.selectedCommitmentList = newList;
+    console.log('selected new items', this.selectedCommitmentList);
   }
 
   /**
