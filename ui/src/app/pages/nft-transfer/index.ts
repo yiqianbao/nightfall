@@ -65,7 +65,7 @@ export default class NftTransferComponent implements OnInit, AfterContentInit {
 
   ngOnInit() {
      this.getAllRegisteredNames();
-     this.getTokenList();
+     this.getNFTokens();
      this.nftName = localStorage.getItem('nftName');
   }
 
@@ -111,13 +111,13 @@ export default class NftTransferComponent implements OnInit, AfterContentInit {
   /**
    * Method list down all ERC-721 tokens.
    */
-  getTokenList() {
-    this.nftService.getNFTTokens().subscribe( (data: any) => {
+  getNFTokens() {
+    this.nftService.getNFTokens().subscribe( (data: any) => {
       this.isRequesting = false;
       this.tokenList = data['data'];
     }, error => {
       this.isRequesting = false;
-      console.log('getTokenList error', error);
+      console.log('getNFTokens error', error);
   });
   }
 
