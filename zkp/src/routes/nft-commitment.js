@@ -17,15 +17,21 @@ async function mint(req, res, next) {
   );
 
   try {
-    const [z_A, z_A_index] = await nfController.mint(tokenId, ownerPublicKey, salt, vkId, {
-      nfTokenShieldJson,
-      nfTokenShieldAddress: nfTokenShield.address,
-      account: address,
-    });
+    const { commitment, commitmentIndex } = await nfController.mint(
+      tokenId,
+      ownerPublicKey,
+      salt,
+      vkId,
+      {
+        nfTokenShieldJson,
+        nfTokenShieldAddress: nfTokenShield.address,
+        account: address,
+      },
+    );
 
     res.data = {
-      z_A,
-      z_A_index,
+      z_A: commitment,
+      z_A_index: commitmentIndex,
       S_A: salt,
     };
     next();
@@ -51,7 +57,7 @@ async function transfer(req, res, next) {
   );
 
   try {
-    const { z_B, z_B_index, txObj } = await nfController.transfer(
+    const { outputCommitment, outputCommitmentIndex, txObj } = await nfController.transfer(
       tokenId,
       receiverPublicKey,
       originalCommitmentSalt,
@@ -67,8 +73,8 @@ async function transfer(req, res, next) {
       },
     );
     res.data = {
-      z_B,
-      z_B_index,
+      z_B: outputCommitment,
+      z_B_index: outputCommitmentIndex,
       txObj,
       S_B: newCommitmentSalt,
     };

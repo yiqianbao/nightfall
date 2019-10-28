@@ -12,7 +12,7 @@ You will need key pairs to run the full application. And the `setupAll` script d
 
 ⚠️ This task will run approximately one to three hours depending on your machine.
 
-📖 ​This task has a recipe in [the Nightfall makefile](../Makefile), execute it using `make zkp-generate-keys` from the top-level folder. Or you can directly run:
+📖 You can also directly run:
 
 ```sh
 docker-compose run --rm zkp --env NODE_ENV=setup npx babel-node code/index.js

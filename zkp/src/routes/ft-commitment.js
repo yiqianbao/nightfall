@@ -17,14 +17,20 @@ async function mint(req, res, next) {
   );
 
   try {
-    const [coin, coin_index] = await fTokenController.mint(amount, ownerPublicKey, salt, vkId, {
-      fTokenShieldJson,
-      fTokenShieldAddress: fTokenShield.address,
-      account: address,
-    });
+    const { commitment, commitmentIndex } = await fTokenController.mint(
+      amount,
+      ownerPublicKey,
+      salt,
+      vkId,
+      {
+        fTokenShieldJson,
+        fTokenShieldAddress: fTokenShield.address,
+        account: address,
+      },
+    );
     res.data = {
-      coin,
-      coin_index,
+      coin: commitment,
+      coin_index: commitmentIndex,
       S_A: salt,
     };
     next();
@@ -81,7 +87,7 @@ async function transfer(req, res, next) {
   ];
 
   try {
-    const { z_E, z_E_index, z_F, z_F_index, txObj } = await fTokenController.transfer(
+    const { outputCommitments: returnedOutputCommitments, txObj } = await fTokenController.transfer(
       inputCommitments,
       outputCommitments,
       receiverPublicKey,
@@ -94,13 +100,13 @@ async function transfer(req, res, next) {
       },
     );
     res.data = {
-      z_E,
-      z_E_index,
-      z_F,
-      z_F_index,
+      z_E: returnedOutputCommitments[0].commitment,
+      z_E_index: returnedOutputCommitments[0].index,
+      z_F: returnedOutputCommitments[1].commitment,
+      z_F_index: returnedOutputCommitments[1].index,
+      S_E: returnedOutputCommitments[0].salt,
+      S_F: returnedOutputCommitments[1].salt,
       txObj,
-      S_E: outputCommitments[0].salt,
-      S_F: outputCommitments[1].salt,
     };
     next();
   } catch (err) {
