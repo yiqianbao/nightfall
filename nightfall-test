@@ -18,10 +18,10 @@ case "${systemInfo}" in
 esac
 
 printf "${GREEN}*** Cleaning up all test containers ***${NC}\n"
-docker-compose -f docker-compose.test.yml down -v || true
+docker-compose down -v || true
 
 printf "${GREEN}*** Build image for all Containers ***${NC}\n"
-docker-compose -f docker-compose.test.yml build
+docker-compose build
 
 printf "${GREEN}*** Pull zokrates docker image ***${NC}\n"
 docker pull zokrates/zokrates:0.4.11
@@ -34,14 +34,18 @@ pushd zkp-utils
 npm ci
 popd
 
-printf "${GREEN}*** Launching containerized ganache-test ***${NC}\n"
-docker-compose -f docker-compose.test.yml up -d ganache_test
+printf "${GREEN}*** Launching containerized ganache ***${NC}\n"
+docker-compose up -d ganache
 
 printf "${GREEN}*** Deploying all contracts ***${NC}\n"
-make offchain-test-migrate
+make truffle-migrate
 
 printf "${GREEN}*** Launching containerized microservices ***${NC}\n"
-docker-compose -f docker-compose.test.yml up -d
+docker-compose up -d mongo accounts offchain zkp database api-gateway
+
+# save all test logs to a file in background
+printf "${GREEN}*** Saving the test logs to nightfall_test.log file ***${NC}\n"
+docker-compose logs -f &> nightfall_test.log &disown
 
 # Create a child Terminal to see docker log, while running testcases.
 if [ "${machine}" == "Mac" ]; then
@@ -49,16 +53,12 @@ if [ "${machine}" == "Mac" ]; then
 	  tell application \"Terminal\"
 	    set currentTab to do script \"cd $dir\"
 	    delay 2
-	    do script \"docker-compose -f docker-compose.test.yml logs -f\" in currentTab
+	    do script \"docker-compose logs -f\" in currentTab
 	  end tell")
 fi
 
 # delay needed to ensure all container are in running state.
-sleep 10
-
-# save all test logs to a file in background
-printf "${GREEN}*** Saving the test logs to nightfall_test.log file ***${NC}\n"
-docker-compose -f docker-compose.test.yml logs -f &> nightfall_test.log &disown
+sleep 20
 
 # RUN test suits and remove test containers
 printf "${GREEN}*** Run Integration test ***${NC}\n"
@@ -67,21 +67,24 @@ npm run test || {
 	printf "${RED}*** Integration test failed ***${NC}\n"
 }
 
+printf "${GREEN}*** List all containers with their Ips ***${NC}\n"
+docker inspect -f '{{.Name}} {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker-compose ps -q)
 
-printf "${GREEN}*** Cleaning up all test containers ***${NC}\n"
-docker-compose -f docker-compose.test.yml down -v || {
+
+printf "${GREEN}*** Cleaning up all containers ***${NC}\n"
+docker-compose down -v || {
   # delay need as waiting time so all container are properly done
   # nightfall_test_net network have no dependency left.
   sleep 3
 
   printf "${GREEN}*** Remove network ***${NC}\n"
-  docker network rm nightfall_test_net
+  docker network rm nightfall_default
 
   printf "${GREEN}*** Remove mongo volume ***${NC}\n"
-  docker volume rm nightfall_mongo_volume_test
+  docker volume rm nightfall_mongo-volume
 
   printf "${GREEN}*** Remove zkp-code volume ***${NC}\n"
-  docker volume rm nightfall_zkp_code_test
+  docker volume rm nightfall_zkp-code
 }
 
 

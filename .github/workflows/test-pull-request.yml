@@ -49,3 +49,9 @@ jobs:
         docker rm $(docker ps -a -q)
     - name: Run integration test
       run:  ./nightfall-test
+    - name: If integration test failed, upload logs files as artifacts
+      if: failure()
+      uses: actions/upload-artifact@master
+      with:
+        name: integration-test-logs
+        path: nightfall_test.log
