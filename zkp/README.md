@@ -6,8 +6,7 @@
 
 ### Run zkp service unit tests
 
-Before running these tests, you will need to have completed the trusted setup. This is done simply
-by running (from the Nightfall root):
+You will need to have completed the trusted setup. This is done simply by running (from the Nightfall root):
 
 ```sh
 npm run setupAll
@@ -22,6 +21,12 @@ to do that:
 cd zkp
 npm run setup -- -i gm17/<dir containing your proof>
 cd ..
+```
+
+Also, before running these tests, don't forget to make sure you have a current version of the zkp container.  If in doubt, run:
+
+```sh
+docker-compose build zkp
 ```
 
 After your trusted setup is complete run:
