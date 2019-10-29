@@ -81,9 +81,9 @@ export async function getNFTCommitmentTransactions(req, res, next) {
 }
 
 // check correctness
-export async function checkCorrectnessToken(req, res, next) {
+export async function checkCorrectnessForNFTCommitment(req, res, next) {
   try {
-    res.data = await zkp.checkCorrectnessToken(req.headers, req.body);
+    res.data = await zkp.checkCorrectnessForNFTCommitment(req.headers, req.body);
     next();
   } catch (err) {
     next(err);

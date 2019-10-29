@@ -3,7 +3,7 @@ import {
   mintCoin,
   transferCoin,
   burnCoin,
-  checkCorrectnessCoin,
+  checkCorrectnessForFTCommitment,
   insertFTCommitmentToDb,
   getFTCommitments,
   getFTCommitmentTransactions,
@@ -11,7 +11,7 @@ import {
 
 const router = express.Router();
 
-router.route('/checkCorrectnessForFTCommitment').post(checkCorrectnessCoin);
+router.route('/checkCorrectnessForFTCommitment').post(checkCorrectnessForFTCommitment);
 
 /**
  * @api {post} /mintFTCommitment Mint a ERC-20 commitment

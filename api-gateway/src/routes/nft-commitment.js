@@ -1,6 +1,6 @@
 import express from 'express';
 import {
-  checkCorrectnessToken,
+  checkCorrectnessForNFTCommitment,
   mintToken,
   transferToken,
   burnToken,
@@ -11,7 +11,7 @@ import {
 
 const router = express.Router();
 
-router.route('/checkCorrectnessForNFTCommitment').post(checkCorrectnessToken);
+router.route('/checkCorrectnessForNFTCommitment').post(checkCorrectnessForNFTCommitment);
 
 /**
  * @api {post} /mintNFTCommitment Mint a ERC-721 commitment
