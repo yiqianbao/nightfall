@@ -8,8 +8,7 @@
     "setup": "NODE_ENV=setup npx babel-node code/index.js",
     "setup-all": "yes | NODE_ENV=setup npx babel-node code/index.js",
     "start": "nodemon --ignore src/vkIds.json --ignore stats-config/ --ignore code/ --exec babel-node ./src/index.js",
-    "test": "jest --runInBand --verbose --forceExit ./__tests__/*.test.js",
-    "generate-keys": "./install.sh"
+    "test": "NODE_ENV=default jest --runInBand --forceExit ./__tests__/*.test.js"
   },
   "contributors": [
     "Chaitanya Konda <CKonda@uk.ey.com>",
@@ -23,6 +22,7 @@
   ],
   "license": "CC0-1.0",
   "dependencies": {
+    "@eyblockchain/zokrates.js": "^1.1.5",
     "beepbeep": "1.2.2",
     "bignumber.js": "^8.0.2",
     "body-parser": "^1.19.0",
