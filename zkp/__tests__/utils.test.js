@@ -132,14 +132,9 @@ describe('utils.js tests', () => {
     });
 
     test('utils.hash should correctly create a truncated sha256 hash of a concatentation of numbers', () => {
-      const testInputHash = utils.hash(
-        '0x0000000000002710',
-        '0xa48eb90d402c7d1f',
-        '0xcd8d31e3cc9af568',
-      );
-      const truncated = '8141a91eb505996e5fc78a00d9af895b32cb6e667e1ec28dd35d3947648cc1b1';
-      const calculatedHash = `0x${truncated.slice(truncated.length - testInputHash.length + 2)}`;
-      expect(calculatedHash).toEqual(testInputHash);
+      const testInputHash = utils.hash('0x0000000000002710a48eb90d402c7d1fcd8d31e3cc9af568');
+      const truncated = '0xb5a95142b8fa2cd63d51e6e7f6584186ce955be1c6bebc20d03f9148b8886fea';
+      expect(testInputHash).toEqual(truncated);
     });
 
     test('utils.concatenateThenHash should correctly create a truncated sha256 hash of a binary concatentation of 3 numbers', () => {
