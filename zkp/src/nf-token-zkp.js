@@ -89,9 +89,9 @@ This function sets the vkId's within the Shield contract.
 async function setVkIds(vkIds, account, nfTokenShield) {
   console.log('Setting vkIds within NFTokenShield');
   await nfTokenShield.setVkIds(
-    vkIds.MintToken.vkId,
-    vkIds.TransferToken.vkId,
-    vkIds.BurnToken.vkId,
+    vkIds.MintNFToken.vkId,
+    vkIds.TransferNFToken.vkId,
+    vkIds.BurnNFToken.vkId,
     {
       from: account,
       gas: 6500000,

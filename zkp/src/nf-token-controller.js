@@ -218,7 +218,7 @@ async function computeProof(elements, hostDir) {
  * @param {string} tokenId - the asset token
  * @param {string} ownerPublicKey - Address of the token owner
  * @param {string} salt - Alice's token serial number as a hex string
- * @param {Object} vkId - vkId for NFT's MintToken
+ * @param {Object} vkId - vkId for NFT's MintNFToken
  * @param {Object} blockchainOptions
  * @param {String} blockchainOptions.nfTokenShieldJson - ABI of nfTokenShield
  * @param {String} blockchainOptions.nfTokenShieldAddress - Address of deployed nfTokenShieldContract
