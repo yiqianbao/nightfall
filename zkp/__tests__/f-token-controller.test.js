@@ -1,44 +1,73 @@
 /* eslint-disable import/no-unresolved */
 
 import utils from 'zkp-utils';
-import Web3 from '../src/web3';
+import bc from '../src/web3';
 
 import controller from '../src/f-token-controller';
+import vk from '../src/vk-controller';
+import { getVkId, getContract } from '../src/contractUtils';
 
 jest.setTimeout(7200000);
 
-Web3.connect();
-const web3 = Web3.connection();
+const C = '0x00000000000000000000000000000020'; // 128 bits = 16 bytes = 32 chars
+const D = '0x00000000000000000000000000000030';
+const E = '0x00000000000000000000000000000040';
+const F = '0x00000000000000000000000000000010'; // don't forget to make C+D=E+F
+const G = '0x00000000000000000000000000000030';
+const H = '0x00000000000000000000000000000020'; // these constants used to enable a second transfer
+const I = '0x00000000000000000000000000000050';
+const skA = '0x0000000000111111111111111111111111111111111111111111111111111111';
+const skB = '0x0000000000222222222222222222222222222222222222222222222222222222';
+let S_A_C;
+let S_A_D;
+let sAToBE;
+let sAToAF;
+let pkA;
+let pkB;
+const pkE = '0x0000000000111111111111111111111111111111111111111111111111111112';
+let Z_A_C;
+let Z_A_D;
+let S_B_G;
+let sBToEH;
+let sBToBI;
+let Z_B_G;
+let Z_B_E;
+let Z_A_F;
+// storage for z indexes
+let zInd1;
+let zInd2;
+let zInd3;
+
+let accounts;
+let fTokenShieldJson;
+let fTokenShieldAddress;
+
+beforeAll(async () => {
+  if (!(await bc.isConnected())) await bc.connect();
+  accounts = await (await bc.connection()).eth.getAccounts();
+  const { contractJson, contractInstance } = await getContract('FTokenShield');
+  fTokenShieldAddress = contractInstance.address;
+  fTokenShieldJson = contractJson;
+  // blockchainOptions = { account, fTokenShieldJson, fTokenShieldAddress };
+  await vk.runController;
+  S_A_C = await utils.rndHex(32);
+  S_A_D = await utils.rndHex(32);
+  sAToBE = await utils.rndHex(32);
+  sAToAF = await utils.rndHex(32);
+  pkA = utils.ensure0x(utils.strip0x(utils.hash(skA)).padStart(32, '0'));
+  pkB = utils.ensure0x(utils.strip0x(utils.hash(skB)).padStart(32, '0'));
+  Z_A_C = utils.concatenateThenHash(C, pkA, S_A_C);
+  Z_A_D = utils.concatenateThenHash(D, pkA, S_A_D);
+  S_B_G = await utils.rndHex(32);
+  sBToEH = await utils.rndHex(32);
+  sBToBI = await utils.rndHex(32);
+  Z_B_G = utils.concatenateThenHash(G, pkB, S_B_G);
+  Z_B_E = utils.concatenateThenHash(E, pkB, sAToBE);
+  Z_A_F = utils.concatenateThenHash(F, pkA, sAToAF);
+});
 
 // eslint-disable-next-line no-undef
 describe('f-token-controller.js tests', () => {
-  const C = '0x00000000000000000000000000000020'; // 128 bits = 16 bytes = 32 chars
-  const D = '0x00000000000000000000000000000030';
-  const E = '0x00000000000000000000000000000040';
-  const F = '0x00000000000000000000000000000010'; // don't forget to make C+D=E+F
-  const skA = '0x111111111111111111111111111111111111111111111111111111';
-  const skB = '0x222222222222222222222222222222222222222222222222222222';
-  const S_A_C = '0x666666666666666666666666666666666666666666666666666666';
-  const S_A_D = '0x333333333333333333333333333333333333333333333333333333';
-  const sAToBE = '0x444444444444444444444444444444444444444444444444444444';
-  const sAToAF = '0x555555555555555555555555555555555555555555555555555555';
-  const pkA = utils.hash(skA);
-  const pkB = utils.hash(skB);
-  const Z_A_C = utils.concatenateThenHash(C, pkA, S_A_C);
-  const Z_A_D = utils.concatenateThenHash(D, pkA, S_A_D);
-  // these constants used to enable a second transfer:
-  const G = '0x00000000000000000000000000000030';
-  const H = '0x00000000000000000000000000000020';
-  const I = '0x00000000000000000000000000000050';
-  const S_B_G = '0x777777777777777777777777777777777777777777777777777777';
-  const sBToEH = '0x888888888888888888888888888888888888888888888888888888';
-  const sBToBI = '0x999999999999999999999999999999999999999999999999999999';
-  const Z_B_G = utils.concatenateThenHash(G, pkB, S_B_G);
-  const Z_B_E = utils.concatenateThenHash(E, pkB, sAToBE);
-  const pkE = '0x111111111111111111111111111111111111111111111111111112';
-  // And a burn
-  const Z_A_F = utils.concatenateThenHash(F, pkA, sAToAF);
-
   // Alice has C + D to start total = 50 ETH
   // Alice sends Bob E and gets F back (Bob has 40 ETH, Alice has 10 ETH)
   // Bob then has E+G at total of 70 ETH
@@ -46,7 +75,6 @@ describe('f-token-controller.js tests', () => {
 
   test('Should create 10000 tokens in accounts[0] and accounts[1]', async () => {
     // fund some accounts with FToken
-    const accounts = await web3.eth.getAccounts();
     const AMOUNT = 10000;
     const bal1 = await controller.getBalance(accounts[0]);
     await controller.buyFToken(AMOUNT, accounts[0]);
@@ -57,7 +85,6 @@ describe('f-token-controller.js tests', () => {
 
   test('Should move 1 ERC-20 token from accounts[0] to accounts[1]', async () => {
     const AMOUNT = 1;
-    const accounts = await web3.eth.getAccounts();
     const bal1 = await controller.getBalance(accounts[0]);
     const bal3 = await controller.getBalance(accounts[1]);
     await controller.transferFToken(AMOUNT, accounts[0], accounts[1]);
@@ -69,7 +96,6 @@ describe('f-token-controller.js tests', () => {
 
   test('Should burn 1 ERC-20 from accounts[1]', async () => {
     const AMOUNT = 1;
-    const accounts = await web3.eth.getAccounts();
     const bal1 = await controller.getBalance(accounts[1]);
     await controller.burnFToken(AMOUNT, accounts[1]);
     const bal2 = await controller.getBalance(accounts[1]);
@@ -77,91 +103,117 @@ describe('f-token-controller.js tests', () => {
   });
 
   test('Should get the ERC-20 metadata', async () => {
-    const accounts = await web3.eth.getAccounts();
     const { symbol, name } = await controller.getTokenInfo(accounts[0]);
     expect('OPS').toEqual(symbol);
     expect('EY OpsCoin').toEqual(name);
   });
 
   test('Should mint an ERC-20 commitment Z_A_C for Alice for asset C', async () => {
-    const accounts = await web3.eth.getAccounts();
     console.log('Alices account ', (await controller.getBalance(accounts[0])).toNumber());
-    const [zTest, zIndex] = await controller.mint(C, pkA, S_A_C, accounts[0]);
-
+    const { commitment: zTest, commitmentIndex: zIndex } = await controller.mint(
+      C,
+      pkA,
+      S_A_C,
+      await getVkId('MintCoin'),
+      {
+        account: accounts[0],
+        fTokenShieldJson,
+        fTokenShieldAddress,
+      },
+    );
+    zInd1 = parseInt(zIndex, 10);
     expect(Z_A_C).toEqual(zTest);
-    expect(0).toEqual(parseInt(zIndex, 10));
     console.log(`Alice's account `, (await controller.getBalance(accounts[0])).toNumber());
   });
 
   test('Should mint another ERC-20 commitment Z_A_D for Alice for asset D', async () => {
-    const accounts = await web3.eth.getAccounts();
-    const [zTest, zIndex] = await controller.mint(D, pkA, S_A_D, accounts[0]);
-
+    const { commitment: zTest, commitmentIndex: zIndex } = await controller.mint(
+      D,
+      pkA,
+      S_A_D,
+      await getVkId('MintCoin'),
+      {
+        account: accounts[0],
+        fTokenShieldJson,
+        fTokenShieldAddress,
+      },
+    );
+    zInd2 = parseInt(zIndex, 10);
     expect(Z_A_D).toEqual(zTest);
-    expect(1).toEqual(parseInt(zIndex, 10));
     console.log(`Alice's account `, (await controller.getBalance(accounts[0])).toNumber());
   });
 
   test('Should transfer a ERC-20 commitment to Bob (two coins get nullified, two created; one coin goes to Bob, the other goes back to Alice as change)', async () => {
     // E becomes Bob's, F is change returned to Alice
-    const accounts = await web3.eth.getAccounts();
+    const inputCommitments = [
+      { value: C, salt: S_A_C, commitment: Z_A_C, index: zInd1 },
+      { value: D, salt: S_A_D, commitment: Z_A_D, index: zInd2 },
+    ];
+    const outputCommitments = [{ value: E, salt: sAToBE }, { value: F, salt: sAToAF }];
     await controller.transfer(
-      C,
-      D,
-      E,
-      F,
+      inputCommitments,
+      outputCommitments,
       pkB,
-      S_A_C,
-      S_A_D,
-      sAToBE,
-      sAToAF,
       skA,
-      Z_A_C,
-      0,
-      Z_A_D,
-      1,
-      accounts[0],
+      await getVkId('TransferCoin'),
+      {
+        account: accounts[0],
+        fTokenShieldJson,
+        fTokenShieldAddress,
+      },
     );
     // now Bob should have 40 (E) ETH
   });
 
   test('Should mint another ERC-20 commitment Z_B_G for Bob for asset G', async () => {
-    const accounts = await web3.eth.getAccounts();
-    const [zTest, zIndex] = await controller.mint(G, pkB, S_B_G, accounts[1]);
-
+    const { commitment: zTest, commitmentIndex: zIndex } = await controller.mint(
+      G,
+      pkB,
+      S_B_G,
+      await getVkId('MintCoin'),
+      {
+        account: accounts[1],
+        fTokenShieldJson,
+        fTokenShieldAddress,
+      },
+    );
+    zInd3 = parseInt(zIndex, 10);
     expect(Z_B_G).toEqual(zTest);
-    expect(4).toEqual(parseInt(zIndex, 10));
   });
 
   test('Should transfer an ERC-20 commitment to Eve', async () => {
     // H becomes Eve's, I is change returned to Bob
-    const accounts = await web3.eth.getAccounts();
+    const inputCommitments = [
+      { value: E, salt: sAToBE, commitment: Z_B_E, index: zInd1 + 2 },
+      { value: G, salt: S_B_G, commitment: Z_B_G, index: zInd3 },
+    ];
+    const outputCommitments = [{ value: H, salt: sBToEH }, { value: I, salt: sBToBI }];
+
     await controller.transfer(
-      E,
-      G,
-      H,
-      I,
+      inputCommitments,
+      outputCommitments,
       pkE,
-      sAToBE,
-      S_B_G,
-      sBToEH,
-      sBToBI,
       skB,
-      Z_B_E,
-      2,
-      Z_B_G,
-      4,
-      accounts[1],
+      await getVkId('TransferCoin'),
+      {
+        account: accounts[1],
+        fTokenShieldJson,
+        fTokenShieldAddress,
+      },
     );
   });
 
   test(`Should burn Alice's remaining ERC-20 commitment`, async () => {
-    const accounts = await web3.eth.getAccounts();
     const bal1 = await controller.getBalance(accounts[3]);
     const bal = await controller.getBalance(accounts[0]);
     console.log('accounts[3]', bal1.toNumber());
     console.log('accounts[0]', bal.toNumber());
-    await controller.burn(F, skA, sAToAF, Z_A_F, 3, accounts[0], accounts[3]);
+    await controller.burn(F, skA, sAToAF, Z_A_F, zInd2 + 2, await getVkId('BurnCoin'), {
+      account: accounts[0],
+      tokenReceiver: accounts[3],
+      fTokenShieldJson,
+      fTokenShieldAddress,
+    });
     const bal2 = await controller.getBalance(accounts[3]);
     console.log('accounts[3]', bal2.toNumber());
     expect(parseInt(F, 16)).toEqual(bal2 - bal1);
