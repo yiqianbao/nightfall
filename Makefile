@@ -10,4 +10,4 @@ zkp-start:
 	docker-compose run --rm zkp npm start
 
 zkp-test:
-	docker-compose run --rm zkp npm t
+	docker-compose run --rm zkp npm test
