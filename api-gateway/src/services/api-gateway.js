@@ -276,7 +276,7 @@ export async function getTokenCommitmentCounts(req, res, next) {
     let totalAmount = 0;
     if (ftCommitments.length) {
       ftCommitments.forEach(ftCommitment => {
-        totalAmount += Number(ftCommitment.coin_value);
+        totalAmount += Number(ftCommitment.ft_commitment_value);
       });
     }
 

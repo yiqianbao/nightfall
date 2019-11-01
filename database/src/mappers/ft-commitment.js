@@ -26,10 +26,10 @@ export default function({
   zOnchainCorrect,
 }) {
   return {
-    coin_value: amount,
+    ft_commitment_value: amount,
     salt,
-    coin_commitment: commitment,
-    coin_commitment_index: commitmentIndex,
+    ft_commitment: commitment,
+    ft_commitment_index: commitmentIndex,
 
     [transferredAmount ? 'transferred_coin_value' : undefined]: transferredAmount,
     [transferredSalt ? 'transferred_salt' : undefined]: transferredSalt,

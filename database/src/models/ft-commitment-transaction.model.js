@@ -7,7 +7,7 @@ export default new Schema(
       enum: ['minted', 'transferred', 'received', 'burned', 'change'],
       required: true,
     },
-    coin_value: {
+    ft_commitment_value: {
       type: String,
       required: true,
     },
@@ -15,12 +15,12 @@ export default new Schema(
       type: String,
       required: true,
     },
-    coin_commitment: {
+    ft_commitment: {
       type: String,
       index: true,
       required: true,
     },
-    coin_commitment_index: {
+    ft_commitment_index: {
       type: Number,
       required: true,
     },
@@ -28,8 +28,8 @@ export default new Schema(
     // incase transfer log only
     used_coin_commitments: [
       {
-        coin_value: String,
-        coin_commitment: String,
+        ft_commitment_value: String,
+        ft_commitment: String,
       },
     ],
 
