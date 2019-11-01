@@ -115,6 +115,8 @@ async function filingChecks(codeDirectory) {
 async function generateZokratesFiles(directoryPath) {
   const files = await readdirAsync(directoryPath);
 
+  console.group(`Setup for directory ${directoryPath}`);
+
   const directoryWithSlash = directoryPath.endsWith('/') ? directoryPath : `${directoryPath}/`;
 
   let codeFile;
@@ -129,29 +131,36 @@ async function generateZokratesFiles(directoryPath) {
   console.log('Compiling at', `${directoryWithSlash}${codeFile}`);
 
   // Generate out.code and out in the same directory.
-  await compile(`${directoryWithSlash}${codeFile}`, directoryWithSlash);
+  const compileOutput = await compile(`${directoryWithSlash}${codeFile}`, directoryWithSlash);
+  console.log('Compile output:', compileOutput);
   console.log('Finished compiling at', directoryPath);
 
+  console.log('Running setup on', directoryPath);
   // Generate verification.key and proving.key
-  await setup(
+  const setupOutput = await setup(
     `${directoryWithSlash}out`,
     directoryWithSlash,
     'gm17',
     'verification.key',
     'proving.key',
   );
+  console.log('Setup output:', setupOutput);
   console.log('Finished setup at', directoryPath);
 
-  await exportVerifier(
+  console.log('Running export-verifier at', directoryPath);
+  const exportVerifierOutput = await exportVerifier(
     `${directoryWithSlash}/verification.key`,
     directoryWithSlash,
     'verifier.sol',
     'gm17',
   );
+  console.log('Export-verifier output:', exportVerifierOutput);
   console.log('Finished export-verifier at', directoryPath);
 
+  console.log(`Extracting key from ${directoryWithSlash}verifier.sol`);
   const vkJson = await keyExtractor(`${directoryWithSlash}verifier.sol`, true);
 
+  console.log(`Writing ${directoryWithSlash}${codeFile.split('.')[0]}-vk.json`);
   // Create a JSON with the file name but without .code
   fs.writeFileSync(`${directoryWithSlash}${codeFile.split('.')[0]}-vk.json`, vkJson, err => {
     if (err) {
