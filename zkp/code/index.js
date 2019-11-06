@@ -131,7 +131,14 @@ async function generateZokratesFiles(directoryPath) {
   console.log('Compiling at', `${directoryWithSlash}${codeFile}`);
 
   // Generate out.code and out in the same directory.
-  const compileOutput = await compile(`${directoryWithSlash}${codeFile}`, directoryWithSlash);
+  const compileOutput = await compile(
+    `${directoryWithSlash}${codeFile}`,
+    directoryWithSlash,
+    'out',
+    {
+      verbose: true,
+    },
+  );
   console.log('Compile output:', compileOutput);
   console.log('Finished compiling at', directoryPath);
 
@@ -143,6 +150,7 @@ async function generateZokratesFiles(directoryPath) {
     'gm17',
     'verification.key',
     'proving.key',
+    { verbose: true },
   );
   console.log('Setup output:', setupOutput);
   console.log('Finished setup at', directoryPath);
@@ -153,6 +161,7 @@ async function generateZokratesFiles(directoryPath) {
     directoryWithSlash,
     'verifier.sol',
     'gm17',
+    { verbose: true },
   );
   console.log('Export-verifier output:', exportVerifierOutput);
   console.log('Finished export-verifier at', directoryPath);
@@ -168,6 +177,7 @@ async function generateZokratesFiles(directoryPath) {
     }
   });
   console.log(directoryPath, 'is done setting up.');
+  console.groupEnd();
 }
 
 /**
