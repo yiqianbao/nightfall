@@ -24,7 +24,6 @@
   },
   "homepage": "https://github.com/EYBlockchain/nightfall#readme",
   "dependencies": {
-    "@eyblockchain/zokrates.js": "^1.2.0",
     "lodash": "^4.17.15",
     "typescript": "^2.9.2"
   },
