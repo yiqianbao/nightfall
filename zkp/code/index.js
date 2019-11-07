@@ -111,8 +111,9 @@ async function filingChecks(codeDirectory) {
 /**
  * Given a directory that contains a .code file, calls Zokrates compile, setup and export verifier
  * @param {String} directoryPath
+ * @param {Boolean} suppress - Flag for logging out zokrates output or not.
  */
-async function generateZokratesFiles(directoryPath) {
+async function generateZokratesFiles(directoryPath, suppress) {
   const files = await readdirAsync(directoryPath);
 
   console.group(`Setup for directory ${directoryPath}`);
@@ -136,10 +137,10 @@ async function generateZokratesFiles(directoryPath) {
     directoryWithSlash,
     'out',
     {
-      verbose: true,
+      verbose: !suppress,
     },
   );
-  console.log('Compile output:', compileOutput);
+  if (!suppress) console.log('Compile output:', compileOutput);
   console.log('Finished compiling at', directoryPath);
 
   console.log('Running setup on', directoryPath);
@@ -150,9 +151,9 @@ async function generateZokratesFiles(directoryPath) {
     'gm17',
     'verification.key',
     'proving.key',
-    { verbose: true },
+    { verbose: !suppress },
   );
-  console.log('Setup output:', setupOutput);
+  if (!suppress) console.log('Setup output:', setupOutput);
   console.log('Finished setup at', directoryPath);
 
   console.log('Running export-verifier at', directoryPath);
@@ -161,9 +162,9 @@ async function generateZokratesFiles(directoryPath) {
     directoryWithSlash,
     'verifier.sol',
     'gm17',
-    { verbose: true },
+    { verbose: !suppress },
   );
-  console.log('Export-verifier output:', exportVerifierOutput);
+  if (!suppress) console.log('Export-verifier output:', exportVerifierOutput);
   console.log('Finished export-verifier at', directoryPath);
 
   console.log(`Extracting key from ${directoryWithSlash}verifier.sol`);
@@ -183,18 +184,20 @@ async function generateZokratesFiles(directoryPath) {
 /**
  * Calls Zokrates' compile, setup, and export-verifier on a single directory that contains a .code file.
  * @param {String} codeDirectory - A specific directory that contains a .code file (e.g., /code/gm17/ft-burn)
+ * @param {Boolean} suppress - Flag to suppress console logs.
  */
-async function runSetup(codeDirectory) {
+async function runSetup(codeDirectory, suppress) {
   await filingChecks(codeDirectory);
 
-  await generateZokratesFiles(codeDirectory);
+  await generateZokratesFiles(codeDirectory, suppress);
 }
 
 /**
  * Calls zokrates' compile, setup, and export-verifier on all directories in `/zkp/code/gm17`.
  * @param {String} codeDirectory - Directory in which all the .code subfolders live.
+ * @param {Boolean} suppress - Flag to suppress console logs.
  */
-async function runSetupAll(codeDirectory) {
+async function runSetupAll(codeDirectory, suppress) {
   // Array of all directories in the above directory.
   const codeDirectories = getDirectories(codeDirectory);
 
@@ -208,7 +211,7 @@ async function runSetupAll(codeDirectory) {
   // Maybe too much processing.
   for (let j = 0; j < codeDirectories.length; j += 1) {
     // eslint-disable-next-line no-await-in-loop
-    await generateZokratesFiles(codeDirectories[j]);
+    await generateZokratesFiles(codeDirectories[j], suppress);
   }
 }
 
@@ -216,18 +219,10 @@ async function runSetupAll(codeDirectory) {
  * Trusted setup for Nightfall. Either compiles all directories in /code/gm17, or a single directory using the -i flag.
  */
 async function main() {
-  // arguments to the command line:
-  // i - filename
-  const { i } = argv; // file name - pass the directory of the .code file as the '-i' parameter
-
-  // a - arguments for compute-witness
-  const a0 = argv.a; // arguments for compute-witness (within quotes "")
-  let a1 = [];
-  if (!(a0 === undefined || a0 === '')) {
-    a1 = a0.split(' ');
-  } else {
-    a1 = null;
-  }
+  // -i being the name of the .code file (i.e., 'ft-mint')
+  const { i } = argv;
+  // eslint-disable-next-line no-unneeded-ternary
+  const suppress = argv.s ? true : false;
 
   if (!i) {
     console.log(
@@ -246,12 +241,12 @@ async function main() {
     if (carryOn.continue !== 'y') return;
 
     try {
-      await runSetupAll(`${process.cwd()}/code/gm17`); // we'll do all .code files if no option is specified
+      await runSetupAll(`${process.cwd()}/code/gm17`, suppress); // we'll do all .code files if no option is specified
     } catch (err) {
       throw new Error(`Trusted setup failed: ${err}`);
     }
   } else {
-    await runSetup(a1);
+    await runSetup(`${process.cwd()}/code/${i}`, suppress);
   }
 }
 
