@@ -54,7 +54,7 @@ async function insertNFTCommitmentToDb(data, userData) {
       userData,
     );
 
-    const correctnessChecks = await apiGateway.checkCorrectnessToken(
+    const correctnessChecks = await apiGateway.checkCorrectnessForNFTCommitment(
       {
         authorization: userData.jwtToken,
       },
@@ -105,7 +105,7 @@ async function insertFTCommitmentToDb(data, userData) {
       userData,
     );
 
-    const correctnessChecks = await apiGateway.checkCorrectnessCoin(
+    const correctnessChecks = await apiGateway.checkCorrectnessForFTCommitment(
       {
         authorization: userData.jwtToken,
       },

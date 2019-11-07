@@ -221,7 +221,7 @@ export default {
   },
 
   // check correctness for non-fungible token commitment once received by whisper listener of bob.
-  checkCorrectnessToken(headers, body) {
+  checkCorrectnessForNFTCommitment(headers, body) {
     const options = {
       url: `${url}/checkCorrectnessForNFTCommitment`,
       method: 'POST',
@@ -233,7 +233,7 @@ export default {
   },
 
   // check correctness for fungible token commitment once received by whisper listener of bob.
-  checkCorrectnessCoin(headers, body) {
+  checkCorrectnessForFTCommitment(headers, body) {
     const options = {
       url: `${url}/checkCorrectnessForFTCommitment`,
       method: 'POST',

@@ -78,9 +78,9 @@ export async function getFTCommitmentTransactions(req, res, next) {
   }
 }
 
-export async function checkCorrectnessCoin(req, res, next) {
+export async function checkCorrectnessForFTCommitment(req, res, next) {
   try {
-    res.data = await zkp.checkCorrectnessCoin(req.headers, req.body);
+    res.data = await zkp.checkCorrectnessForFTCommitment(req.headers, req.body);
     next();
   } catch (err) {
     next(err);

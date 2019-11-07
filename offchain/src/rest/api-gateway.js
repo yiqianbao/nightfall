@@ -14,7 +14,7 @@ const requestWrapper = options =>
   });
 
 export default {
-  checkCorrectnessCoin(headers, body) {
+  checkCorrectnessForFTCommitment(headers, body) {
     const options = {
       url: `${url}/checkCorrectnessForFTCommitment`,
       method: 'POST',
@@ -24,7 +24,7 @@ export default {
     };
     return requestWrapper(options);
   },
-  checkCorrectnessToken(headers, body) {
+  checkCorrectnessForNFTCommitment(headers, body) {
     const options = {
       url: `${url}/checkCorrectnessForNFTCommitment`,
       method: 'POST',
