@@ -22,9 +22,7 @@ _Alternatively_, if you change one of the proofs in the Nightfall suite, then yo
 trusted setup for just that proof, which is a lot faster by running
 
 ```sh
-cd zkp
 npm run setup -- -i gm17/<dir containing your proof>
-cd ..
 ```
 
 Also, before running these tests, don't forget to make sure you have a current version of the zkp
