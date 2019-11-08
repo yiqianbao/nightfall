@@ -1,6 +1,7 @@
 const NodeEnvironment = require('jest-environment-node');
 
 module.exports = class CustomEnvironment extends NodeEnvironment {
+  /* eslint-disable no-useless-constructor */
   constructor(config) {
     super(config);
   }
@@ -17,4 +18,4 @@ module.exports = class CustomEnvironment extends NodeEnvironment {
   runScript(script) {
     return super.runScript(script);
   }
-}
+};
