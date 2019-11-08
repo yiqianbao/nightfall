@@ -48,6 +48,7 @@
     "nodemon": "^1.19.0"
   },
   "jest": {
+    "testEnvironment": "/app/__tests__/test-environment.js",
     "setupFilesAfterEnv": [
       "jest-expect-message"
     ],
