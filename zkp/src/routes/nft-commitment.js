@@ -11,7 +11,7 @@ async function mint(req, res, next) {
   const { address } = req.headers;
   const { tokenId, ownerPublicKey } = req.body;
   const salt = await utils.rndHex(32);
-  const vkId = await getVkId('MintToken');
+  const vkId = await getVkId('MintNFToken');
   const { contractJson: nfTokenShieldJson, contractInstance: nfTokenShield } = await getContract(
     'NFTokenShield',
   );
@@ -51,7 +51,7 @@ async function transfer(req, res, next) {
   } = req.body;
   const newCommitmentSalt = await utils.rndHex(32);
   const { address } = req.headers;
-  const vkId = await getVkId('TransferToken');
+  const vkId = await getVkId('TransferNFToken');
   const { contractJson: nfTokenShieldJson, contractInstance: nfTokenShield } = await getContract(
     'NFTokenShield',
   );
@@ -91,7 +91,7 @@ async function transfer(req, res, next) {
 async function burn(req, res, next) {
   const { tokenId, salt, secretKey, commitment, commitmentIndex, tokenReceiver } = req.body;
   const { address } = req.headers;
-  const vkId = await getVkId('BurnToken');
+  const vkId = await getVkId('BurnNFToken');
   const { contractJson: nfTokenShieldJson, contractInstance: nfTokenShield } = await getContract(
     'NFTokenShield',
   );
@@ -140,7 +140,7 @@ async function checkCorrectness(req, res, next) {
   }
 }
 
-async function setTokenShieldAddress(req, res, next) {
+async function setNFTCommitmentShieldAddress(req, res, next) {
   const { address } = req.headers;
   const { tokenShield } = req.body;
 
@@ -156,7 +156,7 @@ async function setTokenShieldAddress(req, res, next) {
   }
 }
 
-async function getTokenShieldAddress(req, res, next) {
+async function getNFTCommitmentShieldAddress(req, res, next) {
   const { address } = req.headers;
 
   try {
@@ -172,7 +172,7 @@ async function getTokenShieldAddress(req, res, next) {
   }
 }
 
-async function unsetTokenShieldAddress(req, res, next) {
+async function unsetNFTCommitmentShieldAddress(req, res, next) {
   const { address } = req.headers;
 
   try {
@@ -190,8 +190,8 @@ router.post('/mintNFTCommitment', mint);
 router.post('/transferNFTCommitment', transfer);
 router.post('/burnNFTCommitment', burn);
 router.post('/checkCorrectnessForNFTCommitment', checkCorrectness);
-router.post('/setNFTCommitmentShieldContractAddress', setTokenShieldAddress);
-router.get('/getNFTCommitmentShieldContractAddress', getTokenShieldAddress);
-router.delete('/removeNFTCommitmentshield', unsetTokenShieldAddress);
+router.post('/setNFTCommitmentShieldContractAddress', setNFTCommitmentShieldAddress);
+router.get('/getNFTCommitmentShieldContractAddress', getNFTCommitmentShieldAddress);
+router.delete('/removeNFTCommitmentshield', unsetNFTCommitmentShieldAddress);
 
 export default router;

@@ -89,7 +89,7 @@ describe('nf-token-controller.js tests', () => {
       A,
       pkA,
       S_A_A,
-      await getVkId('MintToken'),
+      await getVkId('MintNFToken'),
       {
         account: accounts[0],
         nfTokenShieldJson,
@@ -105,7 +105,7 @@ describe('nf-token-controller.js tests', () => {
       G,
       pkA,
       S_A_G,
-      await getVkId('MintToken'),
+      await getVkId('MintNFToken'),
       {
         account: accounts[0],
         nfTokenShieldJson,
@@ -125,7 +125,7 @@ describe('nf-token-controller.js tests', () => {
       skA,
       Z_A_A,
       zIndA,
-      await getVkId('TransferToken'),
+      await getVkId('TransferNFToken'),
       {
         account: accounts[0],
         nfTokenShieldJson,
@@ -144,7 +144,7 @@ describe('nf-token-controller.js tests', () => {
       skA,
       Z_A_G,
       zIndG,
-      await getVkId('TransferToken'),
+      await getVkId('TransferNFToken'),
       {
         account: accounts[0],
         nfTokenShieldJson,
@@ -161,7 +161,7 @@ describe('nf-token-controller.js tests', () => {
       sAToBA,
       Z_B_A,
       zIndA + 2,
-      await getVkId('BurnToken'),
+      await getVkId('BurnNFToken'),
       {
         account: accounts[0],
         tokenReceiver: accounts[2],

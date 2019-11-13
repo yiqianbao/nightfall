@@ -11,7 +11,7 @@ async function mint(req, res, next) {
   const { address } = req.headers;
   const { amount, ownerPublicKey } = req.body;
   const salt = await utils.rndHex(32);
-  const vkId = await getVkId('MintCoin');
+  const vkId = await getVkId('MintFToken');
   const { contractJson: fTokenShieldJson, contractInstance: fTokenShield } = await getContract(
     'FTokenShield',
   );
@@ -29,8 +29,8 @@ async function mint(req, res, next) {
       },
     );
     res.data = {
-      coin: commitment,
-      coin_index: commitmentIndex,
+      ft_commitment: commitment,
+      ft_commitment_index: commitmentIndex,
       S_A: salt,
     };
     next();
@@ -55,7 +55,7 @@ async function transfer(req, res, next) {
     z_D,
     z_D_index,
   } = req.body;
-  const vkId = await getVkId('TransferCoin');
+  const vkId = await getVkId('TransferFToken');
   const { contractJson: fTokenShieldJson, contractInstance: fTokenShield } = await getContract(
     'FTokenShield',
   );
@@ -120,7 +120,7 @@ async function transfer(req, res, next) {
 async function burn(req, res, next) {
   const { amount, receiverSecretKey, salt, commitment, commitmentIndex, tokenReceiver } = req.body;
   const { address } = req.headers;
-  const vkId = await getVkId('BurnCoin');
+  const vkId = await getVkId('BurnFToken');
   const { contractJson: fTokenShieldJson, contractInstance: fTokenShield } = await getContract(
     'FTokenShield',
   );
@@ -180,7 +180,7 @@ async function checkCorrectness(req, res, next) {
   }
 }
 
-async function setCoinShieldAddress(req, res, next) {
+async function setFTCommitmentShieldAddress(req, res, next) {
   const { address } = req.headers;
   const { coinShield } = req.body;
 
@@ -196,7 +196,7 @@ async function setCoinShieldAddress(req, res, next) {
   }
 }
 
-async function getCoinShieldAddress(req, res, next) {
+async function getFTCommitmentShieldAddress(req, res, next) {
   const { address } = req.headers;
 
   try {
@@ -212,7 +212,7 @@ async function getCoinShieldAddress(req, res, next) {
   }
 }
 
-async function unsetCoinShieldAddress(req, res, next) {
+async function unsetFTCommitmentShieldAddress(req, res, next) {
   const { address } = req.headers;
 
   try {
@@ -230,8 +230,8 @@ router.post('/mintFTCommitment', mint);
 router.post('/transferFTCommitment', transfer);
 router.post('/burnFTCommitment', burn);
 router.post('/checkCorrectnessForFTCommitment', checkCorrectness);
-router.post('/setFTokenShieldContractAddress', setCoinShieldAddress);
-router.get('/getFTokenShieldContractAddress', getCoinShieldAddress);
-router.delete('/removeFTCommitmentshield', unsetCoinShieldAddress);
+router.post('/setFTokenShieldContractAddress', setFTCommitmentShieldAddress);
+router.get('/getFTokenShieldContractAddress', getFTCommitmentShieldAddress);
+router.delete('/removeFTCommitmentshield', unsetFTCommitmentShieldAddress);
 
 export default router;
