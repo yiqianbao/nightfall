@@ -2,7 +2,7 @@ import { Schema } from 'mongoose';
 
 export default new Schema(
   {
-    coin_value: {
+    ft_commitment_value: {
       type: String,
       required: true,
     },
@@ -10,12 +10,12 @@ export default new Schema(
       type: String,
       required: true,
     },
-    coin_commitment: {
+    ft_commitment: {
       type: String,
       unique: true,
       required: true,
     },
-    coin_commitment_index: {
+    ft_commitment_index: {
       type: Number,
       required: true,
     },

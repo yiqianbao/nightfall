@@ -22,15 +22,15 @@ export default function({
 
   if (Array.isArray(usedCoins))
     parsedUsedCoin = usedCoins.map(coin => ({
-      coin_value: coin.amount,
-      coin_commitment: coin.commitment,
+      ft_commitment_value: coin.amount,
+      ft_commitment: coin.commitment,
     }));
 
   return {
-    coin_value: amount,
+    ft_commitment_value: amount,
     salt,
-    coin_commitment: commitment,
-    coin_commitment_index: commitmentIndex,
+    ft_commitment: commitment,
+    ft_commitment_index: commitmentIndex,
 
     [changeAmount ? 'change_coin_value' : undefined]: changeAmount,
     [changeSalt ? 'change_salt' : undefined]: changeSalt,
