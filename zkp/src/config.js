@@ -29,6 +29,7 @@ ABS - absolute path
 export default {
   INPUTS_HASHLENGTH: 32, // expected length of an input to a hash in bytes
   MERKLE_HASHLENGTH: 27, // expected length of inputs to hashes up the merkle tree, in bytes
+  BATCH_PROOF_SIZE: 20, // the number of proofs in a batch (you will need to redo the proofs if oyu change this)
   //* ****
   ZOKRATES_PRIME: '21888242871839275222246405745257275088548364400416034343698204186575808495617', // decimal representation of the prime p of GaloisField(p)
   // NOTE: 2^253 < ZOKRATES_PRIME < 2^254 - so we must use 253bit numbers to be safe (and lazy) - let's use 248bit numbers (because hex numbers ought to be an even length, and 8 divides 248 (248 is 31 bytes is 62 hex numbers))
@@ -43,6 +44,7 @@ export default {
   FT_MINT_VK: './code/gm17/ft-mint/ft-mint-vk.json',
   FT_TRANSFER_VK: './code/gm17/ft-transfer/ft-transfer-vk.json',
   FT_BURN_VK: './code/gm17/ft-burn/ft-burn-vk.json',
+  FT_SIMPLE_BATCH_TRANSFER_VK: './code/gm17/ft-batch-transfer/ft-batch-transfer-vk.json',
 
   AGREE_CONTRACT_VK: './code/gm17/agree-contract/agree-contract-vk.json',
 

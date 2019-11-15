@@ -4,4 +4,5 @@ import vk from '../src/vk-controller';
 module.exports = async function loadVkIds() {
   if (!(await bc.isConnected())) return;
   await vk.runController();
+  console.log('All keys are registered');
 };

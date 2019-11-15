@@ -44,13 +44,9 @@ async function loadVk(vkJsonFile, vkDescription, account) {
   // check relevant contracts are deployed:
   const verifier = await Verifier.deployed();
   const verifierRegistry = await VerifierRegistry.deployed();
+  // TODO we seem to somewhat unnecessarily read this file n time where n is the number of verifier keys
+  let vk = jsonfile.readFileSync(vkJsonFile);
 
-  let vk = await new Promise((resolve, reject) => {
-    jsonfile.readFile(vkJsonFile, (err, data) => {
-      if (err) reject(err);
-      else resolve(data);
-    });
-  });
   vk = Object.values(vk);
   // convert to flattened array:
   vk = utils.flattenDeep(vk);
@@ -131,6 +127,7 @@ async function setVkIds(account) {
   await fTokenShield.setVkIds(
     vkIds.MintFToken.vkId,
     vkIds.TransferFToken.vkId,
+    vkIds.SimpleBatchTransferFToken.vkId,
     vkIds.BurnFToken.vkId,
     {
       from: account,
@@ -159,6 +156,7 @@ async function vkController() {
 
   await loadVk(config.FT_MINT_VK, 'MintFToken', account);
   await loadVk(config.FT_TRANSFER_VK, 'TransferFToken', account);
+  await loadVk(config.FT_SIMPLE_BATCH_TRANSFER_VK, 'SimpleBatchTransferFToken', account);
   await loadVk(config.FT_BURN_VK, 'BurnFToken', account);
 
   await setVkIds(account);

@@ -281,10 +281,11 @@ function binToDec(binStr) {
 
 /** Preserves the magnitude of a hex number in a finite field, even if the order of the field is smaller than hexStr. hexStr is converted to decimal (as fields work in decimal integer representation) and then split into chunks of size packingSize. Relies on a sensible packing size being provided (ZoKrates uses packingSize = 128).
  *if the result has fewer elements than it would need for compatibiity with the dsl, it's padded to the left with zero elements
+ * You can now send in a bigint rather than a hex string as we're moving to prefer BigInts
  */
 function hexToFieldPreserve(hexStr, packingSize, packets, silenceWarnings) {
   let bitsArr = [];
-  bitsArr = splitHexToBitsN(strip0x(hexStr).toString(), packingSize.toString());
+  bitsArr = splitHexToBitsN(strip0x(hexStr.toString(16)), packingSize.toString());
 
   let decArr = []; // decimal array
   decArr = bitsArr.map(item => binToDec(item.toString()));
@@ -408,11 +409,8 @@ function concatenate(a, b) {
 
 /**
 Utility function:
-hashes a concatenation of items but it does it by
-breaking the items up into 432 bit chunks, hashing those, plus any remainder
-and then repeating the process until you end up with a single hash.  That way
-we can generate a hash without needing to use more than a single sha round.  It's
-not the same value as we'd get using rounds but it's at least doable.
+hashes an item. It can cope with hex strings or bigints, returning the same type
+as it gets
 */
 function hash(item) {
   const preimage = strip0x(item);
@@ -520,7 +518,19 @@ function padHex(A, l) {
   return ensure0x(strip0x(A).padStart(l / 4, '0'));
 }
 
+/**
+This function expects a hex string and will set bits longer than 'bits'
+to zero returning a hex string the same length as the original str
+(note: this is different from truncation, although the actual numerical value is the same)
+*/
+function zeroMSBs(_b, bits = 27 * 8) {
+  if (!isHex(_b)) throw new Error('zeroMSBs function requires hex strings');
+  const b = strip0x(_b);
+  return ensure0x(b.slice(-bits / 4).padStart(b.length, '0'));
+}
+
 module.exports = {
+  zeroMSBs,
   isHex,
   utf8StringToHex,
   hexToUtf8String,

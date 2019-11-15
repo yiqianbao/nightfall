@@ -46,6 +46,14 @@ def unpackPath(field p)->(field[216]):
 	field[256] sister = unpack256(p)
 	return sister[40..256]
 
+//'truncate' a 256 bit hash down to 216 bits, returning as 256 bits padded with zeros
+//obviously this is easy to adjust to accommodate other bit lengths than 216.
+//This approach lets us use a 256 padding scheme for the sha hashing, rather than a 216 bit
+//scheme, which is more flexible should we wish to change the 216 bits to something else -
+// we won't need to recalculate all the padding values!
+def zeroMSBs(field[256] sha)->(field[256]):
+	return [...[0;40], ...sha[40..256]]
+
 // Inputs for main are:
 
 // payTo, the public Ethereum address to which the burned tokens get paid
@@ -107,7 +115,7 @@ def main(field publicInputHash, private field payToHigh, private field payToLow,
 
 	field[512] preimage512 = concatenate256x256(saltBits, secretKeyBits)
 
-	field[256] nullifierBitsCheck = sha256of1024(preimage512[0..256], preimage512[256..512], padding512To1024[0..256], padding512To1024[256..512])
+	field[256] nullifierBitsCheck = zeroMSBs(sha256of1024(preimage512[0..256], preimage512[256..512], padding512To1024[0..256], padding512To1024[256..512]))
 
 
 
@@ -115,7 +123,7 @@ def main(field publicInputHash, private field payToHigh, private field payToLow,
 
 	// First, calculate Alice's public key from her private key: publicKey = H(secretKey).
 
- 	field[256] publicKeyBits = sha256of512(secretKeyBits, padding256To512)
+ 	field[256] publicKeyBits = zeroMSBs(sha256of512(secretKeyBits, padding256To512))
 
 
  	// Next calculate the commitment = H(value|publicKey|salt)
@@ -149,9 +157,9 @@ def main(field publicInputHash, private field payToHigh, private field payToLow,
 
 	preimage1024 = [...preimage896, ...padding896To1024]
 
-	field[256] publicInputHashBitsCheck = sha256of1024(preimage1024[0..256], preimage1024[256..512], preimage1024[512..768], preimage1024[768..1024])
+	field[256] publicInputHashBitsCheck = zeroMSBs(sha256of1024(preimage1024[0..256], preimage1024[256..512], preimage1024[512..768], preimage1024[768..1024]))
 
-	publicInputHashBits[8..256] == publicInputHashBitsCheck[8..256]
+	publicInputHashBits == publicInputHashBitsCheck
 
 
  	return

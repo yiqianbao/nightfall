@@ -48,20 +48,21 @@ beforeAll(async () => {
   fTokenShieldAddress = contractInstance.address;
   fTokenShieldJson = contractJson;
   // blockchainOptions = { account, fTokenShieldJson, fTokenShieldAddress };
-  S_A_C = await utils.rndHex(32);
-  S_A_D = await utils.rndHex(32);
-  sAToBE = await utils.rndHex(32);
-  sAToAF = await utils.rndHex(32);
-  pkA = utils.ensure0x(utils.strip0x(utils.hash(skA)).padStart(32, '0'));
-  pkB = utils.ensure0x(utils.strip0x(utils.hash(skB)).padStart(32, '0'));
-  Z_A_C = utils.concatenateThenHash(C, pkA, S_A_C);
-  Z_A_D = utils.concatenateThenHash(D, pkA, S_A_D);
-  S_B_G = await utils.rndHex(32);
-  sBToEH = await utils.rndHex(32);
-  sBToBI = await utils.rndHex(32);
-  Z_B_G = utils.concatenateThenHash(G, pkB, S_B_G);
-  Z_B_E = utils.concatenateThenHash(E, pkB, sAToBE);
-  Z_A_F = utils.concatenateThenHash(F, pkA, sAToAF);
+  S_A_C = utils.zeroMSBs(await utils.rndHex(32));
+  S_A_D = utils.zeroMSBs(await utils.rndHex(32));
+  sAToBE = utils.zeroMSBs(await utils.rndHex(32));
+  sAToAF = utils.zeroMSBs(await utils.rndHex(32));
+  // pkA = utils.ensure0x(utils.zeroMSBs(utils.strip0x(utils.hash(skA)).padStart(32, '0')));
+  pkA = utils.zeroMSBs(utils.hash(skA));
+  pkB = utils.zeroMSBs(utils.hash(skB));
+  Z_A_C = utils.zeroMSBs(utils.concatenateThenHash(C, pkA, S_A_C));
+  Z_A_D = utils.zeroMSBs(utils.concatenateThenHash(D, pkA, S_A_D));
+  S_B_G = utils.zeroMSBs(await utils.rndHex(32));
+  sBToEH = utils.zeroMSBs(await utils.rndHex(32));
+  sBToBI = utils.zeroMSBs(await utils.rndHex(32));
+  Z_B_G = utils.zeroMSBs(utils.concatenateThenHash(G, pkB, S_B_G));
+  Z_B_E = utils.zeroMSBs(utils.concatenateThenHash(E, pkB, sAToBE));
+  Z_A_F = utils.zeroMSBs(utils.concatenateThenHash(F, pkA, sAToAF));
 });
 
 // eslint-disable-next-line no-undef

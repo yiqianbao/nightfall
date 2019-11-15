@@ -6,8 +6,10 @@ module.exports = {
   },
   rules: {
     'no-console': 'off',
+    'no-restricted-syntax': 'off',
+    'no-plusplus': 'off',
     'import/no-extraneous-dependencies': [
-      'error', 
+      'error',
       {
         'devDependencies': ['integration-test/test.js', 'integration-test/testData.js'],
       },
@@ -15,5 +17,8 @@ module.exports = {
   },
   env: {
     mocha: true,
+  },
+  globals: {
+    'BigInt':true
   },
 };

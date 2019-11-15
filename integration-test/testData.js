@@ -13,7 +13,7 @@ export default {
     email: 'alice@ey.com',
     password: 'pass',
     get pk() {
-      return utils.hash(this.sk); // sk - set at login test suit (step 2)
+      return this.sk === undefined ? undefined : utils.hash(this.sk); // sk - set at login test suit (step 2)
     },
   },
   bob: {
@@ -21,7 +21,7 @@ export default {
     email: 'bob@ey.com',
     password: 'pass',
     get pk() {
-      return utils.hash(this.sk); // sk - set at login test suit (step 2)
+      return this.sk === undefined ? undefined : utils.hash(this.sk); // sk - set at login test suit (step 2)
     },
   },
   erc721: {
@@ -79,10 +79,12 @@ export default {
           A: leftPadHex(erc20.toBeMintedAsCommitment[0], 32),
           commitmentIndex: 0,
           get commitment() {
-            return utils.concatenateThenHash(
-              this.A,
-              alice.pk,
-              this.S_A, // S_A - set at erc-20 commitment mint (step 10)
+            return utils.zeroMSBs(
+              utils.concatenateThenHash(
+                this.A,
+                utils.zeroMSBs(alice.pk),
+                utils.zeroMSBs(this.S_A === undefined ? '0x0' : this.S_A), // S_A - set at erc-20 commitment mint (step 10)
+              ),
             );
           },
         },
@@ -90,10 +92,12 @@ export default {
           A: leftPadHex(erc20.toBeMintedAsCommitment[1], 32),
           commitmentIndex: 1,
           get commitment() {
-            return utils.concatenateThenHash(
-              this.A,
-              alice.pk,
-              this.S_A, // S_A - set at erc-20 commitment mint (step 11)
+            return utils.zeroMSBs(
+              utils.concatenateThenHash(
+                this.A,
+                utils.zeroMSBs(alice.pk),
+                utils.zeroMSBs(this.S_A === undefined ? '0x0' : this.S_A), // S_A - set at erc-20 commitment mint (step 11)
+              ),
             );
           },
         },
@@ -102,10 +106,12 @@ export default {
         value: leftPadHex(erc20.transfer, 32),
         commitmentIndex: 2,
         get commitment() {
-          return utils.concatenateThenHash(
-            this.value,
-            bob.pk,
-            this.S_E, // S_E - set at erc-20 commitment transfer (step 12)
+          return utils.zeroMSBs(
+            utils.concatenateThenHash(
+              this.value,
+              utils.zeroMSBs(bob.pk),
+              utils.zeroMSBs(this.S_E === undefined ? '0x0' : this.S_E), // S_E - set at erc-20 commitment transfer (step 12)
+            ),
           );
         },
       },
@@ -113,10 +119,12 @@ export default {
         value: leftPadHex(erc20.change, 32),
         commitmentIndex: 3,
         get commitment() {
-          return utils.concatenateThenHash(
-            this.value,
-            alice.pk,
-            this.S_F, // S_F - set at erc-20 commitment transfer (step 12)
+          return utils.zeroMSBs(
+            utils.concatenateThenHash(
+              this.value,
+              utils.zeroMSBs(alice.pk),
+              utils.zeroMSBs(this.S_F === undefined ? '0x0' : this.S_F), // S_F - set at erc-20 commitment transfer (step 12)
+            ),
           );
         },
       },

@@ -14,7 +14,8 @@ want to define how many fields.  This is what the packets property is used for.
 @author Westlad, iAmMichaelConnor
 */
 class Element {
-  constructor(hex, encoding, packingSize, packets) {
+  constructor(_hex, encoding, packingSize, packets) {
+    const hex = _hex.toString(16);
     const allowedEncoding = ['bits', 'bytes', 'field'];
 
     if (!allowedEncoding.includes(encoding))
@@ -22,7 +23,6 @@ class Element {
 
     if (hex === undefined) throw new Error('Hex string was undefined');
     if (hex === '') throw new Error('Hex string was empty');
-    if (!utils.isHex(hex)) throw new Error(`This does not appear to be hex:${hex.toString()}`);
 
     this.hex = utils.ensure0x(hex);
     this.encoding = encoding;

@@ -5,6 +5,7 @@ import request from 'superagent';
 import prefix from 'superagent-prefix';
 import config from 'config';
 import testData from './testData';
+import utils from '../zkp-utils';
 
 const apiServerURL = config.get('apiServerURL');
 
@@ -69,14 +70,14 @@ describe('****** Integration Test ******\n', function() {
         .use(prefix(apiServerURL))
         .set('Authorization', alice.token);
 
-      alice.sk = res.body.data.secretkey;
+      alice.sk = utils.zeroMSBs(res.body.data.secretkey);
 
       res = await request
         .get('/getUserDetails')
         .use(prefix(apiServerURL))
         .set('Authorization', bob.token);
 
-      bob.sk = res.body.data.secretkey;
+      bob.sk = utils.zeroMSBs(res.body.data.secretkey);
     });
 
     /*
@@ -329,8 +330,7 @@ describe('****** Integration Test ******\n', function() {
             expect(res).to.have.nested.property('body.data.ft_commitment');
             expect(res).to.have.nested.property('body.data.ft_commitment_index');
 
-            erc20Commitments.mint[0].S_A = res.body.data.S_A; // set Salt from response to calculate and verify commitment.
-
+            erc20Commitments.mint[0].S_A = utils.zeroMSBs(res.body.data.S_A); // set Salt from response to calculate and verify commitment.
             expect(res.body.data.ft_commitment).to.be.equal(erc20Commitments.mint[0].commitment);
             expect(res.body.data.ft_commitment_index).to.be.equal(
               erc20Commitments.mint[0].commitmentIndex,
@@ -355,7 +355,7 @@ describe('****** Integration Test ******\n', function() {
             expect(res).to.have.nested.property('body.data.ft_commitment');
             expect(res).to.have.nested.property('body.data.ft_commitment_index');
 
-            erc20Commitments.mint[1].S_A = res.body.data.S_A; // set Salt from response to calculate and verify commitment.
+            erc20Commitments.mint[1].S_A = utils.zeroMSBs(res.body.data.S_A); // set Salt from response to calculate and verify commitment.
 
             expect(res.body.data.ft_commitment).to.be.equal(erc20Commitments.mint[1].commitment);
             expect(res.body.data.ft_commitment_index).to.be.equal(
@@ -400,9 +400,9 @@ describe('****** Integration Test ******\n', function() {
             expect(res).to.have.nested.property('body.data.z_F');
             expect(res).to.have.nested.property('body.data.z_F_index');
 
-            erc20Commitments.transfer.S_E = res.body.data.S_E; // set Salt from response to calculate and verify commitment.
-            erc20Commitments.change.S_F = res.body.data.S_F; // set Salt from response to calculate and verify commitment.
-
+            erc20Commitments.transfer.S_E = utils.zeroMSBs(res.body.data.S_E); // set Salt from response to calculate and verify commitment.
+            erc20Commitments.change.S_F = utils.zeroMSBs(res.body.data.S_F); // set Salt from response to calculate and verify commitment.
+            console.log(res.body.data.z_E, erc20Commitments.transfer.commitment);
             expect(res.body.data.z_E).to.be.equal(erc20Commitments.transfer.commitment);
             expect(res.body.data.z_E_index).to.be.equal(erc20Commitments.transfer.commitmentIndex);
             expect(res.body.data.z_F).to.be.equal(erc20Commitments.change.commitment);

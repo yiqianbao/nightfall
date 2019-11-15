@@ -28,27 +28,29 @@ contract FTokenShield is Ownable {
          15  16  17 18  19  20  21  22  23  24  25  26  27  28  29  30
 
 depth row  width  st#     end#
-  1    0   2^0=1  w=0   2^1-1=0
-  2    1   2^1=2  w=1   2^2-1=2
-  3    2   2^2=4  w=3   2^3-1=6
-  4    3   2^3=8  w=7   2^4-1=14
-  5    4   2^4=16 w=15  2^5-1=30
+  1    0   2**0=1  w=0   2**1-2=0
+  2    1   2**1=2  w=1   2**2-2=2
+  3    2   2**2=4  w=3   2**3-2=6
+  4    3   2**3=8  w=7   2**4-2=14
+  5    4   2**4=16 w=15  2**5-2=30
 
   d = depth = 5
   r = row number
-  w = width = 2^(depth-1) = 2^3 = 16
-  #nodes = (2^depth)-1 = 2^5-2 = 30
+  w = width = 2**(depth-1) = 2**3 = 16
+  #nodes = (2**depth)-1 = 2**5-2 = 30
 
   */
 
   event Mint(uint256 amount, bytes32 commitment, uint256 commitment_index);
   event Transfer(bytes32 nullifier1, bytes32 nullifier2, bytes32 commitment1, uint256 commitment1_index, bytes32 commitment2, uint256 commitment2_index);
   event Burn(uint256 amount, address payTo, bytes32 nullifier);
+  event SimpleBatchTransfer(bytes32 nullifier, bytes32[] commitments, uint256 commitment_index);
 
   event VerifierChanged(address newVerifierContract);
-  event VkIdsChanged(bytes32 mintVkId, bytes32 transferVkId, bytes32 burnVkId);
+  event VkIdsChanged(bytes32 mintVkId, bytes32 transferVkId, bytes32 simpleBatchTransferVkId, bytes32 burnVkId);
 
-
+  uint constant bitLength = 216; // the number of LSB that we use in a hash
+  uint constant batchProofSize = 20; // the number of output commitments in the batch transfer proof
   uint constant merkleWidth = 4294967296; //2^32
   uint constant merkleDepth = 33; //33
   uint private balance = 0;
@@ -70,6 +72,7 @@ depth row  width  st#     end#
   bytes32 public mintVkId;
   bytes32 public transferVkId;
   bytes32 public burnVkId;
+  bytes32 public simpleBatchTransferVkId;
 
   constructor(address _verifierRegistry, address _verifier, address _fToken) public {
       _owner = msg.sender;
@@ -103,18 +106,20 @@ depth row  width  st#     end#
   /**
   Sets the vkIds (as registered with the Verifier Registry) which correspond to 'mint', 'transfer' and 'burn' computations respectively
   */
-  function setVkIds(bytes32 _mintVkId, bytes32 _transferVkId, bytes32 _burnVkId) external onlyOwner {
+  function setVkIds(bytes32 _mintVkId, bytes32 _transferVkId, bytes32 _simpleBatchTransferVkId, bytes32 _burnVkId) external onlyOwner {
       //ensure the vkId's have been registered:
       require(_mintVkId == verifierRegistry.getVkEntryVkId(_mintVkId), "Mint vkId not registered.");
       require(_transferVkId == verifierRegistry.getVkEntryVkId(_transferVkId), "Transfer vkId not registered.");
+      require(_simpleBatchTransferVkId == verifierRegistry.getVkEntryVkId(_simpleBatchTransferVkId), "SimpleBatchTransfer vkId not registered.");
       require(_burnVkId == verifierRegistry.getVkEntryVkId(_burnVkId), "Burn vkId not registered.");
 
       //store the vkIds
       mintVkId = _mintVkId;
       transferVkId = _transferVkId;
+      simpleBatchTransferVkId = _simpleBatchTransferVkId;
       burnVkId = _burnVkId;
 
-      emit VkIdsChanged(mintVkId, transferVkId, burnVkId);
+      emit VkIdsChanged(mintVkId, transferVkId, simpleBatchTransferVkId, burnVkId);
   }
 
   /**
@@ -133,8 +138,8 @@ depth row  width  st#     end#
       require(_vkId == mintVkId, "Incorrect vkId");
 
       // Check that the publicInputHash equals the hash of the 'public inputs':
-      bytes31 publicInputHash = bytes31(bytes32(_inputs[0])<<8);
-      bytes31 publicInputHashCheck = bytes31(sha256(abi.encodePacked(uint128(_value), _commitment))<<8); // Note that we force the _value to be left-padded with zeros to fill 128-bits, so as to match the padding in the hash calculation performed within the zokrates proof.
+      bytes32 publicInputHash = bytes32(_inputs[0]);
+      bytes32 publicInputHashCheck = zeroMSBs(bytes32(sha256(abi.encodePacked(uint128(_value), _commitment)))); // Note that we force the _value to be left-padded with zeros to fill 128-bits, so as to match the padding in the hash calculation performed within the zokrates proof.
       require(publicInputHashCheck == publicInputHash, "publicInputHash cannot be reconciled");
 
       // verify the proof
@@ -165,8 +170,8 @@ depth row  width  st#     end#
       require(_vkId == transferVkId, "Incorrect vkId");
 
       // Check that the publicInputHash equals the hash of the 'public inputs':
-      bytes31 publicInputHash = bytes31(bytes32(_inputs[0])<<8);
-      bytes31 publicInputHashCheck = bytes31(sha256(abi.encodePacked(_root, _nullifierC, _nullifierD, _commitmentE, _commitmentF))<<8);
+      bytes32 publicInputHash = bytes32(_inputs[0]);
+      bytes32 publicInputHashCheck = zeroMSBs(bytes32(sha256(abi.encodePacked(_root, _nullifierC, _nullifierD, _commitmentE, _commitmentF))));
       require(publicInputHashCheck == publicInputHash, "publicInputHash cannot be reconciled");
 
       // verify the proof
@@ -195,10 +200,43 @@ depth row  width  st#     end#
       leafIndex = merkleWidth - 1 + leafCount; //specify the index of the commitment within the merkleTree
       merkleTree[leafIndex] = bytes27(_commitmentF<<40); //add the commitment to the merkleTree
       latestRoot = updatePathToRoot(leafIndex);//recalculate the root of the merkleTree as it's now different
-      
+
       roots[latestRoot] = latestRoot; //and save the new root to the list of roots
 
       emit Transfer(_nullifierC, _nullifierD, _commitmentE, leafCount - 1, _commitmentF, leafCount++);
+  }
+
+  /**
+  The transfer function transfers 20 commitments to new owners
+  */
+  function simpleBatchTransfer(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _vkId, bytes32 _root, bytes32 _nullifier, bytes32[] calldata _commitments) external {
+
+      require(_vkId == simpleBatchTransferVkId, "Incorrect vkId");
+
+      // Check that the publicInputHash equals the hash of the 'public inputs':
+      bytes32 publicInputHash = bytes32(_inputs[0]);
+      bytes32 publicInputHashCheck = zeroMSBs(sha256(abi.encodePacked(_root, _nullifier, _commitments)));
+      require(publicInputHashCheck == publicInputHash, "publicInputHash cannot be reconciled");
+
+      // verify the proof
+      bool result = verifier.verify(_proof, _inputs, _vkId);
+      require(result, "The proof has not been verified by the contract");
+
+      // check inputs vs on-chain states
+      require(roots[_root] == _root, "The input root has never been the root of the Merkle Tree");
+      require(nullifiers[_nullifier] == 0, "The commitment being spent has already been nullified!");
+
+      // update contract states
+      nullifiers[_nullifier] = _nullifier; //remember we spent it
+      uint256 leafIndex = merkleWidth - 1 + leafCount;
+      for (uint i = 0; i < batchProofSize; i++){
+        commitments[_commitments[i]] = _commitments[i]; //add the commitment to the list of commitments
+        merkleTree[leafIndex++] = bytes27(_commitments[i]<<40); //add the commitment to the merkleTree
+      }
+      leafCount += batchProofSize;
+      latestRoot = updateMerkleTree(leafIndex-batchProofSize);
+      roots[latestRoot] = latestRoot; //and save the new root to the list of roots
+      emit SimpleBatchTransfer(_nullifier, _commitments, leafCount-1);
   }
 
 
@@ -207,8 +245,8 @@ depth row  width  st#     end#
       require(_vkId == burnVkId, "Incorrect vkId");
 
       // Check that the publicInputHash equals the hash of the 'public inputs':
-      bytes31 publicInputHash = bytes31(bytes32(_inputs[0])<<8);
-      bytes31 publicInputHashCheck = bytes31(sha256(abi.encodePacked(_root, _nullifier, uint128(_value), _payTo))<<8); // Note that although _payTo represents an address, we have declared it as a uint256. This is because we want it to be abi-encoded as a bytes32 (left-padded with zeros) so as to match the padding in the hash calculation performed within the zokrates proof. Similarly, we force the _value to be left-padded with zeros to fill 128-bits.
+      bytes32 publicInputHash = bytes32(_inputs[0]);
+      bytes32 publicInputHashCheck = zeroMSBs(bytes32(sha256(abi.encodePacked(_root, _nullifier, uint128(_value), _payTo)))); // Note that although _payTo represents an address, we have declared it as a uint256. This is because we want it to be abi-encoded as a bytes32 (left-padded with zeros) so as to match the padding in the hash calculation performed within the zokrates proof. Similarly, we force the _value to be left-padded with zeros to fill 128-bits.
       require(publicInputHashCheck == publicInputHash, "publicInputHash cannot be reconciled");
 
       // verify the proof
@@ -264,6 +302,48 @@ depth row  width  st#     end#
       }
       return h; //the (265-bit) root of the merkleTree
   }
+  // This function update the Merkle tree when you are adding more than one commitment
+  // in one go.  This is much more efficient than calling a function to add a single leaf
+  // multiple times.
+  // @params index - the index of the leaf where we start to add our commitments
+  function updateMerkleTree(uint256 index) private returns (bytes32) {
+    uint256 depth = merkleDepth;
+    uint256 rowMax = 8589934590; //2**depth-2
+    uint256 currentNode = index; // initialise
+    uint256 startNode = currentNode;
+    uint256 parentNode = 0;
+    uint256 sisterNode = 0;
+    bytes27 nodeA;
+    bytes27 nodeB;
+    bytes32 h;
+    bytes27 def; // assign a default value (equals "" in this case)
+    do {
+      // find the sister node calculate the parent node and its hash
+      //sisterNode = currentNode ^ 1; parentNode = currentNode >> 1;
+      if (currentNode%2 == 0){ // calculation is different if node is even or odd
+        sisterNode = currentNode - 1;
+        parentNode = (currentNode - 1)/2;
+        nodeA = merkleTree[sisterNode];
+        nodeB = merkleTree[currentNode];
+      } else {
+        sisterNode = currentNode + 1;
+        parentNode = currentNode/2;
+        nodeB = merkleTree[sisterNode];
+        nodeA = merkleTree[currentNode];
+      }
+      if (currentNode == startNode) startNode = parentNode; // remember where to start on the next row
+      //check if we've gone past the end of the added commitments or run off the end of the row
+      if (merkleTree[sisterNode] == def && merkleTree[currentNode] == def || currentNode > rowMax) {
+        currentNode = startNode; // if we have, go to the next row
+        rowMax = 2**--depth - 2; // oddly this seems to use less gas than the equivalent rowMax = (rowMax-2)>>1
+      } else { // if not, add the hash to the Merkle tree and go to the next node
+        h = sha256(abi.encodePacked(nodeA, nodeB));
+        merkleTree[parentNode] = bytes27(h<<40);
+        currentNode += 2;
+      }
+    } while(parentNode > 0); // stop when we get to the root and return the root hash
+    return h;
+  }
 
   function packToBytes32(uint256 low, uint256 high) private pure returns (bytes32) {
       return (bytes32(high)<<128) | bytes32(low);
@@ -271,6 +351,12 @@ depth row  width  st#     end#
 
   function packToUint256(uint256 low, uint256 high) private pure returns (uint256) {
       return uint256((bytes32(high)<<128) | bytes32(low));
+  }
+
+  //function to zero out the b most siginficant bits
+  function zeroMSBs(bytes32 value) private pure returns (bytes32) {
+    uint256 shift = 256 - bitLength;
+    return (value<<shift)>>shift;
   }
 
 }

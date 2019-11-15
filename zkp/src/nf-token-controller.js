@@ -15,7 +15,7 @@ import zokrates from '@eyblockchain/zokrates.js';
 import fs from 'fs';
 import utils from './zkpUtils';
 import zkp from './nf-token-zkp';
-import cv from './compute-vectors';
+import { computeVectors, computePath } from './compute-vectors';
 import Element from './Element';
 import Web3 from './web3';
 import { getContract } from './contractUtils';
@@ -246,7 +246,7 @@ async function mint(tokenId, ownerPublicKey, salt, vkId, blockchainOptions, zokr
   const publicInputHash = utils.concatenateThenHash(tokenId, commitment);
   console.log('publicInputHash:', publicInputHash);
 
-  const vectors = cv.computeVectors([
+  const vectors = computeVectors([
     new Element(publicInputHash, 'field', 248, 1),
     new Element(tokenId, 'field'),
     new Element(ownerPublicKey, 'field'),
@@ -284,7 +284,7 @@ async function mint(tokenId, ownerPublicKey, salt, vkId, blockchainOptions, zokr
 
   console.group('Minting within the Shield contract');
 
-  const inputs = cv.computeVectors([new Element(publicInputHash, 'field', 248, 1)]);
+  const inputs = computeVectors([new Element(publicInputHash, 'field', 248, 1)]);
 
   console.log('proof:');
   console.log(proof);
@@ -378,16 +378,16 @@ async function transfer(
   );
 
   // we need the Merkle path from the token commitment to the root, expressed as Elements
-  const path = await cv
-    .computePath(account, nfTokenShieldInstance, commitment, commitmentIndex)
-    .then(result => {
+  const path = await computePath(account, nfTokenShieldInstance, commitment, commitmentIndex).then(
+    result => {
       return {
         elements: result.path.map(
           element => new Element(element, 'field', config.MERKLE_HASHLENGTH * 8, 1),
         ),
         positions: new Element(result.positions, 'field', 128, 1),
       };
-    });
+    },
+  );
 
   // check the path and root match:
   if (path.elements[0].hex !== root) {
@@ -430,7 +430,7 @@ async function transfer(
   const publicInputHash = utils.concatenateThenHash(root, n, outputCommitment);
   console.log('publicInputHash:', publicInputHash);
 
-  const vectors = cv.computeVectors([
+  const vectors = computeVectors([
     new Element(publicInputHash, 'field', 248, 1),
     new Element(tokenId, 'field'),
     ...path.elements.slice(1),
@@ -463,7 +463,7 @@ async function transfer(
 
   console.group('Transferring within the Shield contract');
 
-  const inputs = cv.computeVectors([new Element(publicInputHash, 'field', 248, 1)]);
+  const inputs = computeVectors([new Element(publicInputHash, 'field', 248, 1)]);
 
   console.log('proof:');
   console.log(proof);
@@ -566,17 +566,16 @@ async function burn(
   const Na = utils.concatenateThenHash(salt, secretKey);
 
   // we need the Merkle path from the token commitment to the root, expressed as Elements
-  const path = await cv
-    .computePath(account, nfTokenShieldInstance, commitment, commitmentIndex)
-    .then(result => {
+  const path = await computePath(account, nfTokenShieldInstance, commitment, commitmentIndex).then(
+    result => {
       return {
         elements: result.path.map(
           element => new Element(element, 'field', config.MERKLE_HASHLENGTH * 8, 1),
         ),
         positions: new Element(result.positions, 'field', 128, 1),
       };
-    });
-
+    },
+  );
   // check the path and root match:
   if (path.elements[0].hex !== root) {
     throw new Error(`Root inequality: sister-path[0]=${path.elements[0].hex} root=${root}`);
@@ -603,7 +602,7 @@ async function burn(
   const publicInputHash = utils.concatenateThenHash(root, Na, tokenId, payToLeftPadded); // notice we're using the version of payTo which has been padded to 256-bits; to match our derivation of publicInputHash within our zokrates proof.
   console.log('publicInputHash:', publicInputHash);
 
-  const vectors = cv.computeVectors([
+  const vectors = computeVectors([
     new Element(publicInputHash, 'field', 248, 1),
     new Element(payTo, 'field'),
     new Element(tokenId, 'field'),
@@ -634,7 +633,7 @@ async function burn(
 
   console.group('Burning within the Shield contract');
 
-  const inputs = cv.computeVectors([new Element(publicInputHash, 'field', 248, 1)]);
+  const inputs = computeVectors([new Element(publicInputHash, 'field', 248, 1)]);
 
   console.log('proof:');
   console.log(proof);

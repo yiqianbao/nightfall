@@ -18,6 +18,14 @@ def shaPad640To1024()->(field[384]):
 def shaPad384To512()->(field[128]):
 	return [1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1,	0,	0,	0,	0,	0,	0,	0]
 
+//'truncate' a 256 bit hash down to 216 bits, returning as 256 bits padded with zeros
+//obviously this is easy to adjust to accommodate other bit lengths than 216.
+//This approach lets us use a 256 padding scheme for the sha hashing, rather than a 216 bit
+//scheme, which is more flexible should we wish to change the 216 bits to something else -
+// we won't need to recalculate all the padding values!
+def zeroMSBs(field[256] sha)->(field[256]):
+	return [...[0;40], ...sha[40..256]]
+
 
 // Inputs for main are:
 // - value (public) is the 128 bit coin value
@@ -61,7 +69,7 @@ def main(field publicInputHash, private field value, private field  publicKeyHig
 
 	field[1024] preimage1024 = [...preimage640, ...padding640To1024]
 
-	field[256] commitmentBitsCheck = sha256of1024(preimage1024[0..256], preimage1024[256..512], preimage1024[512..768], preimage1024[768..1024])
+	field[256] commitmentBitsCheck = zeroMSBs(sha256of1024(preimage1024[0..256], preimage1024[256..512], preimage1024[512..768], preimage1024[768..1024]))
 
 
 	// This checks if the commitmentBitsCheck we computed using the 'value' (which is hash(value|publicKey|salt)) is equal to the input commitment:
@@ -73,9 +81,9 @@ def main(field publicInputHash, private field value, private field  publicKeyHig
 
 	field[512] preimage512 = [...preimage384, ...padding384To512]
 
-	field[256] publicInputHashBitsCheck = sha256of512(preimage512[0..256], preimage512[256..512])
+	field[256] publicInputHashBitsCheck = zeroMSBs(sha256of512(preimage512[0..256], preimage512[256..512]))
 
-	publicInputHashBits[8..256] == publicInputHashBitsCheck[8..256]
+	publicInputHashBits == publicInputHashBitsCheck
 
 
 	return

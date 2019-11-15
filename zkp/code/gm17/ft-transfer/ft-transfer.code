@@ -46,6 +46,13 @@ def unpackPath(field p)->(field[216]):
 	field[256] sister = unpack256(p)
 	return sister[40..256]
 
+//'truncate' a 256 bit hash down to 216 bits, returning as 256 bits padded with zeros
+//obviously this is easy to adjust to accommodate other bit lengths than 216.
+//This approach lets us use a 256 padding scheme for the sha hashing, rather than a 216 bit
+//scheme, which is more flexible should we wish to change the 216 bits to something else -
+// we won't need to recalculate all the padding values!
+def zeroMSBs(field[256] sha)->(field[256]):
+	return [...[0;40], ...sha[40..256]]
 
 // Inputs for main are:
 // Alice's original coins are valueC and valueD
@@ -155,17 +162,17 @@ def main(field publicInputHash, private field valueC, private field secretKeyAHi
 	// H(saltD|secretKeyA) = nullifierD.
 
 	field[512] preimage512 = concatenate256x256(saltCBits, secretKeyABits)
-	field[256] nullifierCBitsCheck = sha256of1024(preimage512[0..256], preimage512[256..512], padding512To1024[0..256], padding512To1024[256..512])
+	field[256] nullifierCBitsCheck = zeroMSBs(sha256of1024(preimage512[0..256], preimage512[256..512], padding512To1024[0..256], padding512To1024[256..512]))
 
 	preimage512 = concatenate256x256(saltDBits, secretKeyABits)
-	field[256] nullifierDBitsCheck = sha256of1024(preimage512[0..256], preimage512[256..512], padding512To1024[0..256], padding512To1024[256..512])
+	field[256] nullifierDBitsCheck = zeroMSBs(sha256of1024(preimage512[0..256], preimage512[256..512], padding512To1024[0..256], padding512To1024[256..512]))
 
 
 
 	// H(valueC|publicKeyA|saltA) = commitmentC is in the Merkle Tree
 
 	// Calculation of publicKeyA from H(secretKeyA)
-	field[256] publicKeyABits = sha256of512(secretKeyABits, padding256To512)
+	field[256] publicKeyABits = zeroMSBs(sha256of512(secretKeyABits, padding256To512))
 
 
 	// And calculation of commitmentC
@@ -210,7 +217,7 @@ def main(field publicInputHash, private field valueC, private field secretKeyAHi
 
 	preimage1024 = [...preimage640, ...padding640To1024]
 
-	field[256] commitmentEBitsCheck = sha256of1024(preimage1024[0..256], preimage1024[256..512], preimage1024[512..768], preimage1024[768..1024]) // commitmentE
+	field[256] commitmentEBitsCheck = zeroMSBs(sha256of1024(preimage1024[0..256], preimage1024[256..512], preimage1024[512..768], preimage1024[768..1024])) // commitmentE
 
 
 	// And commitmentF
@@ -218,7 +225,7 @@ def main(field publicInputHash, private field valueC, private field secretKeyAHi
 
 	preimage1024 = [...preimage640, ...padding640To1024]
 
-	field[256] commitmentFBitsCheck = sha256of1024(preimage1024[0..256], preimage1024[256..512], preimage1024[512..768], preimage1024[768..1024]) // commitmentF
+	field[256] commitmentFBitsCheck = zeroMSBs(sha256of1024(preimage1024[0..256], preimage1024[256..512], preimage1024[512..768], preimage1024[768..1024])) // commitmentF
 
 
 	// Sum check C+D = E+F - we don't want anyone to create money.
@@ -247,9 +254,9 @@ def main(field publicInputHash, private field valueC, private field secretKeyAHi
 	// Check that the 'public inputs' hash to the publicInputHash:
 	field[1280] preimage1280 = concatenate256x256x256x256x256(rootBits, nullifierCBits, nullifierDBits, commitmentEBits, commitmentFBits)
 
-	field[256] publicInputHashBitsCheck = sha256of1536(preimage1280[0..256], preimage1280[256..512], preimage1280[512..768], preimage1280[768..1024], preimage1280[1024..1280], padding1280To1536[0..256])
+	field[256] publicInputHashBitsCheck = zeroMSBs(sha256of1536(preimage1280[0..256], preimage1280[256..512], preimage1280[512..768], preimage1280[768..1024], preimage1280[1024..1280], padding1280To1536[0..256]))
 
-	publicInputHashBits[8..256] == publicInputHashBitsCheck[8..256]
+	publicInputHashBits == publicInputHashBitsCheck
 
 
 	return
