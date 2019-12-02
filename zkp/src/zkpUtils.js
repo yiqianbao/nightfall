@@ -11,7 +11,6 @@ import crypto from 'crypto';
 import { Buffer } from 'safe-buffer';
 
 const inputsHashLength = 32;
-const merkleDepth = 33;
 
 // FUNCTIONS ON HEX VALUES
 
@@ -460,15 +459,6 @@ function rndHex(bytes) {
   });
 }
 
-function getLeafIndexFromZCount(zCount) {
-  // force it to be a number:
-  const zCountInt = parseInt(zCount, 10);
-  const MERKLE_DEPTH = parseInt(merkleDepth, 10);
-  const MERKLE_WIDTH = parseInt(2 ** (MERKLE_DEPTH - 1), 10);
-  const leafIndex = parseInt(MERKLE_WIDTH - 1 + zCountInt, 10);
-  return leafIndex;
-}
-
 /* flattenDeep converts a nested array into a flattened array. We use this to pass our proofs and vks into the verifier contract.
 Example:
 A vk of the form:
@@ -518,17 +508,6 @@ function padHex(A, l) {
   return ensure0x(strip0x(A).padStart(l / 4, '0'));
 }
 
-/**
-This function expects a hex string and will set bits longer than 'bits'
-to zero returning a hex string the same length as the original str
-(note: this is different from truncation, although the actual numerical value is the same)
-*/
-function zeroMSBs(_b, bits = 27 * 8) {
-  if (!isHex(_b)) throw new Error('zeroMSBs function requires hex strings');
-  const b = strip0x(_b);
-  return ensure0x(b.slice(-bits / 4).padStart(b.length, '0'));
-}
-
 export default {
   isHex,
   utf8StringToHex,
@@ -558,10 +537,8 @@ export default {
   splitHexToBitsN,
   splitAndPadBitsN,
   leftPadBitsN,
-  getLeafIndexFromZCount,
   rndHex,
   flattenDeep,
   padHex,
   leftPadHex,
-  zeroMSBs,
 };

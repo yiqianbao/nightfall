@@ -3,7 +3,7 @@
 import { Router } from 'express';
 import utils from '../zkpUtils';
 import fTokenController from '../f-token-controller';
-import { getVkId, getContract } from '../contractUtils';
+import { getVkId, getTruffleContractInstance } from '../contractUtils';
 
 const router = Router();
 
@@ -12,9 +12,10 @@ async function mint(req, res, next) {
   const { amount, ownerPublicKey } = req.body;
   const salt = await utils.rndHex(32);
   const vkId = await getVkId('MintFToken');
-  const { contractJson: fTokenShieldJson, contractInstance: fTokenShield } = await getContract(
-    'FTokenShield',
-  );
+  const {
+    contractJson: fTokenShieldJson,
+    contractInstance: fTokenShield,
+  } = await getTruffleContractInstance('FTokenShield');
 
   try {
     const { commitment, commitmentIndex } = await fTokenController.mint(
@@ -61,9 +62,10 @@ async function transfer(req, res, next) {
     z_D_index,
   } = req.body;
   const vkId = await getVkId('TransferFToken');
-  const { contractJson: fTokenShieldJson, contractInstance: fTokenShield } = await getContract(
-    'FTokenShield',
-  );
+  const {
+    contractJson: fTokenShieldJson,
+    contractInstance: fTokenShield,
+  } = await getTruffleContractInstance('FTokenShield');
 
   const inputCommitments = [
     {
@@ -131,9 +133,10 @@ async function burn(req, res, next) {
   const { amount, receiverSecretKey, salt, commitment, commitmentIndex, tokenReceiver } = req.body;
   const { address } = req.headers;
   const vkId = await getVkId('BurnFToken');
-  const { contractJson: fTokenShieldJson, contractInstance: fTokenShield } = await getContract(
-    'FTokenShield',
-  );
+  const {
+    contractJson: fTokenShieldJson,
+    contractInstance: fTokenShield,
+  } = await getTruffleContractInstance('FTokenShield');
 
   try {
     await fTokenController.burn(
@@ -251,9 +254,10 @@ async function simpleFTCommitmentBatchTransfer(req, res, next) {
     transferData, // [{value: "0x00000000000000000000000000000002", pkB: "0x70dd53411043c9ff4711ba6b6c779cec028bd43e6f525a25af36b8"}]
     senderSecretKey,
   } = req.body;
-  const { contractJson: fTokenShieldJson, contractInstance: fTokenShield } = await getContract(
-    'FTokenShield',
-  );
+  const {
+    contractJson: fTokenShieldJson,
+    contractInstance: fTokenShield,
+  } = await getTruffleContractInstance('FTokenShield');
   const receiversPublicKeys = [];
 
   if (!transferData || transferData.length !== 20) throw new Error('Invalid data input');
