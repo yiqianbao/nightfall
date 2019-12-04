@@ -60,7 +60,7 @@ export default {
     return requestWrapper(options);
   },
 
-  // insert new coin shield contract info for user in user collection
+  // insert new fungible token shield contract info for user in user collection
   addFTShieldContractInfo({ name }, body) {
     const options = {
       url: `${url}/users/${name}/ft-shield-contracts`,
@@ -82,7 +82,7 @@ export default {
     return requestWrapper(options);
   },
 
-  // update coin shield contract info for user in user collection
+  // update fungible token shield contract info for user in user collection
   updateFTShieldContractInfoByContractAddress({ name }, contractAdress, body) {
     const options = {
       url: `${url}/users/${name}/ft-shield-contracts/${contractAdress}`,
@@ -104,7 +104,7 @@ export default {
     return requestWrapper(options);
   },
 
-  // delete coin shield contract info for user from user collection
+  // delete fungible token shield contract info for user from user collection
   deleteFTShieldContractInfoByContractAddress({ name }, contractAdress) {
     const options = {
       url: `${url}/users/${name}/ft-shield-contracts/${contractAdress}`,

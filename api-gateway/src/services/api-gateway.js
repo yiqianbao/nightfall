@@ -105,9 +105,9 @@ function setShieldContract(user, contractAddress) {
       .then(() => resolve('nft'))
       .catch(() => zkp.unSetTokenShield(user));
     zkp
-      .setCoinShield(user, { ftCommitmentShield: contractAddress })
+      .setFTCommitmentShield(user, { ftCommitmentShield: contractAddress })
       .then(() => resolve('ft'))
-      .catch(() => zkp.unSetCoinShield(user));
+      .catch(() => zkp.unSetFTCommitmentShield(user));
   });
 }
 
@@ -184,8 +184,9 @@ export async function updateContractInfo(req, res, next) {
         isFTShieldPreviousSelected,
       });
 
-      if (isSelected) await zkp.setCoinShield(req.user, { ftCommitmentShield: contractAddress });
-      else if (isFTShieldPreviousSelected) await zkp.unSetCoinShield(req.user);
+      if (isSelected)
+        await zkp.setFTCommitmentShield(req.user, { ftCommitmentShield: contractAddress });
+      else if (isFTShieldPreviousSelected) await zkp.unSetFTCommitmentShield(req.user);
     }
 
     // if update nftCommitmentShield data
@@ -232,7 +233,7 @@ export async function deleteContractInfo(req, res, next) {
         req.user,
         query.coin_shield,
       );
-      if (data.status) await zkp.unSetCoinShield(req.user);
+      if (data.status) await zkp.unSetFTCommitmentShield(req.user);
     }
     if (query.token_shield) {
       const data = await db.deleteNFTShieldContractInfoByContractAddress(

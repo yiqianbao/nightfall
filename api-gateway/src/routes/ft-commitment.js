@@ -1,8 +1,8 @@
 import express from 'express';
 import {
-  mintCoin,
-  transferCoin,
-  burnCoin,
+  mintFTCommitment,
+  transferFTCommitment,
+  burnFTCommitment,
   checkCorrectnessForFTCommitment,
   insertFTCommitmentToDb,
   getFTCommitments,
@@ -43,7 +43,7 @@ router.route('/checkCorrectnessForFTCommitment').post(checkCorrectnessForFTCommi
  *		"ft_commitment_index":"0"
  *	  }
  */
-router.route('/mintFTCommitment').post(mintCoin);
+router.route('/mintFTCommitment').post(mintFTCommitment);
 
 /**
  * @api {post} /transferFTCommitment Transfer ERC-20 commitment
@@ -106,7 +106,7 @@ router.route('/mintFTCommitment').post(mintCoin);
  *		"z_F_index":"3"
  *	  }
  */
-router.route('/transferFTCommitment').post(transferCoin);
+router.route('/transferFTCommitment').post(transferFTCommitment);
 
 /**
  * @api {post} /burnFTCommitment Burn a ERC-20 commitment
@@ -145,7 +145,7 @@ router.route('/transferFTCommitment').post(transferCoin);
  *		"z_C_index":3
  *	  }
  */
-router.route('/burnFTCommitment').post(burnCoin);
+router.route('/burnFTCommitment').post(burnFTCommitment);
 
 /**
  * @api {post} /insertFTCommitmentToDb Insert ERC-20 commitment in database

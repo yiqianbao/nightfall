@@ -69,7 +69,7 @@ export default {
   },
 
   // mint fungible token commitment
-  mintCoin({ address }, body) {
+  mintFTCommitment({ address }, body) {
     const options = {
       url: `${url}/mintFTCommitment`,
       method: 'POST',
@@ -81,7 +81,7 @@ export default {
   },
 
   // transfer fungible token commitment
-  transferCoin({ address }, body) {
+  transferFTCommitment({ address }, body) {
     const options = {
       url: `${url}/transferFTCommitment`,
       method: 'POST',
@@ -93,7 +93,7 @@ export default {
   },
 
   // burn fungible token commitment
-  burnCoin(body, { address }) {
+  burnFTCommitment(body, { address }) {
     const options = {
       url: `${url}/burnFTCommitment`,
       method: 'POST',
@@ -278,7 +278,7 @@ export default {
     return requestWrapper(options);
   },
   // set new fungible commitment token shield for user address
-  setCoinShield({ address }, body) {
+  setFTCommitmentShield({ address }, body) {
     const options = {
       url: `${url}/setFTokenShieldContractAddress`,
       method: 'POST',
@@ -301,7 +301,7 @@ export default {
   },
 
   // remove fungible commitment token shield address for user address
-  unSetCoinShield({ address }) {
+  unSetFTCommitmentShield({ address }) {
     const options = {
       url: `${url}/removeFTCommitmentshield`,
       method: 'DELETE',
