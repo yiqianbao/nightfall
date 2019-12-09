@@ -214,6 +214,7 @@ export async function transferToken(req, res, next) {
       salt: data.S_B,
       commitment: data.z_B,
       commitmentIndex: parseInt(data.z_B_index, 16),
+      blockNumber: data.txReceipt.receipt.blockNumber,
       receiver: req.body.receiver_name,
       receiverPublicKey: req.body.pk_B,
       for: 'NFTCommitment',
@@ -254,7 +255,7 @@ export async function burnToken(req, res, next) {
     // Release the public token from escrow:
     // Nullify the burnor's 'token commitment' within the shield contract.
     // Transfer the public token from the shield contract to the owner.
-    await zkp.burnToken(req.user, {
+    res.data = await zkp.burnToken(req.user, {
       tokenId: req.body.A,
       salt: req.body.S_A,
       secretKey: user.secretkey,
@@ -282,6 +283,7 @@ export async function burnToken(req, res, next) {
         receiver: req.body.payTo, // this will change when payTo will be a user other than burner himself.
         sender: req.user.name,
         senderAddress: req.user.address,
+        blockNumber: res.data.txReceipt.receipt.blockNumber,
         for: 'NFTToken',
       });
     } else {

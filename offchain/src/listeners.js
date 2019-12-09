@@ -36,18 +36,36 @@ async function insertFTTransactionToDb(data, userData) {
 }
 
 async function insertNFTCommitmentToDb(data, userData) {
-  console.log('\noffchain/src/listeners.js', '\naddToken', '\ndata', data, '\nuserData', userData);
+  console.log(
+    '\noffchain/src/listeners.js',
+    '\ninsertNFTCommitmentToDb',
+    '\ndata',
+    data,
+    '\nuserData',
+    userData,
+  );
+
+  const {
+    tokenUri,
+    tokenId,
+    salt,
+    receiverPublicKey,
+    commitment,
+    commitmentIndex,
+    blockNumber,
+  } = data;
 
   const correctnessChecks = await apiGateway.checkCorrectnessForNFTCommitment(
     {
       authorization: userData.jwtToken,
     },
     {
-      A: data.tokenId,
-      pk: data.receiverPublicKey,
-      S_A: data.salt,
-      z_A: data.commitment,
-      z_A_index: data.commitmentIndex,
+      tokenId,
+      receiverPublicKey,
+      salt,
+      commitment,
+      commitmentIndex,
+      blockNumber,
     },
   );
 
@@ -63,14 +81,14 @@ async function insertNFTCommitmentToDb(data, userData) {
       authorization: userData.jwtToken,
     },
     {
-      tokenUri: data.tokenUri,
-      tokenId: data.tokenId,
-      salt: data.salt,
-      commitment: data.commitment,
-      commitmentIndex: data.commitmentIndex,
+      tokenUri,
+      tokenId,
+      salt,
+      commitment,
+      commitmentIndex,
       isReceived: true,
-      zCorrect: correctnessChecks.data.z_correct,
-      zOnchainCorrect: correctnessChecks.data.z_onchain_correct,
+      zCorrect: correctnessChecks.data.zCorrect,
+      zOnchainCorrect: correctnessChecks.data.zOnchainCorrect,
     },
   );
 }
@@ -85,16 +103,19 @@ async function insertFTCommitmentToDb(data, userData) {
     userData,
   );
 
+  const { amount, salt, pk, commitment, commitmentIndex, blockNumber } = data;
+
   const correctnessChecks = await apiGateway.checkCorrectnessForFTCommitment(
     {
       authorization: userData.jwtToken,
     },
     {
-      E: data.amount,
-      S_E: data.salt,
-      pk: data.pk,
-      z_E: data.commitment,
-      z_E_index: data.commitmentIndex,
+      amount,
+      salt,
+      pk,
+      commitment,
+      commitmentIndex,
+      blockNumber,
     },
   );
 

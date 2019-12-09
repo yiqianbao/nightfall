@@ -13,7 +13,15 @@ import merkleTree from './rest/merkle-tree';
 /**
 checks the details of an incoming (newly transferred token), to ensure the data we have received is correct and legitimate!!
 */
-async function checkCorrectness(value, publicKey, salt, commitment, commitmentIndex, fTokenShield) {
+async function checkCorrectness(
+  value,
+  publicKey,
+  salt,
+  commitment,
+  commitmentIndex,
+  blockNumber,
+  fTokenShield,
+) {
   console.log('Checking h(A|pk|S) = z...');
   const commitmentCheck = utils.concatenateThenHash(value, publicKey, salt);
   const zCorrect = commitmentCheck === commitment;
@@ -26,6 +34,10 @@ async function checkCorrectness(value, publicKey, salt, commitment, commitmentIn
   console.log('commitment:', commitment);
   console.log('commitmentIndex:', commitmentIndex);
   const { contractName } = fTokenShield.constructor._json; // eslint-disable-line no-underscore-dangle
+
+  // query the merkle-tree microservice until it's filtered the blockNumber we wish to query:
+  await merkleTree.waitForBlockNumber(contractName, blockNumber);
+
   const leaf = await merkleTree.getLeafByLeafIndex(contractName, commitmentIndex);
   console.log('leaf found:', leaf);
   if (leaf.value !== commitment)

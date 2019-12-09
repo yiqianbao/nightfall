@@ -64,11 +64,7 @@ async function transfer(req, res, next) {
   } = await getTruffleContractInstance('NFTokenShield');
 
   try {
-    const {
-      outputCommitment,
-      outputCommitmentIndex,
-      transferReceipt,
-    } = await nfController.transfer(
+    const { outputCommitment, outputCommitmentIndex, txReceipt } = await nfController.transfer(
       tokenId,
       receiverPublicKey,
       originalCommitmentSalt,
@@ -91,8 +87,8 @@ async function transfer(req, res, next) {
     res.data = {
       z_B: outputCommitment,
       z_B_index: outputCommitmentIndex,
-      txObj: transferReceipt,
       S_B: newCommitmentSalt,
+      txReceipt,
     };
     next();
   } catch (err) {
@@ -110,7 +106,7 @@ async function burn(req, res, next) {
   } = await getTruffleContractInstance('NFTokenShield');
 
   try {
-    await nfController.burn(
+    const { txReceipt } = await nfController.burn(
       tokenId,
       secretKey,
       salt,
@@ -131,6 +127,7 @@ async function burn(req, res, next) {
     );
     res.data = {
       z_A: commitment,
+      txReceipt,
     };
     next();
   } catch (err) {
@@ -139,17 +136,11 @@ async function burn(req, res, next) {
 }
 
 async function checkCorrectness(req, res, next) {
-  console.log('\nzkp/src/restapi', '\n/checkCorrectnessForNFTCommitment', '\nreq.body', req.body);
+  console.log('\nzkp/src/routes/nft-commitment', '\n/checkCorrectness', '\nreq.body', req.body);
 
   try {
     const { address } = req.headers;
-    const {
-      A: tokenId,
-      pk: ownerPublicKey,
-      S_A: salt,
-      z_A: commitment,
-      z_A_index: commitmentIndex,
-    } = req.body;
+    const { tokenId, ownerPublicKey, salt, commitment, commitmentIndex, blockNumber } = req.body;
 
     const results = await nfController.checkCorrectness(
       tokenId,
@@ -157,6 +148,7 @@ async function checkCorrectness(req, res, next) {
       salt,
       commitment,
       commitmentIndex,
+      blockNumber,
       address,
     );
     res.data = results;
@@ -174,7 +166,7 @@ async function setNFTCommitmentShieldAddress(req, res, next) {
     await nfController.setShield(tokenShield, address);
     await nfController.getNFTName(address);
     res.data = {
-      message: 'TokenShield Address Set.',
+      message: 'NFTokenShield Address Set.',
     };
     next();
   } catch (err) {
