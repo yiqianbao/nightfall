@@ -51,6 +51,7 @@ export async function getContractInterface(contractName) {
   return contractInterface;
 }
 
+// returns a web3 contract instance (rather than a truffle-contract instance)
 export async function getWeb3ContractInstance(contractName, deployedAddress) {
   const contractInterface = await getContractInterface(contractName);
   let contractInstance;
@@ -65,7 +66,6 @@ export async function getWeb3ContractInstance(contractName, deployedAddress) {
   return contractInstance;
 }
 
-// returns a web3 contract instance (rather than a truffle-contract instance)
 export async function getContractBytecode(contractName) {
   const contractInterface = await getContractInterface(contractName);
   const { bytecode } = contractInterface;
