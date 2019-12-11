@@ -272,7 +272,7 @@
                 <tbody>
                   <ng-container *ngFor="let transaction of ftCommitmentTransactions; index as i">
                     <tr>
-                        <td [ngClass]="{'active': (transaction.type === 'transferred' || transaction.type === 'batchTransfer' )}" data-toggle="collapse" [attr.data-target]="'#collapse-' + i" [attr.aria-expanded]="false" [attr.aria-controls] = "'collapse-' + i">
+                        <td [ngClass]="{'active fas collapsed': (transaction.type === 'transferred' || transaction.type === 'batchTransfer' ), 'fa-angle-right': ( aria-expanded === false)}" data-toggle="collapse" [attr.data-target]="'#collapse-' + i" [attr.aria-expanded]="false" [attr.aria-controls] = "'collapse-' + i">
                           {{ transaction.type.toUpperCase() }}
                         </td>
                         <td>{{ ftSymbol + ' ' + utilService.convertToNumber(transaction.ft_commitment_value) }}</td>

@@ -126,8 +126,17 @@ tbody{
 .active{
   cursor: pointer;
   pointer-events: visible;
-  text-decoration: underline;
   color: blue;
+}
+
+.active:before{
+  font-family: 'FontAwesome';
+  content: "\f107";
+}
+
+.collapsed:before{
+  font-family: 'FontAwesome';
+  content: "\f105";
 }
 
 .details-table{
@@ -138,4 +147,8 @@ tbody{
 
 .details-pane{
   background-color: #f9f9fa;
+}
+
+td.active.fas {
+  padding-left: 4px;
 }
