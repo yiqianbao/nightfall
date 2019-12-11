@@ -89,6 +89,7 @@ services:
       MERKLE_TREE_HOST: http://merkle-tree
       MERKLE_TREE_PORT: 80
       ZKP_CODE_VOLUME: nightfall_zkp-code-volume
+      NIGHTLITE_LOG_LEVEL: debug
     networks:
       - nightfall_network
       - merkle_tree_network
