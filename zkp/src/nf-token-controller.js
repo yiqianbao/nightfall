@@ -360,7 +360,7 @@ async function mint(tokenId, ownerPublicKey, salt, vkId, blockchainOptions, zokr
  * @param {String} blockchainOptions.account - Account that is sending these transactions
  * @returns {String} outputCommitment - New commitment
  * @returns {Number} outputCommitmentIndex - the index of the token within the Merkle Tree.  This is required for later transfers/joins so that Alice knows which 'chunks' of the Merkle Tree she needs to 'get' from the NFTokenShield contract in order to calculate a path.
- * @returns {Object} txObj - a promise of a blockchain transaction
+ * @returns {Object} txReceipt - a promise of a blockchain transaction
  */
 async function transfer(
   tokenId,
@@ -701,10 +701,18 @@ async function burn(
 
   console.log('BURN COMPLETE\n');
   console.groupEnd();
-  return commitment;
+  return { txReceipt };
 }
 
-async function checkCorrectness(tokenId, publicKey, salt, commitment, commitmentIndex, account) {
+async function checkCorrectness(
+  tokenId,
+  publicKey,
+  salt,
+  commitment,
+  commitmentIndex,
+  blockNumber,
+  account,
+) {
   const nfTokenShield = shield[account] ? shield[account] : await NFTokenShield.deployed();
 
   const results = await zkp.checkCorrectness(
@@ -713,6 +721,7 @@ async function checkCorrectness(tokenId, publicKey, salt, commitment, commitment
     salt,
     commitment,
     commitmentIndex,
+    blockNumber,
     nfTokenShield,
   );
   console.log('\nnf-token-controller', '\ncheckCorrectness', '\nresults', results);

@@ -44,7 +44,7 @@ const startEventFilterPollingFunction = async args => {
 };
 
 /**
-Posts a starts merkle-tree microservice's filter
+Starts the merkle-tree microservice's filter
 @param {string} contractName
 */
 async function startEventFilter(contractName) {
@@ -62,6 +62,76 @@ async function startEventFilter(contractName) {
     return response;
   } catch (err) {
     throw new Error(`Could not start merkle-tree microservice's filter`);
+  }
+}
+
+/**
+Get the latestLeaf object from the tree's metadata db.
+@param {string} contractName
+*/
+async function getLatestLeaf(contractName) {
+  console.log(`\nCalling getLatestLeaf(${contractName})`);
+  return new Promise((resolve, reject) => {
+    const options = {
+      url: `${url}/metadata/latestLeaf`,
+      method: 'GET',
+      json: true,
+      headers: { contractname: contractName },
+      // body:, // no body; uses url param
+    };
+    request(options, (err, res, body) => {
+      if (err) reject(err);
+      else resolve(body.data);
+    });
+  });
+}
+
+/**
+Posts a starts merkle-tree microservice's filter
+@returns {false | object} Polling functions MUST return FALSE if the poll is unsuccessful. Otherwise we return the response from the merkle-tree microservice
+*/
+const getLatestLeafPollingFunction = async args => {
+  try {
+    const { contractName, blockNumber } = args;
+    let latestFilteredBlockNumber = 0;
+
+    const { latestLeaf } = await getLatestLeaf(contractName);
+
+    latestFilteredBlockNumber = latestLeaf.blockNumber;
+
+    if (latestFilteredBlockNumber < blockNumber) {
+      console.log(
+        `\nblockNumber ${blockNumber} has not yet been filtered into the merkle-tree's db`,
+      );
+      return false; // i.e. poll again until we know the required blockNumber has been filtered.
+    }
+
+    console.log(`\nThe merkle-tree microservice's filter has reached block ${blockNumber}`);
+    return true;
+  } catch (err) {
+    console.log(
+      `\nGot a polling error "${err}", but that might be because the external server missed our call - we'll poll again...`,
+    );
+    return false;
+  }
+};
+
+/**
+Start polling for the latestLeaf object, until we see that a particular blockNumber has been filterex.
+@param {string} contractName
+*/
+async function waitForBlockNumber(contractName, blockNumber) {
+  console.log(`\nCalling waitForBlockNumber(${contractName}, ${blockNumber})`);
+  try {
+    // we poll the merkle-tree microservice, because it might not have filtered the blockNumber we want yet:
+    // eslint-disable-next-line no-await-in-loop
+    await utilsPoll.poll(getLatestLeafPollingFunction, config.POLLING_FREQUENCY, {
+      contractName,
+      blockNumber,
+    }); // eslint-disable-line no-await-in-loop
+    return;
+  } catch (err) {
+    throw new Error(`Could not get the latestLeaf from the merkle-tree microservice`);
   }
 }
 
@@ -111,6 +181,7 @@ async function getSiblingPathByLeafIndex(contractName, leafIndex) {
 
 export default {
   startEventFilter,
+  waitForBlockNumber,
   getLeafByLeafIndex,
   getSiblingPathByLeafIndex,
 };

@@ -666,7 +666,7 @@ there's no concept of joining and splitting (yet).
 @param {string} account - the account that is paying for this
 @returns {array} zE - The output token commitments
 @returns {array} z_E_index - the indexes of the commitments within the Merkle Tree.  This is required for later transfers/joins so that Alice knows which leaf of the Merkle Tree she needs to get from the fTokenShieldInstance contract in order to calculate a path.
-@returns {object} txObj - a promise of a blockchain transaction
+@returns {object} txReceipt - a promise of a blockchain transaction
 */
 async function simpleFungibleBatchTransfer(
   _inputCommitment,
@@ -1005,10 +1005,19 @@ async function burn(
 
   console.log('BURN COMPLETE\n');
   console.groupEnd();
-  return { z_C: commitment, z_C_index: commitmentIndex };
+
+  return { z_C: commitment, z_C_index: commitmentIndex, txReceipt };
 }
 
-async function checkCorrectness(amount, publicKey, salt, commitment, commitmentIndex, account) {
+async function checkCorrectness(
+  amount,
+  publicKey,
+  salt,
+  commitment,
+  commitmentIndex,
+  blockNumber,
+  account,
+) {
   const fTokenShieldInstance = shield[account] ? shield[account] : await FTokenShield.deployed();
 
   const results = await zkp.checkCorrectness(
@@ -1017,6 +1026,7 @@ async function checkCorrectness(amount, publicKey, salt, commitment, commitmentI
     salt,
     commitment,
     commitmentIndex,
+    blockNumber,
     fTokenShieldInstance,
   );
   console.log('\nf-token-controller', '\ncheckCorrectness', '\nresults', results);

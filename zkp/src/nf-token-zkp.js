@@ -20,6 +20,7 @@ async function checkCorrectness(
   salt,
   commitment,
   commitmentIndex,
+  blockNumber,
   nfTokenShield,
 ) {
   console.log('Checking h(A|pk|S) = z...');
@@ -28,7 +29,7 @@ async function checkCorrectness(
     publicKey,
     salt,
   );
-  const z_correct = commitmentCheck === commitment; // eslint-disable-line camelcase
+  const zCorrect = commitmentCheck === commitment; // eslint-disable-line camelcase
   console.log('commitment:', commitment);
   console.log('commitmentCheck:', commitmentCheck);
 
@@ -38,6 +39,10 @@ async function checkCorrectness(
   console.log('commitment:', commitment);
   console.log('commitmentIndex:', commitmentIndex);
   const { contractName } = nfTokenShield.constructor._json; // eslint-disable-line no-underscore-dangle
+
+  // query the merkle-tree microservice until it's filtered the blockNumber we wish to query:
+  await merkleTree.waitForBlockNumber(contractName, blockNumber);
+
   const leaf = await merkleTree.getLeafByLeafIndex(contractName, commitmentIndex);
   console.log('leaf found:', leaf);
   if (leaf.value !== commitment)
@@ -45,13 +50,13 @@ async function checkCorrectness(
       `Could not find commitment ${commitment} at the given commitmentIndex ${commitmentIndex} in  the merkle-tree microservice. Found ${leaf.value} instead.`,
     );
 
-  const z_onchain_correct = leaf.value === commitment; // eslint-disable-line camelcase
+  const zOnchainCorrect = leaf.value === commitment; // eslint-disable-line camelcase
   console.log('commitment:', commitment);
   console.log('commitment emmitted by blockchain:', leaf.value);
 
   return {
-    z_correct,
-    z_onchain_correct,
+    zCorrect,
+    zOnchainCorrect,
   };
 }
 
