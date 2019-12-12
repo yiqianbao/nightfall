@@ -60,4 +60,7 @@ async function main() {
 }
 
 // RUN
-main().catch(err => console.log(err));
+main().catch(err => {
+  console.log(err);
+  process.exit(1);
+});

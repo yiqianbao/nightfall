@@ -95,7 +95,7 @@ docker pull zokrates/zokrates:0.5.1
 Next we have to generate the keys and constraint files for Zero Knowledge Proofs ([read more](./zkp/code/README-trusted-setup.md)), this is about 7GB and depends on randomness for security. This step can take a while, depending on your hardware. Before you start, check once more that you have provisioned enough memory for Docker, as described above:
 
 ```sh
-npm run setupAll
+./nightfall-generate-trusted-setup
 ```
 
 Note that this is a completely automated run: although questions will be asked by the script they will automatically receive a 'yes' answer. Further documentation on the setup process is in [the zkp module documentation](zkp/README.md).
@@ -124,7 +124,7 @@ _(Press `q` to exit this log at any time)._
 If this shows that some files have been changed, then before anything else, you will also need to re-run:
 
 ```sh
-npm run setupAll
+./nightfall-generate-trusted-setup
 ```
 _(If only one or a few of the `.code` files have been changed, then it will be faster for you to consult [the zkp module documentation](zkp/README.md) for details on selecting individual files for trusted setup)._
 
