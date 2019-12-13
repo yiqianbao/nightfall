@@ -46,30 +46,10 @@ describe('utils.js tests', () => {
     });
   });
 
-  describe('Functions on Decimal Values', () => {
-    test('decToHex should correctly convert a decimal to hex', () => {
-      expect(hex).toEqual(utils.decToHex(dec));
-    });
-
-    test('decToBin should correctly convert a decimal to binary', () => {
-      expect(bin).toEqual(utils.decToBin(dec));
-    });
-  });
-
   describe('Functions on Binary Values', () => {
     test('binToDec should correctly convert a binary number to decimal', () => {
       expect(dec).toEqual(utils.binToDec(bin));
     });
-
-    test('binToHex should correctly convert a binary number to hex', () => {
-      expect(hex).toEqual(utils.binToHex(bin));
-    });
-  });
-
-  describe('Functions on Field Values', () => {
-    test('fieldsToDec should correctly convert an array of packed field elements (packed according to a set packing size) into the original decimal value which they represent', () => {
-      expect(utils.fieldsToDec(['1', '3', '2'], 2)).toEqual('30');
-    }); // [1,3,2]=[01,11,10](when packed in blocks of 2 bits)=011110 = 30(dec) = 1e (hex)
   });
 
   describe('Utility Functions', () => {
@@ -88,19 +68,6 @@ describe('utils.js tests', () => {
       const truncated = 'b5a95142b8fa2cd63d51e6e7f6584186ce955be1c6bebc20d03f9148b8886fea';
       const calculatedHash = `0x${truncated.slice(truncated.length - testInputHash.length + 2)}`;
       expect(calculatedHash).toEqual(testInputHash);
-    });
-
-    test('splitDecToBitsN should split a decimal string into chunks of size N bits (N=8 in this test)', () => {
-      expect([
-        '11110001',
-        '10011000',
-        '11100011',
-        '01000000',
-        '00111011',
-        '11011101',
-        '10100011',
-        '10100000',
-      ]).toEqual(utils.splitDecToBitsN(dec, 8));
     });
 
     test('splitHexToBitsN should split a decimal string into chunks of size N bits (N=8 in this test)', () => {

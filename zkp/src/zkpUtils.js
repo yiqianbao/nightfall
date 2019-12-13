@@ -110,7 +110,7 @@ function add(x, y, base) {
 /** Helper function for the converting any base to any base
  Returns a*x, where x is an array of decimal digits and a is an ordinary
  JavaScript number. base is the number base of the array x.
-*/
+ */
 function multiplyByNumber(num, x, base) {
   if (num < 0) return null;
   if (num === 0) return [];
@@ -221,7 +221,7 @@ Left-pads the input binary string with zeros, so that it becomes of size N bits.
 @param {string} bitStr A binary number/string.
 @param {integer} N The 'chunk size'.
 @return A binary string (padded) to size N bits.
-*/
+ */
 function leftPadBitsN(bitStr, n) {
   const len = bitStr.length;
   let paddedStr;
@@ -306,43 +306,6 @@ function hexToFieldPreserve(hexStr, packingSize, packets, silenceWarnings) {
   return decArr;
 }
 
-// Converts binary value strings to hex values
-function binToHex(binStr) {
-  const hex = convertBase(binStr, 2, 16);
-  return hex ? `0x${hex}` : null;
-}
-
-// FUNCTIONS ON DECIMAL VALUES
-
-// Converts decimal value strings to hex values
-function decToHex(decStr) {
-  const hex = convertBase(decStr, 10, 16);
-  return hex ? `0x${hex}` : null;
-}
-
-// Converts decimal value strings to binary values
-function decToBin(decStr) {
-  return convertBase(decStr, 10, 2);
-}
-
-/** Checks whether a decimal integer is larger than N bits, and splits its binary representation into chunks of size = N bits. The left-most (big endian) chunk will be the only chunk of size <= N bits. If the inequality is strict, it left-pads this left-most chunk with zeros.
-@param {string} decStr A decimal number/string.
-@param {integer} N The 'chunk size'.
-@return An array whose elements are binary 'chunks' which altogether represent the input decimal number.
-*/
-function splitDecToBitsN(decStr, N) {
-  const bitStr = decToBin(decStr.toString());
-  let a = [];
-  a = splitAndPadBitsN(bitStr, N);
-  return a;
-}
-
-function isProbablyBinary(arr) {
-  const foundField = arr.find(el => el !== 0 && el !== 1);
-  // ...hence it is not binary:
-  return !foundField;
-}
-
 // FUNCTIONS ON FIELDS
 
 /**
@@ -351,23 +314,6 @@ Converts an array of Field Elements (decimal numbers which are smaller in magnit
 @param {integer} packingSize Each field element of fieldsArr is a 'packing' of exactly 'packingSize' bits. I.e. packingSize is the size (in bits) of each chunk (element) of fieldsArr. We use this to reconstruct the underlying decimal value which was, at some point previously, packed into a fieldsArr format.
 @returns {string} A decimal number (as a string, because it might be a very large number)
 */
-function fieldsToDec(fieldsArr, packingSize) {
-  const len = fieldsArr.length;
-  let acc = new BI('0');
-  const s = [];
-  const t = [];
-  const shift = [];
-  const exp = new BI(2).pow(packingSize);
-  for (let i = 0; i < len; i += 1) {
-    s[i] = new BI(fieldsArr[i].toString());
-    shift[i] = new BI(exp).pow(len - 1 - i); // binary shift of the ith field element
-    t[i] = new BI('0');
-    t[i] = s[i].multiply(shift[i]);
-    acc = acc.add(t[i]);
-  }
-  const decStr = acc.toString();
-  return decStr;
-}
 
 // UTILITY FUNCTIONS:
 
@@ -433,7 +379,7 @@ createHash: we're creating a sha256 hash
 update: [input string to hash (an array of bytes (in decimal representaion) [byte, byte, ..., byte] which represents the result of: item1, item2, item3. Note, we're calculating hash(item1, item2, item3) ultimately]
 digest: [output format ("hex" in our case)]
 slice: [begin value] outputs the items in the array on and after the 'begin value'
-*/
+ */
 function concatenateThenHash(...items) {
   const concatvalue = items
     .map(item => Buffer.from(strip0x(item), 'hex'))
@@ -449,7 +395,8 @@ function concatenateThenHash(...items) {
 /**
 function to generate a promise that resolves to a string of hex
 @param {int} bytes - the number of bytes of hex that should be returned
-*/
+ */
+
 function rndHex(bytes) {
   return new Promise((resolve, reject) => {
     crypto.randomBytes(bytes, (err, buf) => {
@@ -493,7 +440,7 @@ A vk of the form:
 
 is converted to:
 ['1','2','3','4','5','6',...]
-*/
+ */
 function flattenDeep(arr) {
   return arr.reduce(
     (acc, val) => (Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val)),
@@ -520,12 +467,7 @@ export default {
   hexToDec,
   hexToField,
   hexToFieldPreserve,
-  decToHex,
-  decToBin,
   binToDec,
-  binToHex,
-  isProbablyBinary,
-  fieldsToDec,
   xor,
   concatenate,
   hash,
@@ -533,7 +475,6 @@ export default {
   add,
   parseToDigitsArray,
   convertBase,
-  splitDecToBitsN,
   splitHexToBitsN,
   splitAndPadBitsN,
   leftPadBitsN,
