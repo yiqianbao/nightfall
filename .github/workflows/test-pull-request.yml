@@ -28,6 +28,8 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '10.15.3'
+      - name: login to github registry
+        run: docker login -u ${{ secrets.GITHUB_USERNAME }} -p ${{ secrets.GITHUB_PASSWORD }} docker.pkg.github.com
       - name: Pull docker image
         run: docker pull zokrates/zokrates:0.5.1
       - name: Increase swap memory
@@ -49,11 +51,12 @@ jobs:
           docker rm $(docker ps -a -q)
       - name: Build zkp image
         run: docker-compose build zkp
-      - name: Setup ganache container, deploy zkp contracts and start the merkle-tree microservice
+      - name: Setup ganache container, deploy zkp contracts
         run: |
           docker-compose run --rm truffle-zkp compile --all
           docker-compose run --rm truffle-zkp migrate --reset --network=default
-          docker-compose -f docker-compose.merkle-tree.yml up -d --build
+      - name: Start merkle-tree microservice
+        run: docker-compose up -d merkle-tree
       - name: Run zkp unit tests
         run: docker-compose run --rm zkp npm test
 
@@ -67,6 +70,8 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '10.15.3'
+      - name: login to github registry
+        run: docker login -u ${{ secrets.GITHUB_USERNAME }} -p ${{ secrets.GITHUB_PASSWORD }} docker.pkg.github.com
       - name: Pull docker image
         run: docker pull zokrates/zokrates:0.5.1
       - name: Increase swap memory

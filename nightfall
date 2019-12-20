@@ -6,7 +6,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 printf "${GREEN}*** Cleaning up all containers ***${NC}\n"
-docker-compose -f docker-compose.merkle-tree.yml -f docker-compose.yml down -v || {
+docker-compose -f docker-compose.yml down -v || {
 	# this block will run if ```docker-compose down -v``` fails.
 	sleep 3
 
@@ -42,4 +42,4 @@ docker-compose run --rm truffle-offchain migrate --reset --network=default
 docker-compose run --rm truffle-zkp migrate --reset --network=default
 
 printf "${GREEN}*** Launching containerized microservices ***${NC}\n"
-docker-compose -f docker-compose.merkle-tree.yml -f docker-compose.yml up --build
+docker-compose -f docker-compose.yml up --build

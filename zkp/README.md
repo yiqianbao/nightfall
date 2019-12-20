@@ -34,12 +34,6 @@ docker-compose run --rm truffle-zkp compile --all && docker-compose run --rm tru
 
 This will run ganache in a container; compile all of the nightfall contracts; and deploy them.  
 
-Then start the merkle-tree microservice, which will start filtering the Shield contracts and populating the merkle-tree database:
-
-```sh
-docker-compose -f docker-compose.merkle-tree.yml up --build
-```
-
 To run the zkp unit tests (in another terminal window):
 
 ```sh
