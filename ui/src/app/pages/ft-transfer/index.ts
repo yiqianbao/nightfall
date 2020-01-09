@@ -84,7 +84,7 @@ export default class FtTransferComponent implements OnInit {
       return this.toastr.error('You do not have enough ERC-20 tokens');
     }
     this.isRequesting = true;
-    this.ftService.transferFToken(this.amount, localStorage.getItem('address'), this.receiverName).subscribe(transaction => {
+    this.ftService.transferFToken(this.amount, this.receiverName).subscribe(transaction => {
       this.isRequesting = false;
       this.toastr.success('fungible token transferred Successfully.');
       this.router.navigate(['/overview'], { queryParams: { selectedTab: 'ft' } });

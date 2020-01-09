@@ -321,11 +321,13 @@ export async function burnFTCommitment(req, res, next) {
       }); // send ft token data to BOB side
     } else {
       await db.insertFTTransaction(req.user, {
-        amount: Number(req.body.A),
+        value: Number(req.body.A),
         shieldContractAddress: user.selected_coin_shield_contract,
-        receiver: req.body.payTo,
-        sender: req.user.name,
-        senderAddress: req.user.address,
+        receiver: {
+          name: req.body.payTo || req.user.name,
+          address: payToAddress,
+        },
+        sender: req.user,
         isReceived: true,
       });
     }

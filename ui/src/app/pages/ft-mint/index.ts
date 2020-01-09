@@ -47,7 +47,7 @@ export default class FtMintComponent implements OnInit {
    */
   mintFToken() {
     this.isRequesting = true;
-    this.ftService.mintFToken(localStorage.getItem('address'), this.amount).subscribe(transaction => {
+    this.ftService.mintFToken(this.amount).subscribe(transaction => {
       this.isRequesting = false;
       this.toastr.success('fungible token minted successfully.');
       this.router.navigate(['/overview'], { queryParams: { selectedTab: 'ft' } });

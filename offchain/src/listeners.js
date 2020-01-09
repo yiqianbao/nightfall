@@ -18,21 +18,10 @@ async function insertNFTToDb(data, userData) {
   );
 }
 
-async function insertFTTransactionToDb(data, userData) {
+async function insertFTTransactionToDb(data, { jwtToken }) {
   console.log('\noffchain/src/listeners.js', 'insertFTTransactionToDb', '\ndata', data);
 
-  await apiGateway.insertFTTransactionToDb(
-    {
-      authorization: userData.jwtToken,
-    },
-    {
-      amount: data.amount,
-      shieldContractAddress: data.shieldContractAddress,
-      sender: data.sender,
-      senderAddress: data.senderAddress,
-      isReceived: true,
-    },
-  );
+  await apiGateway.insertFTTransactionToDb({ authorization: jwtToken }, data);
 }
 
 async function insertNFTCommitmentToDb(data, userData) {

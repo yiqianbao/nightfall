@@ -226,17 +226,22 @@
                     <th>Amount</th>
                     <th>Date</th>
                     <th>Send To</th>
+                    <th>Received From</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let transaction of ftTransactions">
-                    <td>{{ transaction.type.toUpperCase() }}</td>
-                    <td>{{ ftSymbol + ' ' + transaction.amount }}</td>
+                    <td>{{ transaction.transaction_type.toUpperCase() }}</td>
+                    <td>{{ ftSymbol + ' ' + transaction.value }}</td>
                     <td>{{ transaction.created_at | date: 'dd/MM/yyyy hh:mm:ss a' }}</td>
-                    <td *ngIf="transaction.type === 'transferred'">
-                      {{ transaction.receiver ? transaction.receiver : '' }}
+                    <td *ngIf="transaction.transaction_type === 'transfer_outgoing'">
+                      {{ transaction.receiver ? transaction.receiver.name : '' }}
                     </td>
-                    <td *ngIf="transaction.type !== 'transferred'"></td>
+                    <td *ngIf="transaction.transaction_type !== 'transfer_outgoing'"></td>
+                    <td *ngIf="transaction.transaction_type === 'transfer_incoming'">
+                      {{ transaction.sender ? transaction.sender.name : '' }}
+                    </td>
+                    <td *ngIf="transaction.transaction_type !== 'transfer_incoming'"></td>
                   </tr>
                 </tbody>
               </table>

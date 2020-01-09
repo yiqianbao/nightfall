@@ -17,13 +17,25 @@ export default class FtService {
     const mappedData = ftMapper(data);
 
     if (isReceived)
-      return this.ftTransactionService.insertTransaction({ ...mappedData, type: 'received' });
+      return this.ftTransactionService.insertTransaction({
+        ...mappedData,
+        transaction_type: 'transfer_incoming',
+      });
     if (isTransferred)
-      return this.ftTransactionService.insertTransaction({ ...mappedData, type: 'transferred' });
+      return this.ftTransactionService.insertTransaction({
+        ...mappedData,
+        transaction_type: 'transfer_outgoing',
+      });
     if (isBurned)
-      return this.ftTransactionService.insertTransaction({ ...mappedData, type: 'burned' });
+      return this.ftTransactionService.insertTransaction({
+        ...mappedData,
+        transaction_type: 'burn',
+      });
 
-    return this.ftTransactionService.insertTransaction({ ...mappedData, type: 'minted' });
+    return this.ftTransactionService.insertTransaction({
+      ...mappedData,
+      transaction_type: 'mint',
+    });
   }
 
   /**

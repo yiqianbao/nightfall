@@ -303,7 +303,7 @@ describe('****** Integration Test ******\n', function() {
           .post('/mintFToken')
           .use(prefix(apiServerURL))
           .send({
-            amount: erc20.mint,
+            value: erc20.mint,
           })
           .set('Accept', 'application/json')
           .set('Authorization', alice.token)
@@ -477,8 +477,10 @@ describe('****** Integration Test ******\n', function() {
           .post('/transferFToken')
           .use(prefix(apiServerURL))
           .send({
-            amount: erc20.transfer,
-            receiver_name: alice.name,
+            value: erc20.transfer,
+            receiver: {
+              name: alice.name,
+            },
           })
           .set('Accept', 'application/json')
           .set('Authorization', bob.token)
@@ -504,7 +506,7 @@ describe('****** Integration Test ******\n', function() {
           .post('/burnFToken')
           .use(prefix(apiServerURL))
           .send({
-            amount: erc20.mint,
+            value: erc20.mint,
           })
           .set('Accept', 'application/json')
           .set('Authorization', alice.token)
@@ -528,7 +530,7 @@ describe('****** Integration Test ******\n', function() {
         .post('/mintFToken')
         .use(prefix(apiServerURL))
         .send({
-          amount: erc20CommitmentBatchTransfer.mint,
+          value: erc20CommitmentBatchTransfer.mint,
         })
         .set('Accept', 'application/json')
         .set('Authorization', alice.token)

@@ -3,12 +3,16 @@ import { FtService } from '../business';
 /**
  * This function add ERC-20 transactions in database
  * req.body = {
- *  amount: 20,
+ *  value: 20,
  *  shieldContractAddress: "0x033..",
- *  receiver: "BOB",
- *  receiverAddress: "0xb0b",
- *  sender: "ALICE",
- *  senderAddress: "0xA71CE"
+ *  receiver: {
+ *   name: "Bob",
+ *   address: "0xb0b",
+ *  }
+ *  sender: {
+ *   name: "Alice",
+ *   address: "0xb0b",
+ *  }
  * }
  * @param {*} req
  * @param {*} res
