@@ -75,6 +75,7 @@ services:
     restart: on-failure
     depends_on:
       - ganache
+      - merkle-tree
     volumes:
       - ./zkp/src:/app/src
       - ./zkp/build:/app/build
@@ -211,7 +212,7 @@ services:
       MONGO_USERNAME: admin
       MONGO_PASSWORD: admin
     networks:
-      - nightfall_network 
+      - nightfall_network
 
   # The database storing the merkle tree
   mongo-merkle-tree:
