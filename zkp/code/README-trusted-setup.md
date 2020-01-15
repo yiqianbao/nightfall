@@ -93,9 +93,6 @@ zkp
       ft-transfer
         |
         ft-transfer.code
-
-    safe-dump   // required folder, in case of accidental overwriting from mounting of containers from the host.
-      |
 ```
 
 Example to compile and generate a new (proving key, verification key) pair for a 'fungible token
@@ -134,9 +131,6 @@ zkp
       ft-transfer
         |
         ft-transfer.code
-
-    safe-dump
-      |
 ```
 
 ### Suppress Console Logs

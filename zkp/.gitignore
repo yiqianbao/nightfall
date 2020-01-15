@@ -102,5 +102,3 @@ src/vkIds.json
 # We want to keep ft-burn.code, but not out.code
 **/out.code
 **/vkIds.json
-**/safe-dump/**
-!**/safe-dump/README.md
