@@ -2,66 +2,88 @@ import { Schema } from 'mongoose';
 
 export default new Schema(
   {
-    type: {
+    transactionType: {
       type: String,
-      enum: ['minted', 'transferred', 'received', 'burned', 'change', 'batchTransfer'],
-      required: true,
-    },
-    ft_commitment_value: {
-      type: String,
-      required: true,
-    },
-    salt: {
-      type: String,
-      required: true,
-    },
-    ft_commitment: {
-      type: String,
-      index: true,
-      required: true,
-    },
-    ft_commitment_index: {
-      type: Number,
+      enum: ['mint', 'transfer_outgoing', 'transfer_incoming', 'change', 'burn'],
       required: true,
     },
 
-    batch_transfer: [
+    inputCommitments: [
       {
-        ft_commitment_value: String,
-        salt: String,
-        ft_commitment: String,
-        ft_commitment_index: String,
-        receiver: String,
+        value: {
+          type: String,
+          required: true,
+        },
+        salt: {
+          type: String,
+          required: true,
+        },
+        commitment: {
+          type: String,
+          index: true,
+          required: true,
+        },
+        commitmentIndex: {
+          type: Number,
+          required: true,
+        },
+        owner: {
+          name: {
+            type: String,
+          },
+          publicKey: {
+            type: String,
+          },
+        },
       },
     ],
 
-    // incase transfer log only
-    used_ft_commitments: [
+    outputCommitments: [
       {
-        ft_commitment_value: String,
-        ft_commitment: String,
+        value: {
+          type: String,
+          required: true,
+        },
+        salt: {
+          type: String,
+          required: true,
+        },
+        commitment: {
+          type: String,
+          index: true,
+          required: true,
+        },
+        commitmentIndex: {
+          type: Number,
+          required: true,
+        },
+        owner: {
+          name: {
+            type: String,
+          },
+          publicKey: {
+            type: String,
+          },
+        },
       },
     ],
 
-    // receiver info
-    receiver: String,
-
-    // coin info transferred to receiver
-    transferred_ft_commitment_value: String,
-    transferred_salt: String,
-    transferred_ft_commitment: String,
-    transferred_ft_commitment_index: String,
-
-    // coin info of change got from transfer
-    change_ft_commitment_value: String,
-    change_salt: String,
-    change_ft_ommitment: String,
-    change_ft_commitment_index: Number,
-  },
-  {
-    timestamps: {
-      createdAt: 'created_at',
-      updatedAt: 'updated_at',
+    sender: {
+      publicKey: {
+        type: String,
+      },
+      name: {
+        type: String,
+      },
+    },
+    receiver: {
+      publicKey: {
+        type: String,
+      },
+      name: {
+        type: String,
+      },
     },
   },
+  { timestamps: true },
 );

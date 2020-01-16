@@ -9,7 +9,7 @@ import { UtilService } from '../../services/utils/util.service';
  *  This component, which is used for rendering the page of Mint ERC-20 token commitment.
  */
 @Component({
-  selector: 'ft-commitment-mint',
+  selector: 'app-ft-commitment-mint',
   templateUrl: './index.html',
   providers: [FtCommitmentService, UserService, UtilService],
   styleUrls: ['./index.css'],
@@ -87,9 +87,9 @@ export default class FtCommitmentMintComponent implements OnInit {
     const hexValue = (this.ftCommitmentMintForm.controls['A'].value).toString(16);
     const hexString = '0x' + hexValue.padStart(32, '0');
     console.log('Hexstring::', hexString);
-    this.ftCommitmentService.mintFTCommitment(hexString, localStorage.getItem('publickey')).subscribe(tokenDetails => {
+    this.ftCommitmentService.mintFTCommitment(hexString).subscribe(tokenDetails => {
       this.isRequesting = false;
-      this.toastr.success('ft-commitment Minted is ' + tokenDetails['data']['ft_commitment']);
+      this.toastr.success('ft-commitment Minted is ' + tokenDetails['data']['commitment']);
       this.router.navigate(['/overview'], { queryParams: { selectedTab: 'ft-commitment' } });
     }, error => {
         this.isRequesting = false;

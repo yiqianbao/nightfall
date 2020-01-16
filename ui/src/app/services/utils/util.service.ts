@@ -33,6 +33,14 @@ export class UtilService {
     return Number(hex);
   }
 
+  sumCommitmentValues(commitment) {
+    return commitment.reduce((a, b) => {
+      return {
+        value: (Number(a.value) + Number(b.value)),
+      };
+    });
+  }
+
   validate(evt) {
     const theEvent = evt || window.event;
     let key;
@@ -65,12 +73,20 @@ export class UtilService {
     }
   }
 
+  replaceUnderscores(string) {
+    return string.replace(/_/g, ' ').toUpperCase();
+  }
+
   noNegtiveNumber(evt) {
     let value;
     if (evt.type !== 'paste') {
       value = evt.key;
-    }  
-    if(isNaN(value)) return evt.returnValue = false;
-    if(Number(value) < 0) return evt.returnValue = false;
+    }
+    if (isNaN(value)) {
+      return evt.returnValue = false;
+    }
+    if (Number(value) < 0) {
+      return evt.returnValue = false;
+    }
   }
 }

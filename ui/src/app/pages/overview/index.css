@@ -129,15 +129,6 @@ tbody{
   color: blue;
 }
 
-.active:before{
-  font-family: 'FontAwesome';
-  content: "\f107";
-}
-
-.collapsed:before{
-  font-family: 'FontAwesome';
-  content: "\f105";
-}
 
 .details-table{
   font-size: smaller;

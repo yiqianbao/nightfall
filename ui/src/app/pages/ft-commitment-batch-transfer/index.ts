@@ -5,13 +5,13 @@ import FtCommitmentService from '../../services/ft-commitment.service';
 import UserService from '../../services/user.service';
 import { UtilService } from '../../services/utils/util.service';
 import { NgSelectComponent } from '@ng-select/ng-select';
-import { FormGroup, FormBuilder, FormArray } from '@angular/forms'
+import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 
 /**
  *  ft-commitment trasfer component, which is used for rendering the page of transfer ERC-20 token commitments to the selected receipent.
  */
 @Component({
-  selector: 'ft-commitment-batch-transfer',
+  selector: 'app-ft-commitment-batch-transfer',
   templateUrl: './index.html',
   providers: [FtCommitmentService, UserService, UtilService],
   styleUrls: ['./index.css']
@@ -99,7 +99,9 @@ export default class FtCommitmentBatchTrasnferComponent implements OnInit , Afte
 
   ngAfterContentInit() {
     setTimeout(() => {
-      this.select.filterInput.nativeElement.focus();
+      if (this.select) {
+        this.select.filterInput.nativeElement.focus();
+      }
     }, 500);
   }
 
@@ -112,7 +114,6 @@ export default class FtCommitmentBatchTrasnferComponent implements OnInit , Afte
       .subscribe(
         (data) => {
         this.isRequesting = false;
-        console.log(data['data']);
         if (data && data['data'].length ) {
           this.transactions = data['data'].map((tx, indx) => {
             tx.selected = false;
@@ -143,23 +144,6 @@ export default class FtCommitmentBatchTrasnferComponent implements OnInit , Afte
   }
 
   /**
-   * Method to generate batch transaction object.
-   */
-  batchTransactionGenerator () {
-    if(this.selectedCommitmentList[0]){
-      const data = this.selectedCommitmentList[0];
-      this.batchTransactions = {
-        "amount": data.ft_commitment_value,
-        "salt": data.salt,
-        "commitment": data.ft_commitment,
-        "commitmentIndex": data.ft_commitment_index,
-        "id": data.id,
-        "transferData": this.transferData,
-      }
-    }
-  }
-
-  /**
    * Method to transfer two ERC-20 token commitement to selected user.
    */
   initiateTransfer () {
@@ -170,42 +154,42 @@ export default class FtCommitmentBatchTrasnferComponent implements OnInit , Afte
       return;
     }
     this.transferData = this.transferDetails.value.map(({value, receiverName}) => {
-      if(value == null || receiverName == null){
+      if (value == null || receiverName == null) {
         emptyInputFlag = true;
-      }else{
-        if(value != null){
+      } else {
+        if (value != null) {
           return {
             value: this.toHex(value),
-            receiverName,
-          }
+            receiver: { name: receiverName },
+          };
         }
       }
     });
     const { transactions } = this;
-    if(emptyInputFlag == true){
+    if (emptyInputFlag === true) {
       this.toastr.error('All fields are mandatory');
       return;
     }
     this.isRequesting = true;
-    this.batchTransactionGenerator();
-    const transactionId = this.batchTransactions['id'];
+    const [commitment] = this.selectedCommitmentList;
+    // const transactionId = this.batchTransactions['id'];
     this.ftCommitmentService.transferFTBatchCommitment(
-      this.batchTransactions.amount,
-      this.batchTransactions.salt,
-      this.batchTransactions.commitment,
-      this.batchTransactions.commitmentIndex,
-      this.batchTransactions.transferData
+      this.selectedCommitmentList[0],
+      this.transferData,
     ).subscribe( data => {
         this.isRequesting = false;
         this.toastr.success('Transferred to selected receivers');
-        transactions.splice(transactionId, 1);
+        transactions.splice(commitment.id, 1);
         this.getFTCommitments();
         this.router.navigate(['/overview'], { queryParams: { selectedTab: 'ft-batch-commitment' } });
       }, ({error}) => {
         this.isRequesting = false;
-        if (error.error && error.error.message) this.toastr.error(error.error.message, 'Error');
-        else this.toastr.error('Please try again', 'Error');
-    }); 
+        if (error.error && error.error.message) {
+          this.toastr.error(error.error.message, 'Error');
+        } else {
+          this.toastr.error('Please try again', 'Error');
+        }
+    });
   }
 
   /**
@@ -213,12 +197,10 @@ export default class FtCommitmentBatchTrasnferComponent implements OnInit , Afte
    * @param item {Object} Item to be removed.
    */
   onRemove(item) {
-    console.log('selected items', this.selectedCommitmentList, item);
     const newList = this.selectedCommitmentList.filter((it) => {
       return item._id !== it._id;
     });
     this.selectedCommitmentList = newList;
-    console.log('selected new items', this.selectedCommitmentList);
   }
 
   /**
@@ -232,7 +214,7 @@ export default class FtCommitmentBatchTrasnferComponent implements OnInit , Afte
       return;
     }
     term = term.toLocaleLowerCase();
-    const itemToSearch = this.utilService.convertToNumber(item.ft_commitment_value).toString().toLocaleLowerCase();
+    const itemToSearch = this.utilService.convertToNumber(item.value).toString().toLocaleLowerCase();
     return itemToSearch.indexOf(term) > -1;
   }
 
@@ -249,8 +231,7 @@ export default class FtCommitmentBatchTrasnferComponent implements OnInit , Afte
     return '0x' + hexValue.padStart(32, '0');
   }
   /**
-   * Method to return the value to and reveiver name updated in form 
-   *
+   * Method to return the value to and reveiver name updated in form
    */
   createItemFormGroup(): FormGroup {
     return this.formBuilder.group({
@@ -264,7 +245,7 @@ export default class FtCommitmentBatchTrasnferComponent implements OnInit , Afte
    *
    * @param event {Event} Event
    */
-  addTransferInfo(event){
+  addTransferInfo(event) {
     this.transferDetails.push(this.createItemFormGroup());
   }
 
@@ -273,7 +254,7 @@ export default class FtCommitmentBatchTrasnferComponent implements OnInit , Afte
    *
    * @param index {Number} Number
    */
-  removeTransferInfo(index: number){
+  removeTransferInfo(index: number) {
     this.transferDetails.removeAt(index);
   }
 }
