@@ -2,44 +2,83 @@ import { Schema } from 'mongoose';
 
 export default new Schema(
   {
-    type: {
+    transactionType: {
       type: String,
-      enum: ['minted', 'transferred', 'received', 'burned'],
+      enum: ['mint', 'transfer_outgoing', 'transfer_incoming', 'burn'],
       required: true,
     },
-    token_uri: {
-      type: String,
-      required: true,
-    },
-    token_id: {
-      type: String,
-      required: true,
-    },
-    salt: {
-      type: String,
-      required: true,
-    },
-    token_commitment: {
-      type: String,
-      index: true,
-      required: true,
-    },
-    token_commitment_index: {
-      type: Number,
-      required: true,
+    inputCommitments: [
+      {
+        tokenUri: {
+          type: String,
+          required: true,
+        },
+        tokenId: {
+          type: String,
+          required: true,
+        },
+        salt: {
+          type: String,
+          required: true,
+        },
+        commitment: {
+          type: String,
+          index: true,
+          required: true,
+        },
+        commitmentIndex: {
+          type: Number,
+          required: true,
+        },
+        owner: {
+          name: String,
+          publicKey: String,
+        },
+      },
+    ],
+
+    outputCommitments: [
+      {
+        tokenUri: {
+          type: String,
+          required: true,
+        },
+        tokenId: {
+          type: String,
+          required: true,
+        },
+        salt: {
+          type: String,
+          required: true,
+        },
+        commitment: {
+          type: String,
+          index: true,
+          required: true,
+        },
+        commitmentIndex: {
+          type: Number,
+          required: true,
+        },
+        owner: {
+          name: String,
+          publicKey: String,
+        },
+      },
+    ],
+
+    sender: {
+      publicKey: String,
+      name: String,
     },
 
-    // receiver info
-    receiver: String,
-
-    transferred_salt: String,
-    transferred_token_commitment: String,
-    transferred_token_commitment_index: Number,
+    receiver: {
+      publicKey: String,
+      name: String,
+      address: String,
+    },
   },
   {
-    timestamps: {
-      createdAt: 'created_at',
-      updatedAt: 'updated_at',
-    },
+    timestamps: true,
   },
 );

@@ -24,7 +24,7 @@ export async function loginHandler(req, res, next) {
       address: data.address,
       name: data.name,
       jwtToken: token,
-      sk_A: data.secretkey,
+      sk_A: data.secretKey,
     };
     await setWhisperIdentityAndSubscribe(userData);
 
@@ -64,7 +64,7 @@ export async function createAccountHandler(req, res, next) {
 
     await offchain.setName(address, name);
     await offchain.setZkpPublicKey(address, {
-      pk: data.publickey,
+      publicKey: data.publicKey,
     });
 
     res.data = data;
@@ -176,7 +176,7 @@ export async function updateContractInfo(req, res, next) {
       const { contractName, contractAddress, isSelected } = ftCommitmentShield;
 
       const isFTShieldPreviousSelected =
-        user.selected_coin_shield_contract === ftCommitmentShield.contractAddress;
+        user.selectedFTokenShield === ftCommitmentShield.contractAddress;
 
       await db.updateFTShieldContractInfoByContractAddress(req.user, contractAddress, {
         contractName,
@@ -194,7 +194,7 @@ export async function updateContractInfo(req, res, next) {
       const { contractName, contractAddress, isSelected } = nftCommitmentShield;
 
       const isNFTShieldPreviousSelected =
-        user.selected_token_shield_contract === nftCommitmentShield.contractAddress;
+        user.selectedNFTokenShield === nftCommitmentShield.contractAddress;
 
       await db.updateNFTShieldContractInfoByContractAddress(req.user, contractAddress, {
         contractName,
@@ -252,6 +252,14 @@ export async function deleteContractInfo(req, res, next) {
 
 /**
  * This function will retrieve all the registered names.
+ * @apiSuccess (Success 200) {Array} Array of all registered names.
+ *
+ * @apiSuccessExample {json} Success response:
+ * HTTPS 200 OK
+ * "data":[
+ *    "alice",
+ *     "bob"
+ * ]
  * @param {*} req
  * @param {*} res
  */
@@ -266,6 +274,14 @@ export async function getAllRegisteredNames(req, res, next) {
 
 /**
  * This function will fetch token commitments counts from database
+ * @apiSuccess (Success 200) {Object} data count of ft and nft commitments.
+ *
+ * @apiSuccessExample {json} Success response:
+ * HTTPS 200 OK
+ * data:{
+ *    "nftCommitmentCount":0,
+ *    "ftCommitmentCount":0
+ * }
  * @param {*} req
  * @param {*} res
  */

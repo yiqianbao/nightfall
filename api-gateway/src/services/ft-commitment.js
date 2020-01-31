@@ -6,7 +6,7 @@ import { accounts, db, offchain, zkp } from '../rest';
  * req.user {
     address: '0x04b95c76d5075620a655b707a7901462aea8656d',
     name: 'alice',
-    pk_A: '0x4c45963a12f0dfa530285fde66ac235c8f8ddf8d178098cdb292ac',
+    publicKey: '0x4c45963a12f0dfa530285fde66ac235c8f8ddf8d178098cdb292ac',
     password: 'alicesPassword'
  }
  * req.body {
@@ -35,7 +35,7 @@ export async function insertFTCommitmentToDb(req, res, next) {
  * req.user {
     address: '0x04b95c76d5075620a655b707a7901462aea8656d',
     name: 'alice',
-    pk_A: '0x4c45963a12f0dfa530285fde66ac235c8f8ddf8d178098cdb292ac',
+    publicKey: '0x4c45963a12f0dfa530285fde66ac235c8f8ddf8d178098cdb292ac',
     password: 'alicesPassword'
  }
  * req.query {
@@ -59,7 +59,7 @@ export async function getFTCommitments(req, res, next) {
  * req.user {
     address: '0x04b95c76d5075620a655b707a7901462aea8656d',
     name: 'alice',
-    pk_A: '0x4c45963a12f0dfa530285fde66ac235c8f8ddf8d178098cdb292ac',
+    publicKey: '0x4c45963a12f0dfa530285fde66ac235c8f8ddf8d178098cdb292ac',
     password: 'alicesPassword'
  }
  * req.query {
@@ -93,7 +93,7 @@ export async function checkCorrectnessForFTCommitment(req, res, next) {
  * req.user {
     address: '0x3bd5ae4b9ae233843d9ccd30b16d3dbc0acc5b7f',
     name: 'alice',
-    pk_A: '0x70dd53411043c9ff4711ba6b6c779cec028bd43e6f525a25af36b8',
+    publicKey: '0x70dd53411043c9ff4711ba6b6c779cec028bd43e6f525a25af36b8',
     password: 'alicesPassword'
   }
  * req.body {
@@ -108,10 +108,7 @@ export async function mintFTCommitment(req, res, next) {
   const {
     outputCommitments: [outputCommitment],
   } = req.body;
-  outputCommitment.owner = {
-    name: req.user.name,
-    publicKey: req.user.pk_A,
-  };
+  outputCommitment.owner = req.user;
   try {
     const data = await zkp.mintFTCommitment(req.user, outputCommitment);
 
@@ -139,7 +136,7 @@ export async function mintFTCommitment(req, res, next) {
  * req.user {
     address: '0x3bd5ae4b9ae233843d9ccd30b16d3dbc0acc5b7f',
     name: 'alice',
-    pk_A: '0x70dd53411043c9ff4711ba6b6c779cec028bd43e6f525a25af36b8',
+    publicKey: '0x70dd53411043c9ff4711ba6b6c779cec028bd43e6f525a25af36b8',
     password: 'alicesPassword'
   }
   * req.body {
@@ -185,19 +182,16 @@ export async function transferFTCommitment(req, res, next) {
 
     receiver.publicKey = await offchain.getZkpPublicKeyFromName(receiver.name); // fetch pk from PKD by passing username
 
-    // get logged in user's secretkey.
+    // get logged in user's secretKey.
     req.body.sender = {};
-    req.body.sender.secretKey = (await db.fetchUser(req.user)).secretkey;
+    req.body.sender.secretKey = (await db.fetchUser(req.user)).secretKey;
 
     const { outputCommitments, txReceipt } = await zkp.transferFTCommitment({ address }, req.body);
 
     const [transferCommitment, changeCommitment] = outputCommitments;
     transferCommitment.owner = receiver;
     transferCommitment.commitmentIndex = parseInt(transferCommitment.commitmentIndex, 16);
-    changeCommitment.owner = {
-      name: req.user.name,
-      publicKey: req.user.pk_A,
-    };
+    changeCommitment.owner = req.user;
     changeCommitment.commitmentIndex = parseInt(changeCommitment.commitmentIndex, 16);
 
     // update slected coin1 with tansferred data
@@ -212,16 +206,11 @@ export async function transferFTCommitment(req, res, next) {
       isTransferred: true,
     });
 
-    // transfer is only case where we need to call api to add coin transaction
-    // rest of case inserting coin or updating coin will add respective transfer log.
     await db.insertFTCommitmentTransaction(req.user, {
       inputCommitments,
       outputCommitments,
       receiver,
-      sender: {
-        name: req.user.name,
-        publicKey: req.user.pk_A,
-      },
+      sender: req.user,
       isTransferred: true,
     });
 
@@ -237,14 +226,11 @@ export async function transferFTCommitment(req, res, next) {
     // note:
     // E is the value transferred to the receiver
     // F is the value returned as 'change' to the sender
-    await sendWhisperMessage(user.shh_identity, {
+    await sendWhisperMessage(user.shhIdentity, {
       outputCommitments: [transferCommitment],
       blockNumber: txReceipt.receipt.blockNumber,
       receiver,
-      sender: {
-        name: req.user.name,
-        publicKey: req.user.pk_A,
-      },
+      sender: req.user,
       isReceived: true,
       for: 'FTCommitment',
     });
@@ -286,7 +272,7 @@ export async function burnFTCommitment(req, res, next) {
     res.data = await zkp.burnFTCommitment(req.user, {
       ...commitment,
       sender: {
-        secretKey: user.secretkey,
+        secretKey: user.secretKey,
       },
       receiver,
     });
@@ -299,14 +285,11 @@ export async function burnFTCommitment(req, res, next) {
     await db.insertFTCommitmentTransaction(req.user, {
       inputCommitments: [commitment],
       receiver,
-      sender: {
-        name: req.user.name,
-        publicKey: req.user.pk_A,
-      },
+      sender: req.user,
       isBurned: true,
     });
 
-    await sendWhisperMessage(user.shh_identity, {
+    await sendWhisperMessage(user.shhIdentity, {
       value: Number(commitment.value),
       shieldContractAddress: user.selected_coin_shield_contract,
       receiver,
@@ -326,7 +309,7 @@ export async function burnFTCommitment(req, res, next) {
  * req.user {
     address: '0x3bd5ae4b9ae233843d9ccd30b16d3dbc0acc5b7f',
     name: 'alice',
-    pk_A: '0x70dd53411043c9ff4711ba6b6c779cec028bd43e6f525a25af36b8',
+    publicKey: '0x70dd53411043c9ff4711ba6b6c779cec028bd43e6f525a25af36b8',
     password: 'alicesPassword'
   }
  * req.body {
@@ -371,7 +354,7 @@ export async function simpleFTCommitmentBatchTransfer(req, res, next) {
     await db.updateUserWithPrivateAccount(req.user, { address, password });
     await accounts.unlockAccount({ address, password });
 
-    // get logged in user's secretkey.
+    // get logged in user's secretKey.
     const user = await db.fetchUser(req.user);
 
     for (const data of outputCommitments) {
@@ -390,7 +373,7 @@ export async function simpleFTCommitmentBatchTransfer(req, res, next) {
         value: `0x${selectedCommitmentValue.toString(16).padStart(32, 0)}`,
         receiver: {
           name: req.user.name,
-          publicKey: req.user.pk_A,
+          publicKey: req.user.publicKey,
         },
       };
       selectedCommitmentValue = 0;
@@ -401,7 +384,7 @@ export async function simpleFTCommitmentBatchTransfer(req, res, next) {
         inputCommitment,
         outputCommitments,
         sender: {
-          secretKey: user.secretkey,
+          secretKey: user.secretKey,
         },
       },
     );
@@ -424,7 +407,7 @@ export async function simpleFTCommitmentBatchTransfer(req, res, next) {
       /* eslint-disable no-continue */
       if (!Number(data.value)) continue;
       data.owner = data.receiver;
-      await sendWhisperMessage(user.shh_identity, {
+      await sendWhisperMessage(user.shhIdentity, {
         outputCommitments: [data],
         blockNumber: txReceipt.receipt.blockNumber,
         receiver: data.receiver,
@@ -437,10 +420,7 @@ export async function simpleFTCommitmentBatchTransfer(req, res, next) {
     await db.insertFTCommitmentTransaction(req.user, {
       inputCommitments: [inputCommitment],
       outputCommitments: commitments,
-      sender: {
-        name: req.user.name,
-        publicKey: req.user.pk_A,
-      },
+      sender: req.user,
       isBatchTransferred: true,
     });
 

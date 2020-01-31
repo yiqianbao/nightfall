@@ -42,7 +42,7 @@ _All solidity test code implemented in Remix as follows:_
 pragma solidity ^0.5.8;
 import "remix_tests.sol"; // this import is automatically injected by Remix.
 contract test {
-  bytes input = hex"ffff";
+  bytes input = hex'ffff';
   bytes32 output;
   function shaIt() public returns (bytes32) {
     output = sha256(abi.encodePacked(input));

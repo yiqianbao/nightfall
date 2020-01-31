@@ -9,14 +9,18 @@ export default class NftTransactionService {
    * This function add record in nft_transaction tables.
    * @param {Object} data
    * data = {
-   *  uri,
-   *  token_id,
-   *  shield_contract_address,
-   *  type,
-   *  sender,
-   *  sender_address,
-   *  receiver,
-   *  receiver_address,
+   *  tokenUri,
+   *  tokenId,
+   *  shieldcontractAddress,
+   *  transactionType,
+   *  sender: {
+   *    name,
+   *    address,
+   *  },
+   *  receiver: {
+   *    name,
+   *    address,
+   *  }
    * }
    */
   insertTransaction(data) {
@@ -34,7 +38,7 @@ export default class NftTransactionService {
       COLLECTIONS.NFT_TRANSACTION,
       {},
       undefined,
-      { created_at: -1 },
+      { createdAt: -1 },
       parseInt(pageNo, 10),
       parseInt(limit, 10),
     );

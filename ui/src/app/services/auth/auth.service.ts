@@ -25,7 +25,7 @@ export class AuthService implements CanActivate {
     localStorage.removeItem('token');
     localStorage.removeItem('address');
     localStorage.removeItem('name');
-    localStorage.removeItem('publickey');
+    localStorage.removeItem('publicKey');
   }
 
   /**

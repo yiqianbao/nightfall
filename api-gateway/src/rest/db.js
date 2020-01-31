@@ -219,6 +219,18 @@ export default {
     return requestWrapper(options);
   },
 
+  // insert non fungible token commitment transaction info in commitment_transaction collection
+  insertNFTCommitmentTransaction({ name }, body) {
+    const options = {
+      url: `${url}/nft-commitments/transactions`,
+      method: 'POST',
+      json: true,
+      headers: { loggedInUsername: name },
+      body,
+    };
+    return requestWrapper(options);
+  },
+
   // fetch NFT commitment transactions
   getNFTCommitmentTransactions({ name }, qs) {
     const options = {

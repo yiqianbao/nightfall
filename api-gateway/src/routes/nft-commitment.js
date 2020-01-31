@@ -19,29 +19,30 @@ router.route('/checkCorrectnessForNFTCommitment').post(checkCorrectnessForNFTCom
  * @apiName  Mint a ERC-721 commitment
  * @apiGroup ERC-721 commitment
  *
- * @apiParam (Request body) {String} uri URI of token.
- * @apiParam (Request body) {String} tokenID unique ERC-721 token Id.
- * @apiParam (Request body) {String} S_A Random generated Salt.
+ * @apiParam (Request body) {String} tokenUri URI of token.
+ * @apiParam (Request body) {String} tokenId unique ERC-721 token Id.
+ * @apiParam (Request body) {String} salt Random generated Salt.
  *
  * @apiExample {js} Example usage:
  * const data = {
- *    S_A: '0xE9A313C89C449AF6E630C25AB3ACC0FC3BAB821638E0D55599B518',
- *    uri: 'unique token name',
- *    tokenID: '0x1448d8ab4e0d610000000000000000000000000000000000000000000000000'
+ *    outputCommitments: [{
+ *      tokenUri: 'unique token name',
+ *      tokenId: '0x1448d8ab4e0d610000000000000000000000000000000000000000000000000'
+ *    }]
  * }
  *
  * $http.post(url, data)
  *   .success((res, status) => doSomethingHere())
  *   .error((err, status) => doSomethingHere());
  *
- * @apiSuccess (Success 200) {String} z_A Token commitment number.
- * @apiSuccess (Success 200) {Number} z_A_index token index value from blockchain.
+ * @apiSuccess (Success 200) {String} commitment Token commitment number.
+ * @apiSuccess (Success 200) {Number} commitmentIndex token index value from blockchain.
  *
  * @apiSuccessExample {json} Success response:
  *     HTTPS 200 OK
  *	  {
- *		"z_A":"0x5b531cd1a758cf33affd093fcdb3864bfa72f7717f593a8d7d0118",
- *		"z_A_index":"0"
+ *		"commitment":"0x5b531cd1a758cf33affd093fcdb3864bfa72f7717f593a8d7d0118",
+ *		"commitmentIndex":"0"
  *	  }
  */
 router.route('/mintNFTCommitment').post(mintToken);
@@ -52,41 +53,42 @@ router.route('/mintNFTCommitment').post(mintToken);
  * @apiName  Transfer a ERC-721 commitment
  * @apiGroup ERC-721 commitment
  *
- * @apiParam (Request body) {String} A Hex String of token.
- * @apiParam (Request body) {String} uri URI of token.
- * @apiParam (Request body) {String} S_A Salt of token A.
- * @apiParam (Request body) {String} S_B Random generated Salt.
- * @apiParam (Request body) {String} sk_A Secret key of Transferror (Alice).
- * @apiParam (Request body) {String} pk_B Public key of Receiver (Bob).
- * @apiParam (Request body) {String} z_A Token commitment of token A.
- * @apiParam (Request body) {String} z_A_index Token index of token A.
- * @apiParam (Request body) {String} receiver_name Receiver name.
+ * @apiParam (Request body) {Object} inputCommitments selected commitments.
+ * @apiParam (Request body) {Object} outputCommitments Hex String of value.
+ * @apiParam (Request body) {Object} receiver Object with Receiver name.
  *
  * @apiExample {js} Example usage:
  * const data = {
- *    A: '0x1448d8ab4e0d610000000000000000000000000000000000000000000000000',
- *    uri: 'unique token name',
- *    S_A: '0xe9a313c89c449af6e630c25ab3acc0fc3bab821638e0d55599b518',
- *    S_B: '0xF4C7028D78D140333A36381540E70E6210895A994429FB0483FB91',
- *    sk_A: '0xcf6267b9393a8187ab72bf095e9ffc34af1a5d3d069b9d26e21eac',
- *    z_A: '0xca2c0c099289896be4d72c74f801bed6e4b2cd5297bfcf29325484',
- *    receiver_name: 'bob',
- *    z_A_index: 0,
- *    pk_B: '0xebbabcc471780d9581451e1b2f03bb54638800dd441d1e5c2344f8'
- * }
+ *  inputCommitments: [{
+ *    owner: {
+ *      name: "alice",
+ *      publicKey: "0xd1a1fc7064b0c0d4a071d295734d4210b63bd1396efd47d074ea5ac3b1ec98fb"
+ *    }
+ *   tokenUri: "sample"
+ *   tokenId: "0x37b95da113e20000000000000000000000000000000000000000000000000000"
+ *   salt: "0x04a4d4f1bb2053e359c33ae835c180a434ac5fd25858b49098d3eb635fc989c4"
+ *   commitment: "0x1f1657d4e05a0e2a7099ff07530bce6a07099cb062b1e70dfe3066c24db691de"
+ *   commitmentIndex: 0
+ *   isMinted: true
+ *  }],
+ *  receiver: {
+ *    name: "bob"
+ *  }
  *
  * $http.post(url, data)
  *   .success((res, status) => doSomethingHere())
  *   .error((err, status) => doSomethingHere());
  *
- * @apiSuccess (Success 200) {String} z_B Token commitment number.
- * @apiSuccess (Success 200) {Number} z_B_index token index value from blockchain.
+ * @apiSuccess (Success 200) {String} commitment Token commitment number.
+ * @apiSuccess (Success 200) {Number} commitmentIndex token index value from blockchain.
  *
  * @apiSuccessExample {json} Success response:
  *     HTTPS 200 OK
  *	  {
- *		"z_B":"0x5b531cd1a758cf33affd093fcdb3864bfa72f7717f593a8d7d0118",
- *		"z_B_index":"1"
+ *		"commitment":"0x5b531cd1a758cf33affd093fcdb3864bfa72f7717f593a8d7d0118",
+ *		"commitmentIndex":"1",
+ *    "salt": "0xe9a313c89c449af6e630c25ab3acc0fc3bab821638e0d55599b518",
+ *    "txReceipt": "0xcf6267b9393a8187ab72bf095e9ffc34af1a5d3d069b9d26e210ac",
  *	  }
  */
 router.route('/transferNFTCommitment').post(transferToken);
@@ -97,21 +99,32 @@ router.route('/transferNFTCommitment').post(transferToken);
  * @apiName  Burn a ERC-721 commitment
  * @apiGroup ERC-721 commitment
  *
- * @apiParam (Request body) {String} A Hex String of token.
- * @apiParam (Request body) {String} uri URI of token.
- * @apiParam (Request body) {String} S_A Salt of token A.
- * @apiParam (Request body) {String} sk_A Secret key of Transferror (Alice).
- * @apiParam (Request body) {String} z_A Token commitment of token A.
- * @apiParam (Request body) {String} z_A_index Token index of token A.
+ * @apiParam (Request body) {String} tokenId Hex String of a non fungible token to burn.
+ * @apiParam (Request body) {String} tokenUri URI of the non fungible token.
+ * @apiParam (Request body) {String} salt Salt of the non fungible token.
+ * @apiParam (Request body) {String} senderSecretKey Secret key of Transferror (Alice).
+ * @apiParam (Request body) {String} commitment Token commitment of the non fungible token.
+ * @apiParam (Request body) {String} commitmentIndex Token index of the non fungible token.
+ * @apiParam (Request body) {String} reciever Reciever name of the non fungible token.
  *
  * @apiExample {js} Example usage:
  * const data = {
- *    A: '0x1448d8ab4e0d610000000000000000000000000000000000000000000000000',
- *    uri: 'unique token name',
- *    S_A: '0xe9a313c89c449af6e630c25ab3acc0fc3bab821638e0d55599b518',
- *    sk_A: '0xcf6267b9393a8187ab72bf095e9ffc34af1a5d3d069b9d26e21eac',
- *    z_A: '0xca2c0c099289896be4d72c74f801bed6e4b2cd5297bfcf29325484',
- *    z_A_index: 0,
+ *    inputCommitments: [
+ *    {
+ *      tokenId: '0x1448d8ab4e0d610000000000000000000000000000000000000000000000000',
+ *      tokenUri: 'unique token name',
+ *      salt: '0xe9a313c89c449af6e630c25ab3acc0fc3bab821638e0d55599b518',
+ *      senderSecretKey: '0xcf6267b9393a8187ab72bf095e9ffc34af1a5d3d069b9d26e21eac',
+ *      commitment: '0xca2c0c099289896be4d72c74f801bed6e4b2cd5297bfcf29325484',
+ *      commitmentIndex: 0,
+ *      owner: {
+ *        name: "bob",
+ *        publicKey: "0xbcbcf73fd64ccae777d3324cbfa97ec38599ac412c6fb249abb0c98a23ac2d00"
+ *      }
+ *    }],
+ *   receiver: {
+ *      name: 'bob',
+ *   },
  * }
  *
  * $http.post(url, data)
@@ -134,11 +147,11 @@ router.route('/burnNFTCommitment').post(burnToken);
  * @apiName  Insert ERC-721 commitment
  * @apiGroup ERC-721 commitment
  *
- * @apiParam (Request body) {String} tokenId Hex String of token.
- * @apiParam (Request body) {String} tokenUri URI of token.
- * @apiParam (Request body) {String} salt Salt of token A.
- * @apiParam (Request body) {String} commitment Token commitment of token A.
- * @apiParam (Request body) {String} commitmentIndex Token index of token A.
+ * @apiParam (Request body) {String} tokenId Hex String of a non fungible token.
+ * @apiParam (Request body) {String} tokenUri URI of the non fungible token.
+ * @apiParam (Request body) {String} salt Salt of the non fungible token.
+ * @apiParam (Request body) {String} commitment Token commitment of the non fungible token.
+ * @apiParam (Request body) {String} commitmentIndex Token index of the non fungible token.
  * @apiParam (Request body) {Boolean} isMinted if data is for minted token.
  * @apiParam (Request body) {Bolean} isReceived if data is transaferred token.
  *
@@ -149,9 +162,8 @@ router.route('/burnNFTCommitment').post(burnToken);
  *    salt: '0xe9a313c89c449af6e630c25ab3acc0fc3bab821638e0d55599b518',
  *    commitment: '0xca2c0c099289896be4d72c74f801bed6e4b2cd5297bfcf29325484',
  *    commitmentIndex: 0,
- *    isMinted: true  
+ *    isMinted: true,
  *    isReceived: true
-
  * }
  *
  * $http.post(url, data)
@@ -197,12 +209,12 @@ router.post('/insertNFTCommitmentToDb', insertNFTCommitmentToDb);
  *      "data":[
  *        {
  *          "_id":"5d957d9ff359c40039add23c",
- *          "token_uri":"one",
- *          "token_id":"0x119eda3adb1dab00000000000000000000000000000000000000000000000000",
+ *          "tokenUri":"one",
+ *          "tokenId":"0x119eda3adb1dab00000000000000000000000000000000000000000000000000",
  *          "salt":"0x207091ec5be2346fad6a402cf41ea24d0959561fa2502a75e93b05",
- *          "token_commitment":"0x6e139af509abe69a2f642e12317bd6fcb049694e5f3859bda03945",
- *          "token_commitment_index":0,
- *          "is_minted":true,
+ *          "commitment":"0x6e139af509abe69a2f642e12317bd6fcb049694e5f3859bda03945",
+ *          "commitmentIndex":0,
+ *          "isMinted":true,
  *          "created_at":"2019-10-03T04:48:31.223Z",
  *          "updated_at":"2019-10-03T04:48:31.223Z",
  *        }

@@ -2,29 +2,33 @@ import { Schema } from 'mongoose';
 
 export default new Schema(
   {
-    type: {
+    transactionType: {
       type: String,
-      enum: ['minted', 'transferred', 'received', 'burned', 'shielded'],
+      enum: ['mint', 'transfer_outgoing', 'transfer_incoming', 'burn', 'shield'],
       required: true,
     },
-    uri: {
+    tokenUri: {
       type: String,
       required: true,
     },
-    token_id: {
+    tokenId: {
       type: String,
       index: true,
       required: true,
     },
-    shield_contract_address: String,
+    shieldContractAddress: String,
 
     // receiver info
-    receiver: String,
-    receiver_address: String,
+    receiver: {
+      name: String,
+      address: String,
+    },
 
     // sender info
-    sender: String,
-    sender_address: String,
+    sender: {
+      name: String,
+      address: String,
+    },
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
+  { timestamps: true },
 );

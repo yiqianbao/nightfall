@@ -21,12 +21,12 @@ export default class NftService {
   *
   * @param tokenURI {String} Token name
   */
-  mintNFToken (tokenURI: string) {
+  mintNFToken (tokenUri: string) {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
 
-    const body = { tokenURI };
+    const body = { tokenUri };
 
     const url = config.apiGateway.root + 'mintNFToken';
 
@@ -39,13 +39,13 @@ export default class NftService {
    * Method to initiate a HTTP request to transfer ERC-721 token.
    *
    * @param nftToken {Object} Selected ERC-721 token
-   * @param receiver_name {String} receiver name
+   * @param receiver {Object} receiver
    */
-  transferNFToken (nftToken: any, receiver_name: string) {
+  transferNFToken (nftToken: any, receiver: any) {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
-    const body = { tokenID: nftToken.token_id, uri: nftToken.uri, receiver_name, contractAddress: nftToken.shield_contract_address};
+    const body = { ...nftToken, receiver};
     const url = config.apiGateway.root + 'transferNFToken';
     return this.http
       .post(url, body, httpOptions)
@@ -62,7 +62,7 @@ export default class NftService {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
 
-    const body = { tokenID: nftToken.token_id, uri: nftToken.uri, contractAddress: nftToken.shield_contract_address};
+    const body = nftToken;
     const url = config.apiGateway.root + 'burnNFToken';
 
     return this.http

@@ -126,26 +126,22 @@ export class UserAccountsComponent extends Config implements OnInit {
    *
    * @param data {Object} Unformated data source
    */
-  formatDataSource(data) {
-    const coin_shield_contracts = data.coin_shield_contracts || [];
-    const token_shield_contracts = data.token_shield_contracts || [];
-    const selected_coin_shield_contract = data.selected_coin_shield_contract;
-    const selected_token_shield_contract = data.selected_token_shield_contract;
+  formatDataSource({ fTokenShields, nfTokenShields, selectedFTokenShield, selectedNFTokenShield  }) {
     const formatedData = [];
-    token_shield_contracts.map((item) => {
+    nfTokenShields.map((item) => {
       const token721 =   {
-            contractAdd: item.contract_address,
-            contractName: item.contract_name,
-            selection: (selected_token_shield_contract === item.contract_address) ? true : false,
+            contractAdd: item.contractAddress,
+            contractName: item.contractName,
+            selection: (selectedNFTokenShield === item.contractAddress) ? true : false,
             tokenShield: true
         };
         formatedData.push(token721);
     });
-    coin_shield_contracts.map((item) => {
+    fTokenShields.map((item) => {
       const token20 =   {
-            contractAdd: item.contract_address,
-            contractName: item.contract_name,
-            selection: (selected_coin_shield_contract === item.contract_address) ? true : false,
+            contractAdd: item.contractAddress,
+            contractName: item.contractName,
+            selection: (selectedFTokenShield === item.contractAddress) ? true : false,
             coinShield: true
         };
         formatedData.push(token20);
@@ -164,20 +160,24 @@ export class UserAccountsComponent extends Config implements OnInit {
     userDetails,
     nftContractDetails,
     ftContractDetails) {
-    const selected_coin_shield_contract = userDetails.selected_coin_shield_contract;
-    const selected_token_shield_contract = userDetails.selected_token_shield_contract;
+    const selectedFTokenShield = userDetails.selectedFTokenShield;
+    const selectedNFTokenShield = userDetails.selectedNFTokenShield;
     const formatedData = [];
     const token721 = {
-      contractAdd: data.tokenShield.contract_address,
-      contractName: data.tokenShield.contract_name,
-      selection: (!selected_token_shield_contract || selected_token_shield_contract === data.tokenShield.contract_address) ? true : false,
+      contractAdd: data.nftCommitmentShield.shieldAddress,
+      contractName: data.nftCommitmentShield.name,
+      get selection() {
+        return (selectedNFTokenShield === this.contractAdd);
+      },
       tokenShield: true,
       tokenAddress: nftContractDetails.nftAddress
     };
     const token20 = {
-      contractAdd: data.coinShield.contract_address,
-      contractName: data.coinShield.contract_name,
-      selection: (!selected_coin_shield_contract || selected_coin_shield_contract === data.coinShield.contract_address) ? true : false,
+      contractAdd: data.ftCommitmentShield.shieldAddress,
+      contractName: data.ftCommitmentShield.name,
+      get selection() {
+        return (selectedFTokenShield === this.contractAdd);
+      },
       coinShield: true,
       tokenAddress: ftContractDetails.ftAddress
     };
@@ -191,7 +191,6 @@ export class UserAccountsComponent extends Config implements OnInit {
    * @param event {Object} New eneterd data
    */
   addAccount(event) {
-    console.log('addAccount', event.newData);
     if (!this.isValidAccountForm(event.newData)) {
       this.toastr.error('Please fill all the fields.');
       event.confirm.reject(event.newData);
@@ -201,7 +200,6 @@ export class UserAccountsComponent extends Config implements OnInit {
       this.loadAccountDetails();
       event.confirm.resolve(event.newData);
     }, (error) => {
-      console.log('addAccount error ', error);
       this.toastr.error('Please try again!');
       event.confirm.reject(event.newData);
     });
@@ -213,8 +211,6 @@ export class UserAccountsComponent extends Config implements OnInit {
    * @param event {Object} edited data
    */
   editAccount(event) {
-    console.log('edit', event);
-    console.log('addAccount', event.newData);
     if (!this.isValidAccountForm(event.newData)) {
       this.toastr.error('Please fill all the fields.');
       event.confirm.reject(event.newData);
@@ -224,7 +220,6 @@ export class UserAccountsComponent extends Config implements OnInit {
       this.loadAccountDetails();
       event.confirm.resolve(event.newData);
     }, (error) => {
-      console.log('edit error ', error);
       this.toastr.error('Please try again!');
       event.confirm.reject(event.newData);
     });
@@ -236,7 +231,6 @@ export class UserAccountsComponent extends Config implements OnInit {
    * @param event {Object} data to delete
    */
   deleteAccount(event) {
-    console.log('delete', event);
     if (!this.isValidAccountForm(event.data)) {
       this.toastr.error('Please fill all the fields.');
       event.confirm.reject(event.data);
@@ -246,7 +240,6 @@ export class UserAccountsComponent extends Config implements OnInit {
       this.loadAccountDetails();
       event.confirm.resolve(event.data);
     }, (error) => {
-      console.log('edit error ', error);
       this.toastr.error('Please try again!');
       event.confirm.reject(event.data);
     });

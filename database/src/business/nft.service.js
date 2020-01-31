@@ -1,5 +1,4 @@
 import { COLLECTIONS } from '../common/constants';
-import { nftMapper } from '../mappers';
 import NftTransactionService from './nft-transaction.service';
 
 export default class NftService {
@@ -16,19 +15,18 @@ export default class NftService {
    */
   async addNFToken(data) {
     const { isReceived } = data;
-    const mappedData = nftMapper(data);
 
-    await this.db.saveData(COLLECTIONS.NFT, mappedData);
+    await this.db.saveData(COLLECTIONS.NFT, data);
 
     if (isReceived)
       return this.nftTransactionService.insertTransaction({
-        ...mappedData,
-        type: 'received',
+        ...data,
+        transactionType: 'transfer_incoming',
       });
 
     return this.nftTransactionService.insertTransaction({
-      ...mappedData,
-      type: 'minted',
+      ...data,
+      transactionType: 'mint',
     });
   }
 
@@ -40,32 +38,31 @@ export default class NftService {
    */
   async updateNFTokenByTokenId(tokenId, data) {
     const { isBurned, isShielded } = data;
-    const mappedData = nftMapper(data);
 
     await this.db.updateData(
       COLLECTIONS.NFT,
       {
-        token_id: tokenId,
-        is_transferred: { $exists: false },
-        is_shielded: false,
+        tokenId,
+        isTransferred: { $exists: false },
+        isShielded: { $exists: false },
       },
-      { $set: mappedData },
+      { $set: data },
     );
 
     if (isBurned)
       return this.nftTransactionService.insertTransaction({
-        ...mappedData,
-        type: 'burned',
+        ...data,
+        transactionType: 'burn',
       });
     if (isShielded)
       return this.nftTransactionService.insertTransaction({
-        ...mappedData,
-        type: 'shielded',
+        ...data,
+        transactionType: 'shield',
       });
 
     return this.nftTransactionService.insertTransaction({
-      ...mappedData,
-      type: 'transferred',
+      ...data,
+      transactionType: 'transfer_outgoing',
     });
   }
 
@@ -78,23 +75,21 @@ export default class NftService {
   getNFTokens(query) {
     if (!query || !query.pageNo || !query.limit) {
       return this.db.getData(COLLECTIONS.NFT, {
-        shield_contract_address: query.shieldContractAddress ? query.shieldContractAddress : null,
-        is_transferred: { $exists: false },
-        is_burned: { $exists: false },
-        is_shielded: false,
+        isTransferred: { $exists: false },
+        isBurned: { $exists: false },
+        isShielded: { $exists: false },
       });
     }
     const { pageNo, limit } = query;
     return this.db.getDbData(
       COLLECTIONS.NFT,
       {
-        shield_contract_address: query.shieldContractAddress ? query.shieldContractAddress : null,
-        is_transferred: { $exists: false },
-        is_burned: { $exists: false },
-        is_shielded: false,
+        isTransferred: { $exists: false },
+        isBurned: { $exists: false },
+        isShielded: { $exists: false },
       },
       undefined,
-      { created_at: -1 },
+      { createdAt: -1 },
       parseInt(pageNo, 10),
       parseInt(limit, 10),
     );

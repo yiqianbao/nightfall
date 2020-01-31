@@ -1,10 +1,8 @@
 import config from 'config';
 import utils from '../zkp-utils';
 
-const { rndHex, leftPadHex } = utils;
+const { leftPadHex } = utils;
 const LEAF_HASHLENGTH = config.get('LEAF_HASHLENGTH');
-
-const generateTokenID = async () => rndHex(32);
 
 // test data.
 export default {
@@ -13,7 +11,7 @@ export default {
     email: 'alice@ey.com',
     password: 'pass',
     get pk() {
-      return this.sk === undefined ? undefined : utils.hash(this.sk); // sk - set at login test suit (step 2)
+      return this.secretKey === undefined ? undefined : utils.hash(this.secretKey); // secretKey - set at login test suit (step 2)
     },
   },
   bob: {
@@ -21,12 +19,11 @@ export default {
     email: 'bob@ey.com',
     password: 'pass',
     get pk() {
-      return this.sk === undefined ? undefined : utils.hash(this.sk); // sk - set at login test suit (step 2)
+      return this.secretKey === undefined ? undefined : utils.hash(this.secretKey); // secretKey - set at login test suit (step 2)
     },
   },
   erc721: {
-    tokenURI: 'one',
-    tokenID: generateTokenID(),
+    tokenUri: 'one',
   },
   erc20: {
     mint: 5,
@@ -40,30 +37,29 @@ export default {
   // dependent data
   async erc721Commitment() {
     const { alice, bob, erc721 } = this;
-
-    erc721.tokenID = await erc721.tokenID;
-
     return {
-      uri: erc721.tokenURI,
-      tokenID: erc721.tokenID,
-      mintCommitmentIndex: '0',
-      transferCommitmentIndex: '1',
+      tokenUri: erc721.tokenUri,
+      get tokenId() {
+        return erc721.tokenId;
+      },
+      mintCommitmentIndex: 0,
+      transferCommitmentIndex: 1,
 
       // commitment while mint
       get mintCommitment() {
         return utils.concatenateThenHash(
-          utils.strip0x(this.tokenID).slice(-(LEAF_HASHLENGTH * 2)),
+          utils.strip0x(this.tokenId).slice(-(LEAF_HASHLENGTH * 2)),
           alice.pk,
-          this.S_A, // S_A - set at erc-721 commitment mint (step 4)
+          this.salt, // salt - set at erc-721 commitment mint (step 4)
         );
       },
 
       // commitment while transfer
       get transferCommitment() {
         return utils.concatenateThenHash(
-          utils.strip0x(this.tokenID).slice(-(LEAF_HASHLENGTH * 2)),
+          utils.strip0x(this.tokenId).slice(-(LEAF_HASHLENGTH * 2)),
           bob.pk,
-          this.S_B, // S_B - set at erc-721 commitment transfer to bob (step 5)
+          this.transferredSalt, // S_B - set at erc-721 commitment transfer to bob (step 5)
         );
       },
     };
@@ -147,7 +143,7 @@ export default {
             return utils.concatenateThenHash(
               this.value,
               bob.pk,
-              this.salt === undefined ? '0x0' : this.salt, // S_A - set at erc-20 commitment mint (step 18)
+              this.salt === undefined ? '0x0' : this.salt, // salt - set at erc-20 commitment mint (step 18)
             );
           },
         },
@@ -159,7 +155,7 @@ export default {
             return utils.concatenateThenHash(
               this.value,
               alice.pk,
-              this.salt === undefined ? '0x0' : this.salt, // S_A - set at erc-20 commitment mint (step 18)
+              this.salt === undefined ? '0x0' : this.salt, // salt - set at erc-20 commitment mint (step 18)
             );
           },
         },

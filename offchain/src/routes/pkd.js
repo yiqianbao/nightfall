@@ -49,11 +49,11 @@ async function getNameForAccount(req, res, next) {
 }
 
 async function assignZkpPublicKeyToAccount(req, res, next) {
-  const { pk } = req.body;
+  const { publicKey } = req.body;
   const { address } = req.headers;
 
   try {
-    await setZkpPublicKey(pk, address);
+    await setZkpPublicKey(publicKey, address);
     res.data = { message: 'Keys Added.' };
     next();
   } catch (err) {
@@ -98,7 +98,6 @@ async function getWhisperKeyForAccountByName(req, res, next) {
 
 async function getAllRegisteredAddresses(req, res, next) {
   const { name } = req.query;
-
   try {
     res.data = await getAddressFromName(name);
     next();

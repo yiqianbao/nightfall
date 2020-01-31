@@ -10,7 +10,7 @@ import { NgSelectComponent } from '@ng-select/ng-select';
  *  Mint token component, which is used for rendering the page of Mint ERC-721 token commitment.
  */
 @Component({
-  selector: 'ft-commitment-mint',
+  selector: 'app-nft-commitment-mint',
   templateUrl: './index.html',
   providers: [NftCommitmentService, NftService, UtilService],
   styleUrls: ['./index.css']
@@ -77,9 +77,9 @@ export default class NftCommitmentMintComponent implements OnInit, AfterContentI
       this.isRequesting = true;
       this.selectedCommitment = this.selectedCommitmentList[0];
       this.nftCommitmentService.mintNFTCommitment(this.selectedCommitment).subscribe(tokenDetails => {
-        console.log('Token Minted is ' + tokenDetails['data']['z_A']);
+        console.log('Token Minted is ' + tokenDetails['data']['commitment']);
         this.isRequesting = false;
-        this.toastr.success('Token Minted is ' + tokenDetails['data']['z_A'].slice(0, 20) + '...');
+        this.toastr.success('Token Minted is ' + tokenDetails['data']['commitment'].slice(0, 20) + '...');
         this.router.navigate(['/overview'], { queryParams: { selectedTab: 'nft-commitment' } });
       }, error => {
         this.isRequesting = false;

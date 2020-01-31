@@ -2,35 +2,36 @@ import { Schema } from 'mongoose';
 
 export default new Schema(
   {
-    uri: {
+    tokenUri: {
       type: String,
       trim: true,
       required: true,
     },
-    token_id: {
+    tokenId: {
       type: String,
       index: true,
       required: true,
     },
-    shield_contract_address: String,
+    shieldContractAddress: String,
 
     // boolean stats
-    is_shielded: {
-      type: Boolean,
-      default: false,
-    },
-    is_minted: Boolean,
-    is_received: Boolean,
-    is_transferred: Boolean,
-    is_burned: Boolean,
+    isShielded: Boolean,
+    isMinted: Boolean,
+    isReceived: Boolean,
+    isTransferred: Boolean,
+    isBurned: Boolean,
 
     // receiver info
-    receiver: String,
-    receiver_address: String,
+    receiver: {
+      name: String,
+      address: String,
+    },
 
     // sender info
-    sender: String,
-    sender_address: String,
+    sender: {
+      name: String,
+      address: String,
+    },
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
+  { timestamps: true },
 );

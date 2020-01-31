@@ -38,10 +38,10 @@ export default class UserService {
    * @returns {object} a user object
    */
   async createUser(data) {
-    const secretkey = await utils.rndHex(32);
-    const publickey = utils.hash(secretkey);
+    const secretKey = await utils.rndHex(32);
+    const publicKey = utils.hash(secretKey);
 
-    const mappedData = userMapper({ ...data, secretkey, publickey });
+    const mappedData = userMapper({ ...data, secretKey, publicKey });
 
     await this.db.addUser(data.name, data.password);
     await updateUserRole();
@@ -103,7 +103,7 @@ export default class UserService {
       COLLECTIONS.USER,
       {},
       {
-        selected_coin_shield_contract: contractAddress,
+        selectedFTokenShield: contractAddress,
       },
     );
   }
@@ -120,14 +120,11 @@ export default class UserService {
     await this.db.updateData(
       COLLECTIONS.USER,
       {
-        'coin_shield_contracts.contract_address': { $ne: contractAddress },
+        'fTokenShields.contractAddress': { $ne: contractAddress },
       },
       {
         $push: {
-          coin_shield_contracts: {
-            contract_name: contractName,
-            contract_address: contractAddress,
-          },
+          fTokenShields: { contractName, contractAddress },
         },
       },
     );
@@ -151,13 +148,11 @@ export default class UserService {
     await this.db.updateData(
       COLLECTIONS.USER,
       {
-        'coin_shield_contracts.contract_address': contractAddress,
+        'fTokenShields.contractAddress': contractAddress,
       },
       {
         $set: {
-          [contractName !== undefined
-            ? 'coin_shield_contracts.$.contract_name'
-            : undefined]: contractName,
+          [contractName !== undefined ? 'fTokenShields.$.contractName' : undefined]: contractName,
         },
       },
     );
@@ -179,13 +174,13 @@ export default class UserService {
       {},
       {
         $pull: {
-          coin_shield_contracts: { contract_address: contractAddress },
+          fTokenShields: { contractAddress },
         },
       },
     );
 
     const toUpdate = await this.db.findOne(COLLECTIONS.USER, {
-      selected_coin_shield_contract: contractAddress,
+      selectedFTokenShield: contractAddress,
     });
 
     if (!toUpdate) return null;
@@ -205,7 +200,7 @@ export default class UserService {
       COLLECTIONS.USER,
       {},
       {
-        selected_token_shield_contract: contractAddress,
+        selectedNFTokenShield: contractAddress,
       },
     );
   }
@@ -222,14 +217,11 @@ export default class UserService {
     await this.db.updateData(
       COLLECTIONS.USER,
       {
-        'token_shield_contracts.contract_address': { $ne: contractAddress },
+        'nfTokenShields.contractAddress': { $ne: contractAddress },
       },
       {
         $push: {
-          token_shield_contracts: {
-            contract_name: contractName,
-            contract_address: contractAddress,
-          },
+          nfTokenShields: { contractName, contractAddress },
         },
       },
     );
@@ -243,7 +235,7 @@ export default class UserService {
    * contractName - name of tokenShield contract
    * contractAddress - address of tokenShield contract
    * isSelected - set/unset conteract as selected contract
-   * isTokenShieldPreviousSelected - current state of contract; is selected one or not
+   * isNFTShieldPreviousSelected - current state of contract; is selected one or not
    * @returns {Promise}
    */
   async updateNFTShieldContractInfoByContractAddress(
@@ -253,13 +245,11 @@ export default class UserService {
     await this.db.updateData(
       COLLECTIONS.USER,
       {
-        'token_shield_contracts.contract_address': contractAddress,
+        'nfTokenShields.contractAddress': contractAddress,
       },
       {
         $set: {
-          [contractName !== undefined
-            ? 'token_shield_contracts.$.contract_name'
-            : undefined]: contractName,
+          [contractName !== undefined ? 'nfTokenShields.$.contractName' : undefined]: contractName,
         },
       },
     );
@@ -281,13 +271,13 @@ export default class UserService {
       {},
       {
         $pull: {
-          token_shield_contracts: { contract_address: contractAddress },
+          nfTokenShields: { contractAddress },
         },
       },
     );
 
     const toUpdate = await this.db.findOne(COLLECTIONS.USER, {
-      selected_token_shield_contract: contractAddress,
+      selectedNFTokenShield: contractAddress,
     });
 
     if (!toUpdate) return null;

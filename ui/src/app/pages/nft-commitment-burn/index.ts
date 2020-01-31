@@ -9,7 +9,7 @@ import UserService from '../../services//user.service';
  * Burn private token component, which is used for rendering the page of burn ERC-721 commitment.
  */
 @Component({
-  selector: 'nft-commitment-burn',
+  selector: 'app-nft-commitment-burn',
   templateUrl: './index.html',
   providers: [NftCommitmentService, UserService],
   styleUrls: ['./index.css']
@@ -91,13 +91,8 @@ export default class NftCommitmentBurnComponent implements OnInit, AfterContentI
     }
     this.isRequesting = true;
     this.nftCommitmentService.burnNFTCommitment(
-      selectedCommitment.token_id,
-      selectedCommitment.token_uri,
-      selectedCommitment.shield_contract_address,
-      selectedCommitment.salt,
-      selectedCommitment.token_commitment,
-      selectedCommitment.token_commitment_index,
-      this.receiverName
+      selectedCommitment,
+      this.receiverName,
     ).subscribe( data => {
         this.isRequesting = false;
         this.toastr.success('Token burned successfully.');

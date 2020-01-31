@@ -22,17 +22,14 @@ export default class NftCommitmentService {
    *
    * @param token {String} Amount to mint
    */
-  mintNFTCommitment(token: any) {
+  mintNFTCommitment({ tokenUri, tokenId, shieldContractAddress }) {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
 
     const body = {
-      uri: token.uri,
-      tokenID: token.token_id,
-      contractAddress: token.shield_contract_address
+      outputCommitments: [{ tokenUri, tokenId, shieldContractAddress }],
     };
-
     const url = config.apiGateway.root + 'mintNFTCommitment';
 
     return this.http
@@ -44,26 +41,23 @@ export default class NftCommitmentService {
 /**
  * Method to initiate a HTTP request to transfer ERC-721 token commitments.
  *
- * @param A {String} Token Id
- * @param uri {String} Token name
- * @param S_A {String} Serial number of token
- * @param z_A {String} Token2 commitment
- * @param receiver_name {String} Rceiver name
- * @param z_A_index {String} Token commitment index
+ * @param tokenId {String} Token Id
+ * @param tokenURI {String} Token name
+ * @param salt {String} Serial number of token
+ * @param commitment {String} Token2 commitment
+ * @param name {String} Rceiver name
+ * @param commitmentIndex {String} Token commitment index
  */
-  transferNFTCommitment(A: string, uri: string, contractAddress: string, S_A: string, z_A: string, receiver_name: string, z_A_index: number) {
+  transferNFTCommitment(commitment, name: string) {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
 
     const body = {
-      A,
-      uri,
-      contractAddress,
-      S_A,
-      z_A,
-      receiver_name,
-      z_A_index
+      inputCommitments: [commitment],
+      receiver: {
+        name,
+      },
     };
     const url = config.apiGateway.root + 'transferNFTCommitment';
 
@@ -75,24 +69,22 @@ export default class NftCommitmentService {
   /**
    * Method to initiate a HTTP request to burn ERC-721 token commitments.
    *
-   * @param A {String} Token Id
-   * @param uri {String} Token name
-   * @param S_A {String} Serial number of token
-   * @param z_A {String} Token commitment
-   * @param z_A_index {String} Token commitment index
+   * @param tokenId {String} Token Id
+   * @param tokenURI {String} Token name
+   * @param salt {String} Serial number of token
+   * @param commitment {String} Token commitment
+   * @param commitmentIndex {String} Token commitment index
+   * @param receiver {String} Token reciever name
    */
-  burnNFTCommitment(A: string, uri: string, contractAddress: string, S_A: string, z_A: string, z_A_index: number, payTo: string) {
+  burnNFTCommitment(commitment, name: string) {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
     const body = {
-      A,
-      uri,
-      contractAddress,
-      S_A,
-      z_A,
-      z_A_index,
-      payTo
+      inputCommitments: [commitment],
+      receiver: {
+        name,
+      }
     };
     const url = config.apiGateway.root + 'burnNFTCommitment';
     return this.http

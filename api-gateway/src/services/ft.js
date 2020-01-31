@@ -7,7 +7,7 @@ import { db, offchain, zkp } from '../rest';
  * req.user {
     address: '0x432038accaf756a8936a7f067a8223c2d929d58f',
     name: 'alice',
-    pk_A: '0xd68df96f6cddd786290b57fcead37ea670dfe94634f553afeedfef',
+    publicKey: '0xd68df96f6cddd786290b57fcead37ea670dfe94634f553afeedfef',
     password: 'alicesPassword'
   }
  * req.body {
@@ -39,7 +39,7 @@ export async function insertFTTransactionToDb(req, res, next) {
  * req.user {
     address: '0x432038accaf756a8936a7f067a8223c2d929d58f',
     name: 'alice',
-    pk_A: '0xd68df96f6cddd786290b57fcead37ea670dfe94634f553afeedfef',
+    publicKey: '0xd68df96f6cddd786290b57fcead37ea670dfe94634f553afeedfef',
     password: 'alicesPassword'
   }
  * req.query {
@@ -114,7 +114,7 @@ export async function transferFToken(req, res, next) {
       isTransferred: true,
     });
 
-    await sendWhisperMessage(user.shh_identity, {
+    await sendWhisperMessage(user.shhIdentity, {
       value,
       shieldContractAddress: user.selected_coin_shield_contract,
       receiver,
@@ -178,6 +178,17 @@ export async function getFTokenAddress(req, res, next) {
 /**
  * This function will retrieve information of the fungible token.
  * Which will retrieve the balance, name and symbol of the fungible token
+ * @apiSuccess (Success 200) {Object} data information of the fungible token.
+ *
+ * @apiSuccessExample {json} Success response:
+ * HTTPS 200 OK
+ *
+ * data":{
+ *    "balance":"0",
+ *    "symbol":"OPS",
+ *    "name":"EY OpsCoin"
+ * }
+ *
  * @param {*} req
  * @param {*} res
  */

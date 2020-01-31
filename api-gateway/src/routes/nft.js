@@ -18,11 +18,11 @@ const router = express.Router();
  * @apiName  Mint a non-fungible token
  * @apiGroup ERC-721
  *
- * @apiParam (Request body) {String} tokenURI URI of token.
+ * @apiParam (Request body) {String} tokenUri URI of token.
  *
  * @apiExample {js} Example usage:
  * const data = {
- *   tokenURI: 'unique token URI'
+ *   tokenUri: 'unique token URI'
  * }
  *
  * $http.post(url, data)
@@ -32,10 +32,11 @@ const router = express.Router();
  * @apiSuccess (Success 200) {String} message status message.
  *
  * @apiSuccessExample {json} Success response:
- *     HTTPS 200 OK
- *	  {
- *		"message":"NFT Mint Successful"
- *	  }
+ *  HTTPS 200 OK
+ *  data: {
+ *     "message":"NFT Mint Successful",
+ *     "tokenId":"0x1542f342b6220000000000000000000000000000000000000000000000000000"
+ *  }
  */
 router.route('/mintNFToken').post(mintNFToken);
 
@@ -45,19 +46,20 @@ router.route('/mintNFToken').post(mintNFToken);
  * @apiName  Transfer a non-fungible token
  * @apiGroup ERC-721
  *
- * @apiParam (Request body) {String} tokenID unique ERC-721 token Id.
- * @apiParam (Request body) {String} tokenURI URI of token.
- * @apiParam (Request body) {String} receiver_name Name of Receiver.
+ * @apiParam (Request body) {String} tokenId unique ERC-721 token Id.
+ * @apiParam (Request body) {String} tokenUri URI of token.
+ * @apiParam (Request body) {String} receiver Name of Receiver.
  * @apiParam (Request body) {String} contractAddress TokenShield Address (optional).
  *
  * @apiExample {js} Example usage:
  * const data = {
- *    tokenID: '0xc3b53ccd640c680000000000000000000000000000000000000000000000000',
- *    uri: 'unique token name',
- *    receiver_name: 'bob'.
- *    contractAddress: 'Oxad23..'
+ *    tokenUri: "sample"
+ *    tokenId: "0x1542f342b6220000000000000000000000000000000000000000000000000000"
+ *    isMinted: true
+ *    receiver: {
+ *      name: "bob"
+ *    }
  * }
- *
  * $http.post(url, data)
  *   .success((res, status) => doSomethingHere())
  *   .error((err, status) => doSomethingHere());
@@ -65,10 +67,10 @@ router.route('/mintNFToken').post(mintNFToken);
  * @apiSuccess (Success 200) {String} message status message.
  *
  * @apiSuccessExample {json} Success response:
- *     HTTPS 200 OK
- *	  {
- *		"message":"NFT Transfer Successful"
- *	  }
+ *  HTTPS 200 OK
+ *  "data":{
+ *      "message":"NFT Transfer Successful"
+ *  }
  */
 router.route('/transferNFToken').post(transferNFToken);
 
@@ -78,15 +80,24 @@ router.route('/transferNFToken').post(transferNFToken);
  * @apiName  Burn a non-fungible token
  * @apiGroup ERC-721
  *
- * @apiParam (Request body) {String} tokenID unique ERC-721 token Id.
- * @apiParam (Request body) {String} tokenURI URI of token.
+ * @apiParam (Request body) {String} tokenId unique ERC-721 token Id.
+ * @apiParam (Request body) {String} tokenUri URI of token.
  * @apiParam (Request body) {String} contractAddress TokenShield Address (optional).
  *
  * @apiExample {js} Example usage:
  * const data = {
- *    tokenID: '0xc3b53ccd640c680000000000000000000000000000000000000000000000000',
- *    uri: 'unique token name',
- *    contractAddress: 'Oxad23..'
+ *  receiver: {
+ *    name: "bob",
+ *    address: "0x666fA6a40F7bc990De774857eCf35e3C82f07505"
+ *  }
+ *  sender: {
+ *    address: "0x6baec85121ad0bd700c197668b2c30030e1ea0df",
+ *    name: "alice"
+ *  }
+ *  _id: "5e26d1983754de00388a57e0"
+ *  tokenUri: "sample"
+ *  tokenId: "0x1542f342b6220000000000000000000000000000000000000000000000000000"
+ *  isReceived: true
  * }
  *
  * $http.post(url, data)
@@ -96,7 +107,7 @@ router.route('/transferNFToken').post(transferNFToken);
  * @apiSuccess (Success 200) {String} message status message.
  *
  * @apiSuccessExample {json} Success response:
- *     HTTPS 200 OK
+ * HTTPS 200 OK
  *	  {
  *		"message":"NFT Burn Successful"
  *	  }
@@ -126,21 +137,13 @@ router.route('/burnNFToken').post(burnNFToken);
  * @apiSuccess (Success 200) {Array} totalCount Total no. of tokens.
  *
  * @apiSuccessExample {json} Success response:
- *     HTTPS 200 OK
+ * HTTPS 200 OK
  *    {
- *    "data":[
- *      {
- *        "is_shielded":false,
- *        "_id":"5ce25daa09416cc13c79b9f0",
- *        "uri":"one",
- *        "token_id":"0x57880c3b9cee300000000000000000000000000000000000000000000000000",
- *        "is_minted":true,
- *        "created_at":"2019-05-20T07:56:26.579Z",
- *        "updated_at":"2019-05-20T07:56:26.579Z",
- *        "__v":0
- *      }
- *    ],
- *    "totalCount":1
+ *      "data":[{
+ *          "tokenUri":"sample",
+ *          "tokenId":"0x37b95da113e20000000000000000000000000000000000000000000000000000",
+ *          "isMinted":true,
+ *       }]
  *    }
  */
 router.get('/getNFTokens', getNFTokens);
@@ -151,7 +154,7 @@ router.get('/getNFTokens', getNFTokens);
  * @apiName  insert non-fungible tokens
  * @apiGroup ERC-721
  *
- * @apiParam (Request body) {String} uri
+ * @apiParam (Request body) {String} tokenUri
  * @apiParam (Request body) {String} tokenId
  * @apiParam (Request body) {String} shieldContractAddress
  * @apiParam (Request body) {String} sender
@@ -160,7 +163,7 @@ router.get('/getNFTokens', getNFTokens);
  *
  * @apiExample {js} Example usage:
  * const body = {
- *    uri: 'unique token URI',
+ *    tokenUri: 'unique token URI',
  *    tokenId: '0x1448d8ab4e0d610000000000000000000000000000000000000000000000000',
  *    shieldContractAddress: '0x04b95c76d5075620a655b707a7901462aea8656c',
  *    sender: 'a',
@@ -174,7 +177,7 @@ router.get('/getNFTokens', getNFTokens);
  * @apiSuccess (Success 200) {String} message status message.
  *
  * @apiSuccessExample {json} Success response:
- *     HTTPS 200 OK
+ * HTTPS 200 OK
  *    {
  *      message: 'inserted',
  *    }
@@ -205,19 +208,13 @@ router.post('/insertNFTToDb', insertNFTToDb);
  * @apiSuccess (Success 200) {Array} totalCount Total no. of token transactions in database.
  *
  * @apiSuccessExample {json} Success response:
- *     HTTPS 200 OK
+ * HTTPS 200 OK
  *    {
- *      "data":[
- *        {
- *          "_id":"5d951085f359c40039add23b",
- *          "uri":"one",
- *          "token_id":"0x119eda3adb1dab00000000000000000000000000000000000000000000000000",
- *          "type":"minted",
- *          "created_at":"2019-10-02T21:03:01.491Z",
- *          "updated_at":"2019-10-02T21:03:01.491Z",
- *          "__v":0
- *        }
- *      ],
+ *      "data":[{
+ *          "tokenUri":"sample",
+ *          "tokenId":"0x1542f342b6220000000000000000000000000000000000000000000000000000",
+ *          "transactionType":"mint",
+ *          }],
  *      "totalCount":1
  *      }
  *    }
@@ -244,12 +241,12 @@ router.route('/getNFTTransactions').get(getNFTTransactions);
  * @apiSuccess (Success 200) {Array} totalCount Total no. of tokens.
  *
  * @apiSuccessExample {json} Success response:
- *     HTTPS 200 OK
+ * HTTPS 200 OK
  *	  {
  *		"data":[
- *          {
- *          "address": "0x3915e408fd5cff354fd73549d31a4bc66f7335db59bc4e84001473"
- *          }
+ *        {
+ *         "address": "0x3915e408fd5cff354fd73549d31a4bc66f7335db59bc4e84001473"
+ *        }
  *		]
  *	  }
  */
@@ -274,16 +271,16 @@ router.route('/getNFTokenContractAddress').get(getNFTokenAddress);
  * @apiSuccess (Success 200) {Array} totalCount Total no. of tokens.
  *
  * @apiSuccessExample {json} Success response:
- *     HTTPS 200 OK
- *	  {
+ * HTTPS 200 OK
+ *  {
  *		"data":[
- *          {
- *              balance,
- *              nftName,
- *              nftSymbol,
- *          }
+ *        {
+ *          balance,
+ *          nftName,
+ *          nftSymbol,
+ *        }
  *		]
- *	  }
+ *	}
  */
 router.route('/getNFTokenInfo').get(getNFTokenInfo);
 

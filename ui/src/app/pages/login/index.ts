@@ -58,7 +58,7 @@ export default class LoginComponent implements OnInit {
       data => {
         localStorage.setItem('token', data['data']['token']);
         localStorage.setItem('name', data['data']['name']);
-        localStorage.setItem('publickey', data['data']['publickey']);
+        localStorage.setItem('publicKey', data['data']['publicKey']);
         this.isRequesting = false;
         this.sg['name'] = data['data']['name'];
         this.router.navigate(['/overview']);

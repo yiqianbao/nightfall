@@ -4,15 +4,15 @@ export default new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   address: { type: String, requird: true },
-  publickey: { type: String, requird: true },
-  secretkey: { type: String, requird: true },
-  shh_identity: { type: String },
-  selected_coin_shield_contract: { type: String },
-  selected_token_shield_contract: { type: String },
-  coin_shield_contracts: [
+  publicKey: { type: String, requird: true },
+  secretKey: { type: String, requird: true },
+  shhIdentity: { type: String },
+  selectedFTokenShield: { type: String },
+  selectedNFTokenShield: { type: String },
+  fTokenShields: [
     {
-      contract_name: { type: String },
-      contract_address: {
+      contractName: { type: String },
+      contractAddress: {
         type: String,
         trim: true,
         required: true,
@@ -20,10 +20,10 @@ export default new Schema({
       },
     },
   ],
-  token_shield_contracts: [
+  nfTokenShields: [
     {
-      contract_name: { type: String },
-      contract_address: {
+      contractName: { type: String },
+      contractAddress: {
         type: String,
         trim: true,
         required: true,

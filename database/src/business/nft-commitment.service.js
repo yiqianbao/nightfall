@@ -9,27 +9,44 @@ export default class NftCommitmentService {
   }
 
   /**
+   * This function insert ERC-721 commitment (ft-commitment) transaction
+   * in ft_commitment_transction collection
+   * @param {object} data
+   */
+  insertNFTCommitmentTransaction(data) {
+    const { isTransferred, isReceived, isBurned } = data;
+
+    if (isReceived)
+      return this.nftCommitmentTransactionService.insertTransaction({
+        ...data,
+        transactionType: 'transfer_incoming',
+      });
+    if (isTransferred)
+      return this.nftCommitmentTransactionService.insertTransaction({
+        ...data,
+        transactionType: 'transfer_outgoing',
+      });
+    if (isBurned)
+      return this.nftCommitmentTransactionService.insertTransaction({
+        ...data,
+        transactionType: 'burn',
+      });
+
+    return this.nftCommitmentTransactionService.insertTransaction({
+      ...data,
+      transactionType: 'mint',
+    });
+  }
+
+  /**
    * This function inset ERC-721 commitment (nft-commitment)
    * either new minted or recived commitment in nft_commitment collection.
    * Also, will insert transaction in nft_commitment_transaction collection
    * @param {object} data
    */
   async insertNFTCommitment(data) {
-    const { isReceived } = data;
-    const mappedData = nftCommitmentMapper(data);
-
-    await this.db.saveData(COLLECTIONS.NFT_COMMITMENT, mappedData);
-
-    if (isReceived)
-      return this.nftCommitmentTransactionService.insertTransaction({
-        ...mappedData,
-        type: 'received',
-      });
-
-    return this.nftCommitmentTransactionService.insertTransaction({
-      ...mappedData,
-      type: 'minted',
-    });
+    await this.db.saveData(COLLECTIONS.NFT_COMMITMENT, nftCommitmentMapper(data));
+    return this.insertNFTCommitmentTransaction(data);
   }
 
   /**
@@ -39,28 +56,16 @@ export default class NftCommitmentService {
    * @param {object} data
    */
   async updateNFTCommitmentByTokenId(tokenId, data) {
-    const { isBurned } = data;
     const mappedData = nftCommitmentMapper(data);
 
     await this.db.updateData(
       COLLECTIONS.NFT_COMMITMENT,
       {
-        token_id: tokenId,
-        is_transferred: { $exists: false },
+        tokenId,
+        isTransferred: { $exists: false },
       },
       { $set: mappedData },
     );
-
-    if (isBurned)
-      return this.nftCommitmentTransactionService.insertTransaction({
-        ...mappedData,
-        type: 'burned',
-      });
-
-    return this.nftCommitmentTransactionService.insertTransaction({
-      ...mappedData,
-      type: 'transferred',
-    });
   }
 
   /**
@@ -72,19 +77,19 @@ export default class NftCommitmentService {
   getNFTCommitments(pageination) {
     if (!pageination || !pageination.pageNo || !pageination.limit) {
       return this.db.getData(COLLECTIONS.NFT_COMMITMENT, {
-        is_transferred: { $exists: false },
-        is_burned: { $exists: false },
+        isTransferred: { $exists: false },
+        isBurned: { $exists: false },
       });
     }
     const { pageNo, limit } = pageination;
     return this.db.getDbData(
       COLLECTIONS.NFT_COMMITMENT,
       {
-        is_transferred: { $exists: false },
-        is_burned: { $exists: false },
+        isTransferred: { $exists: false },
+        isBurned: { $exists: false },
       },
       undefined,
-      { created_at: -1 },
+      { createdAt: -1 },
       parseInt(pageNo, 10),
       parseInt(limit, 10),
     );
