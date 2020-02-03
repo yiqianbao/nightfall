@@ -2,8 +2,6 @@
 
 pragma solidity ^0.5.8;
 
-import "./Points.sol";
-
 /**
  * @title Elliptic curve operations on twist points for alt_bn128
  * @author Mustafa Al-Bassam (mus@musalbas.com)
@@ -375,17 +373,25 @@ library BN256G2 {
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // More information at https://gist.github.com/chriseth/f9be9d9391efc5beb9704255a8e2989d
 
-library Pairing_v1 {
+library Pairing {
 
-    using Points for *;
+    struct G1Point {
+        uint X;
+        uint Y;
+    }
+    // Encoding of field elements is: X[0] * z + X[1]
+    struct G2Point {
+        uint[2] X;
+        uint[2] Y;
+    }
 
     /// @return the generator of G1
-    function P1() pure internal returns (Points.G1Point memory) {
-        return Points.G1Point(1, 2);
+    function P1() pure internal returns (G1Point memory) {
+        return G1Point(1, 2);
     }
     /// @return the generator of G2
-    function P2() pure internal returns (Points.G2Point memory ) {
-        return Points.G2Point(
+    function P2() pure internal returns (G2Point memory ) {
+        return G2Point(
             [11559732032986387107991004021392285783925812861821192530917403151452391805634,
              10857046999023057135944570762232829481370756359578518086990519993285655852781],
             [4082367875863433681332203403145435568316851327593401208105741076214120093531,
@@ -393,15 +399,15 @@ library Pairing_v1 {
         );
     }
     /// @return the negation of p, i.e. p.addition(p.negate()) should be zero.
-    function negate(Points.G1Point memory p) pure internal returns (Points.G1Point memory) {
+    function negate(G1Point memory p) pure internal returns (G1Point memory) {
         // The prime q in the base field F_q for G1
         uint q = 21888242871839275222246405745257275088696311157297823662689037894645226208583;
         if (p.X == 0 && p.Y == 0)
-            return Points.G1Point(0, 0);
-        return Points.G1Point(p.X, q - (p.Y % q));
+            return G1Point(0, 0);
+        return G1Point(p.X, q - (p.Y % q));
     }
     /// @return the sum of two points of G1
-    function addition(Points.G1Point memory p1, Points.G1Point memory p2) internal returns (Points.G1Point memory r) {
+    function addition(G1Point memory p1, G1Point memory p2) internal returns (G1Point memory r) {
         uint[4] memory input;
         input[0] = p1.X;
         input[1] = p1.Y;
@@ -416,13 +422,13 @@ library Pairing_v1 {
         require(success, "EC addition failed");
     }
     /// @return the sum of two points of G2
-    function addition2(Points.G2Point memory p1, Points.G2Point memory p2) internal pure returns (Points.G2Point memory r) {
+    function addition2(G2Point memory p1, G2Point memory p2) internal pure returns (G2Point memory r) {
         (r.X[1], r.X[0], r.Y[1], r.Y[0]) = BN256G2.ECTwistAdd(p1.X[1],p1.X[0],p1.Y[1],p1.Y[0],p2.X[1],p2.X[0],p2.Y[1],p2.Y[0]);
 
     }
     /// @return the product of a point on G1 and a scalar, i.e.
     /// p == p.scalar_mul(1) and p.addition(p) == p.scalar_mul(2) for all points p.
-    function scalar_mul(Points.G1Point memory p, uint s) internal returns (Points.G1Point memory r) {
+    function scalar_mul(G1Point memory p, uint s) internal returns (G1Point memory r) {
         uint[3] memory input;
         input[0] = p.X;
         input[1] = p.Y;
@@ -439,7 +445,7 @@ library Pairing_v1 {
     /// e(p1[0], p2[0]) *  .... * e(p1[n], p2[n]) == 1
     /// For example pairing([P1(), P1().negate()], [P2(), P2()]) should
     /// return true.
-    function pairing(Points.G1Point[] memory p1, Points.G2Point[] memory p2) internal returns (bool) {
+    function pairing(G1Point[] memory p1, G2Point[] memory p2) internal returns (bool) {
         require(p1.length == p2.length, "EC pairing p1 length != p2 length");
         uint elements = p1.length;
         uint inputSize = elements * 6;
@@ -464,9 +470,9 @@ library Pairing_v1 {
         return out[0] != 0;
     }
     /// Convenience method for a pairing check for two pairs.
-    function pairingProd2(Points.G1Point memory a1, Points.G2Point memory a2, Points.G1Point memory b1, Points.G2Point memory b2) internal returns (bool) {
-        Points.G1Point[] memory p1 = new Points.G1Point[](2);
-        Points.G2Point[] memory p2 = new Points.G2Point[](2);
+    function pairingProd2(G1Point memory a1, G2Point memory a2, G1Point memory b1, G2Point memory b2) internal returns (bool) {
+        G1Point[] memory p1 = new G1Point[](2);
+        G2Point[] memory p2 = new G2Point[](2);
         p1[0] = a1;
         p1[1] = b1;
         p2[0] = a2;
@@ -475,12 +481,12 @@ library Pairing_v1 {
     }
     /// Convenience method for a pairing check for three pairs.
     function pairingProd3(
-            Points.G1Point memory a1, Points.G2Point memory a2,
-            Points.G1Point memory b1, Points.G2Point memory b2,
-            Points.G1Point memory c1, Points.G2Point memory c2
+            G1Point memory a1, G2Point memory a2,
+            G1Point memory b1, G2Point memory b2,
+            G1Point memory c1, G2Point memory c2
     ) internal returns (bool) {
-        Points.G1Point[] memory p1 = new Points.G1Point[](3);
-        Points.G2Point[] memory p2 = new Points.G2Point[](3);
+        G1Point[] memory p1 = new G1Point[](3);
+        G2Point[] memory p2 = new G2Point[](3);
         p1[0] = a1;
         p1[1] = b1;
         p1[2] = c1;
@@ -491,13 +497,13 @@ library Pairing_v1 {
     }
     /// Convenience method for a pairing check for four pairs.
     function pairingProd4(
-            Points.G1Point memory a1, Points.G2Point memory a2,
-            Points.G1Point memory b1, Points.G2Point memory b2,
-            Points.G1Point memory c1, Points.G2Point memory c2,
-            Points.G1Point memory d1, Points.G2Point memory d2
+            G1Point memory a1, G2Point memory a2,
+            G1Point memory b1, G2Point memory b2,
+            G1Point memory c1, G2Point memory c2,
+            G1Point memory d1, G2Point memory d2
     ) internal returns (bool) {
-        Points.G1Point[] memory p1 = new Points.G1Point[](4);
-        Points.G2Point[] memory p2 = new Points.G2Point[](4);
+        G1Point[] memory p1 = new G1Point[](4);
+        G2Point[] memory p2 = new G2Point[](4);
         p1[0] = a1;
         p1[1] = b1;
         p1[2] = c1;

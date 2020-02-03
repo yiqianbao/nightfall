@@ -6,39 +6,40 @@ pragma solidity ^0.5.8;
 
 import "./Ownable.sol";
 import "./MerkleTree.sol";
-import "./Verifier_Registry.sol"; //we import the implementation to have visibility of its 'getters'
 import "./Verifier_Interface.sol";
 import "./ERC721Interface.sol";
 
 contract NFTokenShield is Ownable, MerkleTree {
+    // ENUMS:
+    enum TransactionTypes { Mint, Transfer, Burn }
+
+    // EVENTS:
     // Observers may wish to listen for nullification of commitments:
     event Transfer(bytes32 nullifier);
     event Burn(bytes32 nullifier);
 
     // Observers may wish to listen for zkSNARK-related changes:
     event VerifierChanged(address newVerifierContract);
-    event VkIdsChanged(bytes32 mintVkId, bytes32 transferVkId, bytes32 burnVkId);
+    event VkChanged(TransactionTypes txType);
 
     // For testing only. This SHOULD be deleted before mainnet deployment:
     event GasUsed(uint256 byShieldContract, uint256 byVerifierContract);
 
-    mapping(bytes32 => bytes32) public nullifiers; // store nullifiers of spent commitments
-    mapping(bytes32 => bytes32) public roots; // holds each root we've calculated so that we can pull the one relevant to the prover
-
-    bytes32 public latestRoot; //holds the index for the latest root so that the prover can provide it later and this contract can look up the relevant root
-
-    Verifier_Registry public verifierRegistry; //the Verifier Registry contract
+    // CONTRACT INSTANCES:
     Verifier_Interface public verifier; //the verification smart contract
     ERC721Interface public nfToken; //the NFToken ERC-721 token contract
 
-    // following registration of the vkId's with the Verifier Registry, we hard code their vkId's in setVkIds
-    bytes32 public mintVkId;
-    bytes32 public transferVkId;
-    bytes32 public burnVkId;
+    // PRIVATE TRANSACTIONS' PUBLIC STATES:
+    mapping(bytes32 => bytes32) public nullifiers; // store nullifiers of spent commitments
+    mapping(bytes32 => bytes32) public roots; // holds each root we've calculated so that we can pull the one relevant to the prover
+    bytes32 public latestRoot; //holds the index for the latest root so that the prover can provide it later and this contract can look up the relevant root
 
-    constructor(address _verifierRegistry, address _verifier, address _nfToken) public {
+    // VERIFICATION KEY STORAGE:
+    mapping(uint => uint256[]) public vks; // mapped to by an enum uint(TransactionTypes):
+
+    // FUNCTIONS:
+    constructor(address _verifier, address _nfToken) public {
         _owner = msg.sender;
-        verifierRegistry = Verifier_Registry(_verifierRegistry);
         verifier = Verifier_Interface(_verifier);
         nfToken = ERC721Interface(_nfToken);
     }
@@ -61,32 +62,25 @@ contract NFTokenShield is Ownable, MerkleTree {
     /**
     returns the verifier-interface contract address that this shield contract is calling
     */
-    function getVerifier() external view returns(address) {
+    function getVerifier() external view returns (address) {
         return address(verifier);
-    }
-
-    /**
-    Sets the vkIds (as registered with the Verifier Registry) which correspond to 'mint', 'transfer' and 'burn' computations respectively
-    */
-    function setVkIds(bytes32 _mintVkId, bytes32 _transferVkId, bytes32 _burnVkId) external onlyOwner {
-        // ensure the vkId's have been registered:
-        require(_mintVkId == verifierRegistry.getVkEntryVkId(_mintVkId), "Mint vkId not registered.");
-        require(_transferVkId == verifierRegistry.getVkEntryVkId(_transferVkId), "Transfer vkId not registered.");
-        require(_burnVkId == verifierRegistry.getVkEntryVkId(_burnVkId), "Burn vkId not registered.");
-
-        // store the vkIds
-        mintVkId = _mintVkId;
-        transferVkId = _transferVkId;
-        burnVkId = _burnVkId;
-
-        emit VkIdsChanged(mintVkId, transferVkId, burnVkId);
     }
 
     /**
     returns the ERC-721 contract address that this shield contract is calling
     */
-    function getNFToken() public view returns(address){
+    function getNFToken() public view returns (address) {
         return address(nfToken);
+    }
+
+    /**
+    Stores verification keys (for the 'mint', 'transfer' and 'burn' computations).
+    */
+    function registerVerificationKey(uint256[] calldata _vk, TransactionTypes _txType) external onlyOwner returns (bytes32) {
+        // CAUTION: we do not prevent overwrites of vk's. Users must listen for the emitted event to detect updates to a vk.
+        vks[uint(_txType)] = _vk;
+
+        emit VkChanged(_txType);
     }
 
     /**
@@ -102,12 +96,10 @@ contract NFTokenShield is Ownable, MerkleTree {
     /**
     The mint function creates ('mints') a new commitment and stores it in the merkleTree
     */
-    function mint(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _vkId, uint256 _tokenId, bytes32 _commitment) external {
+    function mint(uint256[] calldata _proof, uint256[] calldata _inputs, uint256 _tokenId, bytes32 _commitment) external {
 
         // gas measurement:
         uint256 gasCheckpoint = gasleft();
-
-        require(_vkId == mintVkId, "Incorrect vkId");
 
         // Check that the publicInputHash equals the hash of the 'public inputs':
         bytes31 publicInputHash = bytes31(bytes32(_inputs[0])<<8);
@@ -119,7 +111,7 @@ contract NFTokenShield is Ownable, MerkleTree {
         gasCheckpoint = gasleft();
 
         // verify the proof
-        bool result = verifier.verify(_proof, _inputs, _vkId);
+        bool result = verifier.verify(_proof, _inputs, vks[uint(TransactionTypes.Mint)]);
         require(result, "The proof has not been verified by the contract");
 
         // gas measurement:
@@ -141,12 +133,10 @@ contract NFTokenShield is Ownable, MerkleTree {
     /**
     The transfer function transfers a commitment to a new owner
     */
-    function transfer(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _vkId, bytes32 _root, bytes32 _nullifier, bytes32 _commitment) external {
+    function transfer(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _root, bytes32 _nullifier, bytes32 _commitment) external {
 
         // gas measurement:
         uint256 gasCheckpoint = gasleft();
-
-        require(_vkId == transferVkId, "Incorrect vkId");
 
         // Check that the publicInputHash equals the hash of the 'public inputs':
         bytes31 publicInputHash = bytes31(bytes32(_inputs[0])<<8);
@@ -158,7 +148,7 @@ contract NFTokenShield is Ownable, MerkleTree {
         gasCheckpoint = gasleft();
 
         // verify the proof
-        bool result = verifier.verify(_proof, _inputs, _vkId);
+        bool result = verifier.verify(_proof, _inputs, vks[uint(TransactionTypes.Transfer)]);
         require(result, "The proof has not been verified by the contract");
 
         // gas measurement:
@@ -185,12 +175,10 @@ contract NFTokenShield is Ownable, MerkleTree {
     /**
     The burn function burns a commitment and transfers the asset held within the commiment to the address payTo
     */
-    function burn(uint256[] memory _proof, uint256[] memory _inputs, bytes32 _vkId, bytes32 _root, bytes32 _nullifier, uint256 _tokenId, uint256 _payTo) public {
+    function burn(uint256[] memory _proof, uint256[] memory _inputs, bytes32 _root, bytes32 _nullifier, uint256 _tokenId, uint256 _payTo) public {
 
         // gas measurement:
         uint256 gasCheckpoint = gasleft();
-
-        require(_vkId == burnVkId, "Incorrect vkId");
 
         // Check that the publicInputHash equals the hash of the 'public inputs':
         bytes31 publicInputHash = bytes31(bytes32(_inputs[0])<<8);
@@ -202,7 +190,7 @@ contract NFTokenShield is Ownable, MerkleTree {
         gasCheckpoint = gasleft();
 
         // verify the proof
-        bool result = verifier.verify(_proof, _inputs, _vkId);
+        bool result = verifier.verify(_proof, _inputs, vks[uint(TransactionTypes.Burn)]);
         require(result, "The proof has not been verified by the contract");
 
         // gas measurement:

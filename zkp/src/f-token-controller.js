@@ -15,12 +15,7 @@ import Web3 from './web3';
 const FTokenShield = contract(jsonfile.readFileSync('./build/contracts/FTokenShield.json'));
 FTokenShield.setProvider(Web3.connect());
 
-const VerifierRegistry = contract(
-  jsonfile.readFileSync('./build/contracts/Verifier_Registry.json'),
-);
-VerifierRegistry.setProvider(Web3.connect());
-
-const Verifier = contract(jsonfile.readFileSync('./build/contracts/GM17_v0.json'));
+const Verifier = contract(jsonfile.readFileSync('./build/contracts/Verifier.json'));
 Verifier.setProvider(Web3.connect());
 
 const FToken = contract(jsonfile.readFileSync('./build/contracts/FToken.json'));

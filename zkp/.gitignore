@@ -92,7 +92,6 @@ typings/
 
 build
 build-test
-src/vkIds.json
 
 #other zkp files
 #ensures users who do their own local 'trusted setups' don't 'corrupt' the shared zkp files in the opensource repo.
@@ -101,4 +100,3 @@ src/vkIds.json
 !**/*.zok
 # We want to keep ft-burn.code, but not out.code
 **/out.code
-**/vkIds.json

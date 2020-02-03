@@ -1,5 +1,5 @@
 /**
-Contract to enable the management of ZKSnark-hidden coin transactions.
+Contract to enable the management of private fungible token (ERC-20) transactions using zk-SNARKs.
 @Author Westlad, Chaitanya-Konda, iAmMichaelConnor
 */
 
@@ -7,11 +7,14 @@ pragma solidity ^0.5.8;
 
 import "./Ownable.sol";
 import "./MerkleTree.sol";
-import "./Verifier_Registry.sol"; //we import the implementation to have visibility of its 'getters'
 import "./Verifier_Interface.sol";
 import "./ERC20Interface.sol";
 
 contract FTokenShield is Ownable, MerkleTree {
+  // ENUMS:
+  enum TransactionTypes { Mint, Transfer, Burn, SimpleBatchTransfer }
+
+  // EVENTS:
   // Observers may wish to listen for nullification of commitments:
   event Transfer(bytes32 nullifier1, bytes32 nullifier2);
   event SimpleBatchTransfer(bytes32 nullifier);
@@ -19,33 +22,35 @@ contract FTokenShield is Ownable, MerkleTree {
 
   // Observers may wish to listen for zkSNARK-related changes:
   event VerifierChanged(address newVerifierContract);
-  event VkIdsChanged(bytes32 mintVkId, bytes32 transferVkId, bytes32 simpleBatchTransferVkId, bytes32 burnVkId);
+  event VkChanged(TransactionTypes txType);
 
   // For testing only. This SHOULD be deleted before mainnet deployment:
   event GasUsed(uint256 byShieldContract, uint256 byVerifierContract);
 
-  uint constant bitLength = 216; // the number of LSB that we use in a hash
-  uint constant batchProofSize = 20; // the number of output commitments in the batch transfer proof
+  // CONTRACT INSTANCES:
+  Verifier_Interface private verifier; // the verification smart contract
+  ERC20Interface private fToken; // the  ERC-20 token contract
 
+  // PRIVATE TRANSACTIONS' PUBLIC STATES:
   mapping(bytes32 => bytes32) public nullifiers; // store nullifiers of spent commitments
   mapping(bytes32 => bytes32) public roots; // holds each root we've calculated so that we can pull the one relevant to the prover
   bytes32 public latestRoot; // holds the index for the latest root so that the prover can provide it later and this contract can look up the relevant root
 
-  Verifier_Registry public verifierRegistry; // the Verifier Registry contract
-  Verifier_Interface private verifier; // the verification smart contract
-  ERC20Interface private fToken; // the  ERC-20 token contract
+  // VERIFICATION KEY STORAGE:
+  mapping(uint => uint256[]) public vks; // mapped to by an enum uint(TransactionTypes):
 
-  //following registration of the vkId's with the Verifier Registry, we hard code their vkId's in setVkIds
-  bytes32 public mintVkId;
-  bytes32 public transferVkId;
-  bytes32 public burnVkId;
-  bytes32 public simpleBatchTransferVkId;
-
-  constructor(address _verifierRegistry, address _verifier, address _fToken) public {
+  // FUNCTIONS:
+  constructor(address _verifier, address _fToken) public {
       _owner = msg.sender;
-      verifierRegistry = Verifier_Registry(_verifierRegistry);
       verifier = Verifier_Interface(_verifier);
       fToken = ERC20Interface(_fToken);
+  }
+
+  /**
+  self destruct
+  */
+  function close() external onlyOwner {
+      selfdestruct(address(uint160(_owner)));
   }
 
   /**
@@ -57,55 +62,36 @@ contract FTokenShield is Ownable, MerkleTree {
   }
 
   /**
-  self destruct
-  */
-  function close() public onlyOwner {
-      selfdestruct(address(uint160(_owner)));
-  }
-
-  /**
   returns the verifier-interface contract address that this shield contract is calling
   */
-  function getVerifier() public view returns(address){
+  function getVerifier() public view returns (address) {
       return address(verifier);
-  }
-
-  /**
-  Sets the vkIds (as registered with the Verifier Registry) which correspond to 'mint', 'transfer' and 'burn' computations respectively
-  */
-  function setVkIds(bytes32 _mintVkId, bytes32 _transferVkId, bytes32 _simpleBatchTransferVkId, bytes32 _burnVkId) external onlyOwner {
-      //ensure the vkId's have been registered:
-      require(_mintVkId == verifierRegistry.getVkEntryVkId(_mintVkId), "Mint vkId not registered.");
-      require(_transferVkId == verifierRegistry.getVkEntryVkId(_transferVkId), "Transfer vkId not registered.");
-      require(_simpleBatchTransferVkId == verifierRegistry.getVkEntryVkId(_simpleBatchTransferVkId), "SimpleBatchTransfer vkId not registered.");
-      require(_burnVkId == verifierRegistry.getVkEntryVkId(_burnVkId), "Burn vkId not registered.");
-
-      //store the vkIds
-      mintVkId = _mintVkId;
-      transferVkId = _transferVkId;
-      simpleBatchTransferVkId = _simpleBatchTransferVkId;
-      burnVkId = _burnVkId;
-
-      emit VkIdsChanged(mintVkId, transferVkId, simpleBatchTransferVkId, burnVkId);
   }
 
   /**
   returns the ERC-20 contract address that this shield contract is calling
   */
-  function getFToken() public view returns(address){
+  function getFToken() public view returns (address) {
     return address(fToken);
   }
 
+  /**
+  Stores verification keys (for the 'mint', 'transfer' and 'burn' computations).
+  */
+  function registerVerificationKey(uint256[] calldata _vk, TransactionTypes _txType) external onlyOwner returns (bytes32) {
+      // CAUTION: we do not prevent overwrites of vk's. Users must listen for the emitted event to detect updates to a vk.
+      vks[uint(_txType)] = _vk;
+
+      emit VkChanged(_txType);
+  }
 
   /**
   The mint function accepts fungible tokens from the specified fToken ERC-20 contract and creates the same amount as a commitment.
   */
-  function mint(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _vkId, uint128 _value, bytes32 _commitment) external {
+  function mint(uint256[] calldata _proof, uint256[] calldata _inputs, uint128 _value, bytes32 _commitment) external {
 
       // gas measurement:
       uint256 gasCheckpoint = gasleft();
-
-      require(_vkId == mintVkId, "Incorrect vkId");
 
       // Check that the publicInputHash equals the hash of the 'public inputs':
       bytes31 publicInputHash = bytes31(bytes32(_inputs[0]) << 8);
@@ -117,7 +103,7 @@ contract FTokenShield is Ownable, MerkleTree {
       gasCheckpoint = gasleft();
 
       // verify the proof
-      bool result = verifier.verify(_proof, _inputs, _vkId);
+      bool result = verifier.verify(_proof, _inputs, vks[uint(TransactionTypes.Mint)]);
       require(result, "The proof has not been verified by the contract");
 
       // gas measurement:
@@ -139,13 +125,11 @@ contract FTokenShield is Ownable, MerkleTree {
   /**
   The transfer function transfers a commitment to a new owner
   */
-  function transfer(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _vkId, bytes32 _root, bytes32 _nullifierC, bytes32 _nullifierD, bytes32 _commitmentE, bytes32 _commitmentF) external {
+  function transfer(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _root, bytes32 _nullifierC, bytes32 _nullifierD, bytes32 _commitmentE, bytes32 _commitmentF) external {
 
       // gas measurement:
       uint256[3] memory gasUsed; // array needed to stay below local stack limit
       gasUsed[0] = gasleft();
-
-      require(_vkId == transferVkId, "Incorrect vkId");
 
       // Check that the publicInputHash equals the hash of the 'public inputs':
       bytes31 publicInputHash = bytes31(bytes32(_inputs[0]) << 8);
@@ -157,7 +141,7 @@ contract FTokenShield is Ownable, MerkleTree {
       gasUsed[0] = gasleft();
 
       // verify the proof
-      bool result = verifier.verify(_proof, _inputs, _vkId);
+      bool result = verifier.verify(_proof, _inputs, vks[uint(TransactionTypes.Transfer)]);
       require(result, "The proof has not been verified by the contract");
 
       // gas measurement:
@@ -192,12 +176,10 @@ contract FTokenShield is Ownable, MerkleTree {
   /**
   The transfer function transfers 20 commitments to new owners
   */
-  function simpleBatchTransfer(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _vkId, bytes32 _root, bytes32 _nullifier, bytes32[] calldata _commitments) external {
+  function simpleBatchTransfer(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _root, bytes32 _nullifier, bytes32[] calldata _commitments) external {
 
       // gas measurement:
       uint256 gasCheckpoint = gasleft();
-
-      require(_vkId == simpleBatchTransferVkId, "Incorrect vkId");
 
       // Check that the publicInputHash equals the hash of the 'public inputs':
       bytes31 publicInputHash = bytes31(bytes32(_inputs[0]) << 8);
@@ -209,7 +191,7 @@ contract FTokenShield is Ownable, MerkleTree {
       gasCheckpoint = gasleft();
 
       // verify the proof
-      bool result = verifier.verify(_proof, _inputs, _vkId);
+      bool result = verifier.verify(_proof, _inputs, vks[uint(TransactionTypes.SimpleBatchTransfer)]);
       require(result, "The proof has not been verified by the contract");
 
       // gas measurement:
@@ -233,13 +215,10 @@ contract FTokenShield is Ownable, MerkleTree {
       emit GasUsed(gasUsedByShieldContract, gasUsedByVerifierContract);
   }
 
-
-  function burn(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _vkId, bytes32 _root, bytes32 _nullifier, uint128 _value, uint256 _payTo) external {
+  function burn(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _root, bytes32 _nullifier, uint128 _value, uint256 _payTo) external {
 
       // gas measurement:
       uint256 gasCheckpoint = gasleft();
-
-      require(_vkId == burnVkId, "Incorrect vkId");
 
       // Check that the publicInputHash equals the hash of the 'public inputs':
       bytes31 publicInputHash = bytes31(bytes32(_inputs[0]) << 8);
@@ -251,7 +230,7 @@ contract FTokenShield is Ownable, MerkleTree {
       gasCheckpoint = gasleft();
 
       // verify the proof
-      bool result = verifier.verify(_proof, _inputs, _vkId);
+      bool result = verifier.verify(_proof, _inputs, vks[uint(TransactionTypes.Burn)]);
       require(result, "The proof has not been verified by the contract");
 
       // gas measurement:

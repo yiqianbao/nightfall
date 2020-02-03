@@ -95,4 +95,3 @@ typings/
 **/gm17/*/**
 !**/*.pcode
 !**/aux-*code
-**/vkIds.json

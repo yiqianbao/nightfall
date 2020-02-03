@@ -7,7 +7,7 @@
   "scripts": {
     "setup": "NODE_ENV=setup babel-node code/index.js",
     "setup-all": "yes | NODE_ENV=setup babel-node code/index.js",
-    "start": "nodemon --ignore src/vkIds.json --ignore stats-config/ --ignore code/ --exec babel-node ./src/index.js",
+    "start": "nodemon --ignore stats-config/ --ignore code/ --exec babel-node ./src/index.js",
     "test": "jest --verbose --runInBand --forceExit ./__tests__/*.test.js"
   },
   "contributors": [
@@ -22,7 +22,7 @@
   ],
   "license": "CC0-1.0",
   "dependencies": {
-    "@eyblockchain/nightlite": "^1.4.4",
+    "@eyblockchain/nightlite": "^2.0.1",
     "@eyblockchain/zokrates.js": "^1.2.0",
     "big-integer": "^1.6.47",
     "body-parser": "^1.19.0",

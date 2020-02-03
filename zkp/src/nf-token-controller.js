@@ -16,13 +16,7 @@ const NFTokenShield = contract(jsonfile.readFileSync('./build/contracts/NFTokenS
 
 NFTokenShield.setProvider(Web3.connect());
 
-const Verifier_Registry = contract(
-  jsonfile.readFileSync('./build/contracts/Verifier_Registry.json'),
-);
-
-Verifier_Registry.setProvider(Web3.connect());
-
-const Verifier = contract(jsonfile.readFileSync('./build/contracts/GM17_v0.json'));
+const Verifier = contract(jsonfile.readFileSync('./build/contracts/Verifier.json'));
 Verifier.setProvider(Web3.connect());
 
 const NFTokenMetadata = contract(jsonfile.readFileSync('./build/contracts/NFTokenMetadata.json'));

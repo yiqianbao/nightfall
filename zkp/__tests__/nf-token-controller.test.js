@@ -4,7 +4,7 @@ import { erc721 } from '@eyblockchain/nightlite';
 import utils from '../src/zkpUtils';
 import bc from '../src/web3';
 import controller from '../src/nf-token-controller';
-import { getVkId, getTruffleContractInstance } from '../src/contractUtils';
+import { getTruffleContractInstance } from '../src/contractUtils';
 
 jest.setTimeout(7200000);
 
@@ -90,7 +90,6 @@ describe('nf-token-controller.js tests', () => {
       A,
       pkA,
       S_A_A,
-      await getVkId('MintNFToken'),
       {
         account: accounts[0],
         nfTokenShieldJson,
@@ -111,7 +110,6 @@ describe('nf-token-controller.js tests', () => {
       G,
       pkA,
       S_A_G,
-      await getVkId('MintNFToken'),
       {
         account: accounts[0],
         nfTokenShieldJson,
@@ -136,7 +134,6 @@ describe('nf-token-controller.js tests', () => {
       skA,
       Z_A_A,
       zIndA,
-      await getVkId('TransferNFToken'),
       {
         account: accounts[0],
         nfTokenShieldJson,
@@ -160,7 +157,6 @@ describe('nf-token-controller.js tests', () => {
       skA,
       Z_A_G,
       zIndG,
-      await getVkId('TransferNFToken'),
       {
         account: accounts[0],
         nfTokenShieldJson,
@@ -182,7 +178,6 @@ describe('nf-token-controller.js tests', () => {
       sAToBA,
       Z_B_A,
       zIndA + 2,
-      await getVkId('BurnNFToken'),
       {
         account: accounts[0],
         tokenReceiver: accounts[2],

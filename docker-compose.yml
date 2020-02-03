@@ -77,6 +77,7 @@ services:
       - ganache
       - merkle-tree
     volumes:
+      #- ./zkp/.yalc:/app/.yalc
       - ./zkp/src:/app/src
       - ./zkp/build:/app/build
       - ./zkp/code:/app/code

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { erc721 } from '@eyblockchain/nightlite';
 import utils from '../zkpUtils';
 import nfController from '../nf-token-controller';
-import { getVkId, getTruffleContractInstance } from '../contractUtils';
+import { getTruffleContractInstance } from '../contractUtils';
 
 const router = Router();
 /**
@@ -25,7 +25,6 @@ async function mint(req, res, next) {
     owner: { publicKey },
   } = req.body;
   const salt = await utils.rndHex(32);
-  const vkId = await getVkId('MintNFToken');
   const {
     contractJson: nfTokenShieldJson,
     contractInstance: nfTokenShield,
@@ -36,7 +35,6 @@ async function mint(req, res, next) {
       tokenId,
       publicKey,
       salt,
-      vkId,
       {
         nfTokenShieldJson,
         nfTokenShieldAddress: nfTokenShield.address,
@@ -91,7 +89,6 @@ async function transfer(req, res, next) {
   } = req.body;
   const newCommitmentSalt = await utils.rndHex(32);
   const { address } = req.headers;
-  const vkId = await getVkId('TransferNFToken');
   const {
     contractJson: nfTokenShieldJson,
     contractInstance: nfTokenShield,
@@ -106,7 +103,6 @@ async function transfer(req, res, next) {
       sender.secretKey,
       commitment,
       commitmentIndex,
-      vkId,
       {
         nfTokenShieldJson,
         nfTokenShieldAddress: nfTokenShield.address,
@@ -160,7 +156,6 @@ async function burn(req, res, next) {
     receiver: { address: tokenReceiver },
   } = req.body;
   const { address } = req.headers;
-  const vkId = await getVkId('BurnNFToken');
   const {
     contractJson: nfTokenShieldJson,
     contractInstance: nfTokenShield,
@@ -173,7 +168,6 @@ async function burn(req, res, next) {
       salt,
       commitment,
       commitmentIndex,
-      vkId,
       {
         nfTokenShieldJson,
         nfTokenShieldAddress: nfTokenShield.address,

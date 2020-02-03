@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e
+
+# For devs. Quickly compile all contracts in both the zkp and offchain microservices.
+docker-compose run --rm truffle-zkp compile
+docker-compose run --rm truffle-offchain compile
