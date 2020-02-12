@@ -8,7 +8,7 @@ import { argv } from 'yargs';
 import fs from 'fs';
 import path from 'path';
 import inquirer from 'inquirer';
-import { generateZokratesFiles } from '@eyblockchain/nightlite';
+import { generateZokratesFiles } from 'nightlite';
 
 const isDirectory = source => fs.lstatSync(source).isDirectory();
 const getDirectories = source =>
@@ -55,13 +55,13 @@ async function main() {
       // Maybe too much processing.
       for (let j = 0; j < codeDirectories.length; j += 1) {
         // eslint-disable-next-line no-await-in-loop
-        await generateZokratesFiles(codeDirectories[j]);
+        await generateZokratesFiles(codeDirectories[j], zkpScheme);
       }
     } catch (err) {
       throw new Error(`Trusted setup failed: ${err}`);
     }
   } else {
-    await generateZokratesFiles(`${process.cwd()}/code/${f}`);
+    await generateZokratesFiles(`${process.cwd()}/code/${f}`, zkpScheme);
   }
 }
 

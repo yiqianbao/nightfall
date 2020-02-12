@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 
-import { erc20 } from '@eyblockchain/nightlite';
+import { erc20 } from 'nightlite';
 import bc from '../src/web3';
 
 import utils from '../src/zkpUtils';
