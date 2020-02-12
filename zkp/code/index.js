@@ -24,6 +24,12 @@ const getDirectories = source =>
 async function main() {
   // -f being the name of the .code file (i.e., 'ft-mint')
   const { f } = argv;
+  // -s being the scheme of zkp (g16, gm17)
+  let zkpScheme = argv.s;
+  if (!zkpScheme) {
+    zkpScheme = "g16";
+  }
+  console.log(`Proving scheme ${zkpScheme} will be used.`)
 
   if (!f) {
     console.log(
@@ -43,7 +49,7 @@ async function main() {
 
     try {
       // Array of all directories in the above directory.
-      const codeDirectories = getDirectories(`${process.cwd()}/code/gm17`);
+      const codeDirectories = getDirectories(`${process.cwd()}/code/${zkpScheme}`);
 
       // The files don't compile correctly when we Promise.all these, so we're doing sequentially.
       // Maybe too much processing.
