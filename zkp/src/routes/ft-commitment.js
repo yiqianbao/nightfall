@@ -3,6 +3,7 @@ import { erc20 } from 'nightlite';
 import utils from '../zkpUtils';
 import fTokenController from '../f-token-controller';
 import { getTruffleContractInstance } from '../contractUtils';
+import config from 'config';
 
 const router = Router();
 
@@ -38,9 +39,9 @@ async function mint(req, res, next) {
         account: address,
       },
       {
-        codePath: `${process.cwd()}/code/gm17/ft-mint/out`,
-        outputDirectory: `${process.cwd()}/code/gm17/ft-mint`,
-        pkPath: `${process.cwd()}/code/gm17/ft-mint/proving.key`,
+        codePath: `${process.cwd()}/code/${config.ZKPScheme}/ft-mint/out`,
+        outputDirectory: `${process.cwd()}/code/${config.ZKPScheme}/ft-mint`,
+        pkPath: `${process.cwd()}/code/${config.ZKPScheme}/ft-mint/proving.key`,
       },
     );
     res.data = {
@@ -100,9 +101,9 @@ async function transfer(req, res, next) {
         account: address,
       },
       {
-        codePath: `${process.cwd()}/code/gm17/ft-transfer/out`,
-        outputDirectory: `${process.cwd()}/code/gm17/ft-transfer`,
-        pkPath: `${process.cwd()}/code/gm17/ft-transfer/proving.key`,
+        codePath: `${process.cwd()}/code/${config.ZKPScheme}/ft-transfer/out`,
+        outputDirectory: `${process.cwd()}/code/${config.ZKPScheme}/ft-transfer`,
+        pkPath: `${process.cwd()}/code/${config.ZKPScheme}/ft-transfer/proving.key`,
       },
     );
     res.data = { outputCommitments, txReceipt };
@@ -153,9 +154,9 @@ async function burn(req, res, next) {
         tokenReceiver: receiver.address,
       },
       {
-        codePath: `${process.cwd()}/code/gm17/ft-burn/out`,
-        outputDirectory: `${process.cwd()}/code/gm17/ft-burn`,
-        pkPath: `${process.cwd()}/code/gm17/ft-burn/proving.key`,
+        codePath: `${process.cwd()}/code/${config.ZKPScheme}/ft-burn/out`,
+        outputDirectory: `${process.cwd()}/code/${config.ZKPScheme}/ft-burn`,
+        pkPath: `${process.cwd()}/code/${config.ZKPScheme}/ft-burn/proving.key`,
       },
     );
     res.data = { message: 'Burn successful' };
@@ -294,9 +295,9 @@ async function simpleFTCommitmentBatchTransfer(req, res, next) {
         fTokenShieldAddress: fTokenShield.address,
       },
       {
-        codePath: `${process.cwd()}/code/gm17/ft-batch-transfer/out`,
-        outputDirectory: `${process.cwd()}/code/gm17/ft-batch-transfer`,
-        pkPath: `${process.cwd()}/code/gm17/ft-batch-transfer/proving.key`,
+        codePath: `${process.cwd()}/code/${config.ZKPScheme}/ft-batch-transfer/out`,
+        outputDirectory: `${process.cwd()}/code/${config.ZKPScheme}/ft-batch-transfer`,
+        pkPath: `${process.cwd()}/code/${config.ZKPScheme}/ft-batch-transfer/proving.key`,
       },
     );
 

@@ -18,8 +18,8 @@ const getDirectories = source =>
     .filter(isDirectory);
 
 /**
- * Trusted setup for Nightfall. Either compiles all directories in /code/gm17, or a single directory using the -f flag.
- * Calls zokrates' compile, setup, and export-verifier on all (or a specified) directories in `/zkp/code/gm17`.
+ * Trusted setup for Nightfall. Either compiles all directories in /code/zkpScheme, or a single directory using the -f flag.
+ * Calls zokrates' compile, setup, and export-verifier on all (or a specified) directories in `/zkp/code/zkpScheme`.
  */
 async function main() {
   // -f being the name of the .code file (i.e., 'ft-mint')

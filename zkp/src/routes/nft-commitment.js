@@ -41,9 +41,9 @@ async function mint(req, res, next) {
         account: address,
       },
       {
-        codePath: `${process.cwd()}/code/gm17/nft-mint/out`,
-        outputDirectory: `${process.cwd()}/code/gm17/nft-mint`,
-        pkPath: `${process.cwd()}/code/gm17/nft-mint/proving.key`,
+        codePath: `${process.cwd()}/code/${config.ZKPScheme}/nft-mint/out`,
+        outputDirectory: `${process.cwd()}/code/${config.ZKPScheme}/nft-mint`,
+        pkPath: `${process.cwd()}/code/${config.ZKPScheme}/nft-mint/proving.key`,
       },
     );
 
@@ -109,9 +109,9 @@ async function transfer(req, res, next) {
         account: address,
       },
       {
-        codePath: `${process.cwd()}/code/gm17/nft-transfer/out`,
-        outputDirectory: `${process.cwd()}/code/gm17/nft-transfer`,
-        pkPath: `${process.cwd()}/code/gm17/nft-transfer/proving.key`,
+        codePath: `${process.cwd()}/code/${config.ZKPScheme}/nft-transfer/out`,
+        outputDirectory: `${process.cwd()}/code/${config.ZKPScheme}/nft-transfer`,
+        pkPath: `${process.cwd()}/code/${config.ZKPScheme}/nft-transfer/proving.key`,
       },
     );
     res.data = {
@@ -175,9 +175,9 @@ async function burn(req, res, next) {
         tokenReceiver,
       },
       {
-        codePath: `${process.cwd()}/code/gm17/nft-burn/out`,
-        outputDirectory: `${process.cwd()}/code/gm17/nft-burn`,
-        pkPath: `${process.cwd()}/code/gm17/nft-burn/proving.key`,
+        codePath: `${process.cwd()}/code/${config.ZKPScheme}/nft-burn/out`,
+        outputDirectory: `${process.cwd()}/code/${config.ZKPScheme}/nft-burn`,
+        pkPath: `${process.cwd()}/code/${config.ZKPScheme}/nft-burn/proving.key`,
       },
     );
     res.data = {

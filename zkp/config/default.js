@@ -22,7 +22,10 @@ i.e. DIRNAME_DIRPATH_REL: "/dirName/" is a relative path which (on the host mach
 
 ABS - absolute path
 */
+const ZKPScheme = process.env.ZKPScheme || "g16";
 module.exports = {
+  // set proving scheme
+  ZKPScheme: ZKPScheme,
   // Tree parameters. You also need to set these in the MerkleTree.sol contract, and in Nightfall's ./config/merkle-tree/default.js config file.
   LEAF_HASHLENGTH: 32, // expected length of an input to a hash in bytes
   NODE_HASHLENGTH: 27, // expected length of inputs to hashes up the merkle tree, in bytes
@@ -37,15 +40,15 @@ module.exports = {
 
   VK_PATHS: {
     NFTokenShield: {
-      mint: './code/gm17/nft-mint/nft-mint-vk.json',
-      transfer: './code/gm17/nft-transfer/nft-transfer-vk.json',
-      burn: './code/gm17/nft-burn/nft-burn-vk.json',
+      mint: `./code/${ZKPScheme}/nft-mint/nft-mint-vk.json`,
+      transfer: `./code/${ZKPScheme}/nft-transfer/nft-transfer-vk.json`,
+      burn: `./code/${ZKPScheme}/nft-burn/nft-burn-vk.json`,
     },
     FTokenShield: {
-      mint: './code/gm17/ft-mint/ft-mint-vk.json',
-      transfer: './code/gm17/ft-transfer/ft-transfer-vk.json',
-      simpleBatchTransfer: './code/gm17/ft-batch-transfer/ft-batch-transfer-vk.json',
-      burn: './code/gm17/ft-burn/ft-burn-vk.json',
+      mint: `./code/${ZKPScheme}/ft-mint/ft-mint-vk.json`,
+      transfer: `./code/${ZKPScheme}/ft-transfer/ft-transfer-vk.json`,
+      simpleBatchTransfer: `./code/${ZKPScheme}/ft-batch-transfer/ft-batch-transfer-vk.json`,
+      burn: `./code/${ZKPScheme}/ft-burn/ft-burn-vk.json`,
     },
   },
 
