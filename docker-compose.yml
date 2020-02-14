@@ -173,6 +173,7 @@ services:
       ETH_HOST: ganache
       ETH_GAS: 6000000
       ETH_GAS_PRICE: 20000000000
+      ZKPScheme: ${ZKPScheme:-g16}
     volumes:
       - ./zkp/contracts/:/truffle/contracts:delegated
       - ./zkp/migrations/:/truffle/migrations:delegated

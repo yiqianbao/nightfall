@@ -28,7 +28,7 @@ pragma solidity ^0.5.8;
 import "./Ownable.sol";
 import "./Pairing.sol";
 
-contract Verifier is Ownable {
+contract Verifier_GM17 is Ownable {
 
   using Pairing for *;
 
