@@ -39,6 +39,7 @@ async function mint(req, res, next) {
         account: address,
       },
       {
+        provingScheme: config.ZKPScheme,
         codePath: `${process.cwd()}/code/${config.ZKPScheme}/ft-mint/out`,
         outputDirectory: `${process.cwd()}/code/${config.ZKPScheme}/ft-mint`,
         pkPath: `${process.cwd()}/code/${config.ZKPScheme}/ft-mint/proving.key`,
@@ -101,6 +102,7 @@ async function transfer(req, res, next) {
         account: address,
       },
       {
+        provingScheme: config.ZKPScheme,
         codePath: `${process.cwd()}/code/${config.ZKPScheme}/ft-transfer/out`,
         outputDirectory: `${process.cwd()}/code/${config.ZKPScheme}/ft-transfer`,
         pkPath: `${process.cwd()}/code/${config.ZKPScheme}/ft-transfer/proving.key`,
@@ -154,6 +156,7 @@ async function burn(req, res, next) {
         tokenReceiver: receiver.address,
       },
       {
+        provingScheme: config.ZKPScheme,
         codePath: `${process.cwd()}/code/${config.ZKPScheme}/ft-burn/out`,
         outputDirectory: `${process.cwd()}/code/${config.ZKPScheme}/ft-burn`,
         pkPath: `${process.cwd()}/code/${config.ZKPScheme}/ft-burn/proving.key`,
@@ -295,6 +298,7 @@ async function simpleFTCommitmentBatchTransfer(req, res, next) {
         fTokenShieldAddress: fTokenShield.address,
       },
       {
+        provingScheme: config.ZKPScheme,
         codePath: `${process.cwd()}/code/${config.ZKPScheme}/ft-batch-transfer/out`,
         outputDirectory: `${process.cwd()}/code/${config.ZKPScheme}/ft-batch-transfer`,
         pkPath: `${process.cwd()}/code/${config.ZKPScheme}/ft-batch-transfer/proving.key`,

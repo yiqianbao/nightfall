@@ -3,6 +3,7 @@ import { erc721 } from 'nightlite';
 import utils from '../zkpUtils';
 import nfController from '../nf-token-controller';
 import { getTruffleContractInstance } from '../contractUtils';
+import config from 'config'
 
 const router = Router();
 /**
@@ -41,6 +42,7 @@ async function mint(req, res, next) {
         account: address,
       },
       {
+        provingScheme: config.ZKPScheme,
         codePath: `${process.cwd()}/code/${config.ZKPScheme}/nft-mint/out`,
         outputDirectory: `${process.cwd()}/code/${config.ZKPScheme}/nft-mint`,
         pkPath: `${process.cwd()}/code/${config.ZKPScheme}/nft-mint/proving.key`,
@@ -109,6 +111,7 @@ async function transfer(req, res, next) {
         account: address,
       },
       {
+        provingScheme: config.ZKPScheme,
         codePath: `${process.cwd()}/code/${config.ZKPScheme}/nft-transfer/out`,
         outputDirectory: `${process.cwd()}/code/${config.ZKPScheme}/nft-transfer`,
         pkPath: `${process.cwd()}/code/${config.ZKPScheme}/nft-transfer/proving.key`,
@@ -175,6 +178,7 @@ async function burn(req, res, next) {
         tokenReceiver,
       },
       {
+        provingScheme: config.ZKPScheme,
         codePath: `${process.cwd()}/code/${config.ZKPScheme}/nft-burn/out`,
         outputDirectory: `${process.cwd()}/code/${config.ZKPScheme}/nft-burn`,
         pkPath: `${process.cwd()}/code/${config.ZKPScheme}/nft-burn/proving.key`,
