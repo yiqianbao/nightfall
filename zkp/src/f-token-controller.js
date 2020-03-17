@@ -15,7 +15,7 @@ import Web3 from './web3';
 const FTokenShield = contract(jsonfile.readFileSync('./build/contracts/FTokenShield.json'));
 FTokenShield.setProvider(Web3.connect());
 
-const Verifier = contract(jsonfile.readFileSync('./build/contracts/Verifier.json'));
+const Verifier = contract(jsonfile.readFileSync(`./build/contracts/Verifier_${ZKPScheme.toUpperCase()}.json`));
 Verifier.setProvider(Web3.connect());
 
 const FToken = contract(jsonfile.readFileSync('./build/contracts/FToken.json'));

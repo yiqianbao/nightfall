@@ -9,7 +9,7 @@ const contractMapping = {
   NFTokenMetadata: './build/contracts/NFTokenMetadata.json',
   FTokenShield: './build/contracts/FTokenShield.json',
   FToken: './build/contracts/FToken.json',
-  Verifier: './build/contracts/Verifier.json',
+  Verifier: `./build/contracts/Verifier_${ZKPScheme.toUpperCase()}.json`,
 };
 
 export async function getTruffleContractInstance(contractName) {
