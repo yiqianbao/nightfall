@@ -5,6 +5,7 @@ import "utils/pack/unpack128.code" as unpack128
 import "utils/pack/nonStrictUnpack256.code" as unpack256
 import "hashes/sha256/IVconstants.code" as IVconstants
 import "hashes/sha256/shaRoundNoBoolCheck.code" as sha256
+import "hashes/pedersen/432bit.code" as pedersenhash
 
 // A function that takes 22 field[256] arrays as inputs
 // and applies 11 rounds of sha256 compression.
@@ -172,8 +173,10 @@ def main(field publicInputHash, private field inputValue, private field[2] secre
 	for field i in 0..32 do
 		field j = 31-i
     field k = 127-i
-		preimage512 = shaPad432To512(orderedConcatenate216x216(orderBits[k], hash[40..256], unpackSiblingNode(path[j])))
-		hash = sha256of512(preimage512[0..256], preimage512[256..512])
+		//preimage512 = shaPad432To512(orderedConcatenate216x216(orderBits[k], hash[40..256], unpackSiblingNode(path[j])))
+		//hash = sha256of512(preimage512[0..256], preimage512[256..512])
+		preimage432 = orderedConcatenate216x216(orderBits[k], hash[40..256], unpackSiblingNode(path[j]))
+		hash = pedersenhash(preimage432)
 	endfor
 	// check we have indeed recovered the root:
   rootBits = unpack2xx128To256(root)

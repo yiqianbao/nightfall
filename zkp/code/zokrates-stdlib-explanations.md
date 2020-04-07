@@ -39,7 +39,7 @@ in Solidity.**
 _All solidity test code implemented in Remix as follows:_
 
 ```solidity
-pragma solidity ^0.5.8;
+pragma solidity ^0.5.0;
 import "remix_tests.sol"; // this import is automatically injected by Remix.
 contract test {
   bytes input = hex'ffff';

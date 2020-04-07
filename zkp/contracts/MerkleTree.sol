@@ -5,7 +5,7 @@ The intention is for other 'derived' contracts to import this contract, and for 
 @Author iAmMichaelConnor
 */
 
-pragma solidity ^0.5.8;
+pragma solidity ^0.5.0;
 
 contract MerkleTree {
 
@@ -131,7 +131,7 @@ contract MerkleTree {
                     let input := mload(0x40) // 0x40 is always the free memory pointer. Don't change this.
                     mstore(input, leftInput) // push first input
                     mstore(add(input, 0x1b), rightInput) // push second input at position 27bytes = 0x1b
-                    success := staticcall(not(0), 2, input, 0x36, output, 0x20)
+                    success := staticcall(not(0), 10, input, 0x36, output, 0x20)
                     // Use "invalid" to make gas estimation work
                     switch success case 0 { invalid() }
                 }
@@ -151,7 +151,7 @@ contract MerkleTree {
                     let input := mload(0x40) // 0x40 is always the free memory pointer. Don't change this.
                     mstore(input, leftInput) // push first input
                     mstore(add(input, 0x1b), rightInput) // push second input at position 27bytes = 0x1b
-                    success := staticcall(not(0), 2, input, 0x36, output, 0x20)
+                    success := staticcall(not(0), 10, input, 0x36, output, 0x20)
                     // Use "invalid" to make gas estimation work
                     switch success case 0 { invalid() }
                 }
@@ -231,7 +231,7 @@ contract MerkleTree {
                         let input := mload(0x40) // 0x40 is always the free memory pointer. Don't change this.
                         mstore(input, leftInput) // push first input
                         mstore(add(input, 0x1b), rightInput) // push second input at position 27bytes = 0x1b
-                        success := staticcall(not(0), 2, input, 0x36, output, 0x20)
+                        success := staticcall(not(0), 10, input, 0x36, output, 0x20)
                         // Use "invalid" to make gas estimation work
                         switch success case 0 { invalid() }
                     }
@@ -250,7 +250,7 @@ contract MerkleTree {
                         let input := mload(0x40) // 0x40 is always the free memory pointer. Don't change this.
                         mstore(input, leftInput) // push first input
                         mstore(add(input, 0x1b), rightInput) // push second input at position 27bytes = 0x1b
-                        success := staticcall(not(0), 2, input, 0x36, output, 0x20)
+                        success := staticcall(not(0), 10, input, 0x36, output, 0x20)
                         // Use "invalid" to make gas estimation work
                         switch success case 0 { invalid() }
                     }
@@ -277,7 +277,7 @@ contract MerkleTree {
                     let input := mload(0x40) // 0x40 is always the free memory pointer. Don't change this.
                     mstore(input, leftInput) // push first input
                     mstore(add(input, 0x1b), rightInput) // push second input at position 27bytes = 0x1b
-                    success := staticcall(not(0), 2, input, 0x36, output, 0x20)
+                    success := staticcall(not(0), 10, input, 0x36, output, 0x20)
                     // Use "invalid" to make gas estimation work
                     switch success case 0 { invalid() }
                 }
@@ -296,7 +296,7 @@ contract MerkleTree {
                     let input := mload(0x40) // 0x40 is always the free memory pointer. Don't change this.
                     mstore(input, leftInput) // push first input
                     mstore(add(input, 0x1b), rightInput) // push second input at position 27bytes = 0x1b
-                    success := staticcall(not(0), 2, input, 0x36, output, 0x20)
+                    success := staticcall(not(0), 10, input, 0x36, output, 0x20)
                     // Use "invalid" to make gas estimation work
                     switch success case 0 { invalid() }
                 }

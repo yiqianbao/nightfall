@@ -2,7 +2,7 @@
 Contract to enable the management of hidden non fungible toke transactions.
 @Author Westlad, Chaitanya-Konda, iAmMichaelConnor
 */
-pragma solidity ^0.5.8;
+pragma solidity ^0.5.0;
 
 import "./Ownable.sol";
 import "./MerkleTree.sol";

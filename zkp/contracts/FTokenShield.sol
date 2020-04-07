@@ -3,7 +3,7 @@ Contract to enable the management of private fungible token (ERC-20) transaction
 @Author Westlad, Chaitanya-Konda, iAmMichaelConnor
 */
 
-pragma solidity ^0.5.8;
+pragma solidity ^0.5.0;
 
 import "./Ownable.sol";
 import "./MerkleTree.sol";

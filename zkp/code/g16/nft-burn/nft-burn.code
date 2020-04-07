@@ -3,6 +3,7 @@ import "hashes/sha256/1024bit.code" as sha256of1024
 import "hashes/sha256/512bit.code" as sha256of512
 import "utils/pack/unpack128.code" as unpack128
 import "utils/pack/nonStrictUnpack256.code" as unpack256
+import "hashes/pedersen/432bit.code" as pedersenhash
 
 def concatenate256x256x256x256(field[256] a, field[256] b, field[256] c, field[256] d)->(field[1024]):
 	return [...a, ...b, ...c, ...d]
@@ -124,8 +125,10 @@ def main(field publicInputHash, private field payToHigh, private field payToLow,
 	for field i in 0..32 do
 		field j = 31-i
 		field k = 127-i
-		preimage512 = shaPad432To512(orderedConcatenate216x216(orderBits[k], hash[40..256], unpackSiblingNode(siblingPath[j])))
-		hash = sha256of512(preimage512[0..256], preimage512[256..512])
+		//preimage512 = shaPad432To512(orderedConcatenate216x216(orderBits[k], hash[40..256], unpackSiblingNode(siblingPath[j])))
+		//hash = sha256of512(preimage512[0..256], preimage512[256..512])
+		preimage432 = orderedConcatenate216x216(orderBits[k], hash[40..256], unpackSiblingNode(siblingPath[j]))
+		hash = pedersenhash(preimage432)
   endfor
 	// save the computed root:
 	field[256] rootBitsCheck = hash

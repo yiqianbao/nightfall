@@ -23,7 +23,7 @@ Harry R
 @notice Do not use this example in any production code!
 */
 
-pragma solidity ^0.5.8;
+pragma solidity ^0.5.0;
 
 import "./Ownable.sol";
 import "./Pairing.sol";
