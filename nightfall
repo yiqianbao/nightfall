@@ -27,19 +27,20 @@ docker-compose -f docker-compose.yml down -v || {
 }
 
 printf "${GREEN}*** Pull zokrates docker image ***${NC}\n"
-docker pull zokrates/zokrates:0.5.1
+#docker pull zokrates/zokrates:0.5.1
 
 printf "${GREEN}*** Installing zkp-util dependencies"
-pushd zkp-utils
-npm ci
-popd
+#pushd zkp-utils
+#npm ci
+#popd
 
-printf "${GREEN}*** Launching containerized ganache ***${NC}\n"
-docker-compose up -d ganache
+#printf "${GREEN}*** Launching containerized ganache ***${NC}\n"
+#docker-compose up -d ganache
 
 printf "${GREEN}*** Deploying all contracts ***${NC}\n"
-docker-compose run --rm truffle-offchain migrate --reset --network=default
-docker-compose run --rm truffle-zkp migrate --reset --network=default
+
+docker-compose run --rm truffle-offchain migrate --reset --network=development
+docker-compose run --rm truffle-zkp migrate --reset --network=development
 
 printf "${GREEN}*** Launching containerized microservices ***${NC}\n"
 docker-compose -f docker-compose.yml up --build
