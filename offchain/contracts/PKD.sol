@@ -1,4 +1,4 @@
-pragma solidity ^0.5.8;
+pragma solidity ^0.5.0;
 /**
 This contract acts as a Public Key Directory for looking up ZKP public keys if you know
 the Ethereum address.  It also works as a simple Name Service

@@ -29,7 +29,9 @@ async function assignNameToAccount(req, res, next) {
   const { address } = req.headers;
 
   try {
+    //await console.log("555");
     await setName(name, address);
+    //await console.log("666");
     res.data = { message: 'Name Added.' };
     next();
   } catch (err) {
@@ -53,7 +55,9 @@ async function assignZkpPublicKeyToAccount(req, res, next) {
   const { address } = req.headers;
 
   try {
+    //await console.log("777");
     await setZkpPublicKey(publicKey, address);
+    //await console.log("888");
     res.data = { message: 'Keys Added.' };
     next();
   } catch (err) {
@@ -77,7 +81,9 @@ async function assignWhisperKeyToAccount(req, res, next) {
   const { address } = req.headers;
 
   try {
+    //await console.log("999");
     await setWhisperPublicKey(whisperPk, address);
+    //await console.log("aaa");
     res.data = { message: 'Keys Added.' };
     next();
   } catch (err) {

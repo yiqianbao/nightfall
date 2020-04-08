@@ -70,6 +70,7 @@ export async function getPublicKeysFromAddress(address) {
 // set a name for the user (the smart contract enforces uniqueness)
 export async function setName(name, address) {
   const pkd = await PKD.deployed();
+  //await console.log("bbb", pkd);  
   return pkd.setName(bytes32(name), { from: address, gas: 4000000 });
 }
 
@@ -80,10 +81,13 @@ export async function setPublicKeys([whisperPublicKey, zkpPublicKey], account) {
 
 export async function setWhisperPublicKey(wpk, address) {
   const pkd = await PKD.deployed();
+  //await console.log("ccc", pkd);  
   return pkd.setWhisperPublicKey(wpk, { from: address, gas: 4000000 });
 }
 
+
 export async function setZkpPublicKey(zpk, address) {
   const pkd = await PKD.deployed();
+  //await console.log("ddd");  
   return pkd.setZkpPublicKey(zpk, { from: address, gas: 4000000 });
 }
