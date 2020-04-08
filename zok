@@ -4,3 +4,11 @@ docker run -ti --rm -v $PWD/zkp/code:/home/zokrates/code zokrates/zokrates:0.5.1
 
 # to generate a proof (after having copied the 'compute-witness' logging from the console) use:
 # ./zokrates generate-proof -i ./code/gm17/ft-batch-transfer/out -j ./code/gm17/ft-batch-transfer/proof.json -p ./code/gm17/ft-batch-transfer/proving.key -s gm17
+
+# time (optype=ft-batch-transfer && ./zokrates generate-proof -i ./code/g16/$optype/out -j ./code/g16/$optype/proof.json -p ./code/g16/$optype/proving.key -w ./code/g16/$optype/witness -s g16)
+# time (optype=ft-transfer && ./zokrates generate-proof -i ./code/g16/$optype/out -j ./code/g16/$optype/proof.json -p ./code/g16/$optype/proving.key -w ./code/g16/$optype/witness -s g16)
+# time (optype=ft-mint && ./zokrates generate-proof -i ./code/g16/$optype/out -j ./code/g16/$optype/proof.json -p ./code/g16/$optype/proving.key -w ./code/g16/$optype/witness -s g16)
+# time (optype=ft-burn && ./zokrates generate-proof -i ./code/g16/$optype/out -j ./code/g16/$optype/proof.json -p ./code/g16/$optype/proving.key -w ./code/g16/$optype/witness -s g16)
+# time (optype=nft-mint && ./zokrates generate-proof -i ./code/g16/$optype/out -j ./code/g16/$optype/proof.json -p ./code/g16/$optype/proving.key -w ./code/g16/$optype/witness -s g16)
+# time (optype=nft-burn && ./zokrates generate-proof -i ./code/g16/$optype/out -j ./code/g16/$optype/proof.json -p ./code/g16/$optype/proving.key -w ./code/g16/$optype/witness -s g16)
+# time (optype=nft-transfer && ./zokrates generate-proof -i ./code/g16/$optype/out -j ./code/g16/$optype/proof.json -p ./code/g16/$optype/proving.key -w ./code/g16/$optype/witness -s g16)
