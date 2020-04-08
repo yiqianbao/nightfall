@@ -53,20 +53,21 @@ export async function createAccountHandler(req, res, next) {
 
     const address = (await accounts.createAccount(password)).data;
     const shhIdentity = '';
-
+    //await console.log("000");
     const data = await db.createUser({
       ...req.body,
       address,
       shhIdentity,
     });
-
+    //await console.log("111");
     await accounts.unlockAccount({ address, password });
-
+    //await console.log("222");
     await offchain.setName(address, name);
+    //await console.log("333");
     await offchain.setZkpPublicKey(address, {
       publicKey: data.publicKey,
     });
-
+    //await console.log("444");
     res.data = data;
     next();
   } catch (err) {

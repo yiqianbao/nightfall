@@ -1,7 +1,8 @@
 import request from 'request';
 import config from 'config';
 
-const url = config.get('database.url');
+//const url = config.get('database.url');
+const url = 'http://database:80'
 
 const requestWrapper = options =>
   new Promise(function promiseHandler(resolve, reject) {

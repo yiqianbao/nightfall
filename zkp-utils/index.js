@@ -11,6 +11,7 @@ const BI = require('big-integer');
 const hexToBinary = require('hex-to-binary');
 const crypto = require('crypto');
 const { Buffer } = require('safe-buffer');
+//const pedersenHashCallGo = require("./pedersenHashCallGo.js")
 
 const inputsHashLength = 32;
 
@@ -439,7 +440,11 @@ function concatenateThenHash(...items) {
     .map(item => Buffer.from(strip0x(item), 'hex'))
     .reduce((acc, item) => concatenate(acc, item));
 
-  const h = `0x${crypto
+//const hash = pedersenHashCallGo.pedersenHashCallGo(concatvalue);
+
+//const h = `0x${hash.toString("hex")}`;
+  
+const h = `0x${crypto
     .createHash('sha256')
     .update(concatvalue, 'hex')
     .digest('hex')}`;
