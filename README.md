@@ -199,3 +199,30 @@ they have shared with the community:
 -   [GM17](https://eprint.iacr.org/2017/540.pdf)
 -   [0xcert](https://github.com/0xcert/ethereum-erc721/)
 -   [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/token/ERC20/ERC20.sol)
+
+## Modify
+-   mongoDB: 修改了启动后的bindIp, 本次测试出现：默认值127.0.0.1会导致其他容器访问失败。（非必须改动）
+-   timber：修改了默克尔树的hash算法。（必须改动）
+-   zkp：（必须改动）
+    -   修改了合约的hash调用。staticcall(......)，共6处
+    -   修改了nightlight的默克尔树验证的hash调用
+    -   新增了nightlight  七种交易类型的时间戳（erc20.js,  erc721.js）
+    -   新增了zokrates的podersenHash类型（432bit.zok）
+    -   新增了zokrates的point的压缩类型 （edwardsCompressX.zok)
+-   geth：（必须改动）
+   -   新增了pedersen预编译合约类型
+   -   修改了挖矿机制（有pending交易才挖矿，不挖空矿），减少geth占用的cpu资源
+
+-   启动步骤
+    -   先启动私链
+        -   geth --datadir ./data0 account new（将生成的账户替换genesis.json里的账户"coinbase"和"alloc"）
+        -   geth --datadir ./data0 init genesis.json
+        -   geth --datadir ./data0 --verbosity 5 --rpc --rpccorsdomain "*" --rpcaddr 0.0.0.0 --rpcport 8545 --rpcapi eth,web3,admin,personal,net --allow-insecure-unlock --wsapi eth,web3,admin,personal,net --networkid 999 --vmdebug console 2>> geth.log (若不删除文件，重启后直接执行后四步即可)
+        -   admin.startWS("0.0.0.0", 8546, "*")
+        -   personal.unlockAccount(eth.coinbase, "", 500000000)
+        -   miner.setEtherbase(eth.coinbase)
+        -   miner.start()
+    
+    -   启动nightfall
+        -   将生成的账户地址分别替换offchain和zkp下的truffle-config.js和truffle.js，保存
+        -   执行./nightfall
