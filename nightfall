@@ -34,13 +34,14 @@ printf "${GREEN}*** Installing zkp-util dependencies"
 #npm ci
 #popd
 
-#printf "${GREEN}*** Launching containerized ganache ***${NC}\n"
+printf "${GREEN}*** Launching containerized ganache ***${NC}\n"
 #docker-compose up -d ganache
+docker-compose up -d custom-geth
 
 printf "${GREEN}*** Deploying all contracts ***${NC}\n"
 
-docker-compose run --rm truffle-offchain migrate --reset --network=development
-docker-compose run --rm truffle-zkp migrate --reset --network=development
+docker-compose run --rm truffle-offchain migrate --reset --network=default
+docker-compose run --rm truffle-zkp migrate --reset --network=default
 
 printf "${GREEN}*** Launching containerized microservices ***${NC}\n"
 docker-compose -f docker-compose.yml up --build

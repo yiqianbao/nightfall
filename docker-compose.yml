@@ -12,8 +12,10 @@ services:
       - ./accounts/.babelrc:/app/.babelrc
       - ./accounts/node_modules:/app/node_modules
     environment:
-      BLOCKCHAIN_HOST: ws://172.17.0.1
+      BLOCKCHAIN_HOST: ws://custom-geth
       BLOCKCHAIN_PORT: 8546
+    depends_on:
+      - custom-geth
     networks:
       - nightfall_network
 
@@ -62,8 +64,10 @@ services:
     environment:
       AUTHENTICATION_API_HOST: http://api-gateway
       AUTHENTICATION_API_PORT: 80
-      BLOCKCHAIN_HOST: ws://172.17.0.1
+      BLOCKCHAIN_HOST: ws://custom-geth
       BLOCKCHAIN_PORT: 8546
+    depends_on:
+      - custom-geth
     networks:
       - nightfall_network
 
@@ -74,6 +78,7 @@ services:
     restart: on-failure
     depends_on:
       - merkle-tree
+      - custom-geth
     volumes:
       - ./zkp/src:/app/src
       - ./zkp/build:/app/build
@@ -84,7 +89,7 @@ services:
       - ./zkp/node_modules:/app/node_modules
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      BLOCKCHAIN_HOST: ws://172.17.0.1
+      BLOCKCHAIN_HOST: ws://custom-geth
       BLOCKCHAIN_PORT: 8546
       MERKLE_TREE_HOST: http://merkle-tree
       MERKLE_TREE_PORT: 80
@@ -110,7 +115,7 @@ services:
       - nightfall_network
 
   mongo-nightfall:
-    image: mongo:v1.1
+    image: mongo
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin
@@ -118,6 +123,19 @@ services:
     volumes:
       - ./database/docker-entrypoint-initdb.d/01_setup_admin_user.js:/docker-entrypoint-initdb.d/01_setup_admin_user.js
       - mongo-nightfall-volume:/data/db
+    networks:
+      - nightfall_network
+
+  custom-geth:
+    build:
+      context: ./custom-geth
+      dockerfile: Dockerfile
+    restart: on-failure
+    # volumes:
+    #   - ./custom-geth/datadir:/app/datadir
+    ports:
+      - '8545:8545'
+      - '8546:8546'
     networks:
       - nightfall_network
 
@@ -141,17 +159,20 @@ services:
   truffle-offchain:
     image: ajmay/truffle:5.0.9
     environment:
-      BLOCKCHAIN_HOST: ws://172.17.0.1
+      BLOCKCHAIN_HOST: ws://custom-geth
       BLOCKCHAIN_PORT: 8546
       SOLC_VERSION: 0.5.0
+      ETH_HOST: custom-geth
       ETH_GAS: 6000000
       ETH_GAS_PRICE: 0
+    depends_on:
+      - custom-geth
     volumes:
       - ./offchain/contracts:/truffle/contracts:delegated
       - ./offchain/migrations/:/truffle/migrations:delegated
       - ./offchain/build/contracts/:/truffle/build/contracts:cached
       - ./offchain/test/:/truffle/test:delegated
-      - ./offchain/truffle-config.js:/truffle/truffle.js:delegated
+      # - ./offchain/truffle-config.js:/truffle/truffle.js:delegated
     logging:
       options:
         max-size: 10m
@@ -161,19 +182,22 @@ services:
   truffle-zkp:
     image: ajmay/truffle:5.0.9
     environment:
-      BLOCKCHAIN_HOST: ws://172.17.0.1
+      BLOCKCHAIN_HOST: ws://custom-geth
       BLOCKCHAIN_PORT: 8546
       SOLC_VERSION: 0.5.0
+      ETH_HOST: custom-geth
       ETH_GAS: 6000000
       ETH_GAS_PRICE: 0
       ZKPScheme: ${ZKPScheme:-g16}
+    depends_on:
+      - custom-geth
     volumes:
       - ./zkp/contracts/:/truffle/contracts:delegated
       - ./zkp/migrations/:/truffle/migrations:delegated
       - ./zkp/build/contracts/:/truffle/build/contracts:cached
       - ./zkp/test/:/truffle/test:delegated
       - ./zkp/src/:/truffle/src:delegated
-      - ./zkp/truffle.js:/truffle/truffle.js:delegated
+      # - ./zkp/truffle.js:/truffle/truffle.js:delegated
     logging:
       options:
         max-size: 10m
@@ -182,7 +206,7 @@ services:
 
   # The database storing the merkle tree
   mongo-merkle-tree:
-    image: mongo:v1.1
+    image: mongo
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin
@@ -193,11 +217,17 @@ services:
     networks:
       - nightfall_network
 
+  timber:
+    build:
+      context: ./timber
+      dockerfile: Dockerfile
+
   merkle-tree:
-    image: eyblockchain/timber:v1.4.0
+    image: nightfall_timber
     restart: on-failure
     depends_on:
       - mongo-merkle-tree
+      - custom-geth
     volumes:
       - ./config/merkle-tree:/app/config # mount point might be different if configuring from another application
       - ./zkp/contracts/:/app/contracts:consistent # required if deploying contracts from within this service (if CONTRACT_LOCATION = 'default')
@@ -205,7 +235,7 @@ services:
     ports:
       - "9000:80"
     environment:
-      BLOCKCHAIN_HOST: ws://172.17.0.1
+      BLOCKCHAIN_HOST: ws://custom-geth
       BLOCKCHAIN_PORT: 8546
       CONTRACT_LOCATION: 'default' # Where to find the contractInstances?
       # Specify one of:
