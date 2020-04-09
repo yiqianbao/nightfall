@@ -9,7 +9,7 @@ module.exports = {
       development: {
         host: "172.17.0.1",
         port: 8545,
-        from: "0xdAD63797BB789F4BcEF6c3f452cF04781883DDa6",
+        from: "0x4c34Ac28a0707cF3289e288126452Fcb5A03830e",
         gas: 4612388,
         gasPrice: 0,
         network_id: 999
