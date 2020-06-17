@@ -16,11 +16,11 @@ At present, GM17 algorithm has been implemented for Nightfall. We run all variou
 
 The first row represents the transaction type and the second line states the transaction execution time (Actually that is the generation time of the proof); The third action is the size of the proof for each transaction. It can be seen that:
 
-1. Time consumption is positively correlated with the size of the proof; The bigger the proof, the longer it takes
+1. Time consumption is positively correlated with the size of the proof; The bigger the proof, the longer time it costs
 
-2. The transfer operation and destruction operation take too long, which is much higher than the coinage
+2. The transfer operation and burn operation take too long, which is much higher than the mint operation
 
-Such efficiency is difficult to use for payment transactions, that is the troubles. So we should find a more efficient scheme. A better zero-knowledge proof algorithm or a smaller proof size? Maybe both.
+Obviously we should find a more efficient scheme. A better zero-knowledge proof algorithm or a smaller proof size? Maybe both.
 
 ### Zkp Alg
 
@@ -59,7 +59,7 @@ After a lot of analysis and research work, we summarized the performance compari
 |  poseidon |  316 |
 
 The first column represents the hash algorithm; The second column represents the number of constraints corresponding to an operation. It can be seen that both Pedersen, MIMC, and Poseidon hash have a considerable performance improvement compared with sha256. 
-However we are finally select the pedersen hash algorithm, depend on mainly the security which is most important point.Because the pedersen algorithm has been proven safe and has been used in [zcash](https://github.com/zcash/zips/blob/master/protocol/protocol.pdf "zcash"), while the safety of the mimc and the podeidon algorithm is still in doubt, but we will still try to implement it in other branches; Another point is that, compared with sha256 hash algorithm, pedersen hash has been made great ascension performance, i.e., after replacement, merkel tree path validation part number of constraints is a small percentage of the overall number of constraints, and if replace mimc or podeidon hash, may not significantly reduce the number of constraints, the performance improvement is not obvious; But this is still an alternative direction of optimization that needs to be addressed. In fact, Nightfall has achieved [mimc](https://github.com/EYBlockchain/nightfall/tree/MirandaWood/mimc "mimc") version of the branch which can get larger ascension.
+However we are finally select the pedersen hash algorithm, depend on mainly the security which is most important point.Because the pedersen algorithm has been proven safe and has been used in [zcash](https://github.com/zcash/zips/blob/master/protocol/protocol.pdf "zcash"), while the safety of the mimc and the podeidon algorithm is still in doubt, but we will still try to implement it in other branches; Another point is that, compared with sha256 hash algorithm, pedersen hash has been made great ascension performance, i.e., after replacement, merkel tree path validation part number of constraints is a small percentage of the overall number of constraints, and if replace mimc or poseidon hash, may not significantly reduce the number of constraints, the performance improvement is not obvious; But this is still an alternative direction of optimization that needs to be addressed. In fact, Nightfall has achieved [mimc](https://github.com/EYBlockchain/nightfall/tree/MirandaWood/mimc "mimc") version of the branch which can get larger ascension.
 
 ## Our modifications
 
@@ -105,6 +105,7 @@ With these changes, the current version of Nightfall has achieved significant pe
 |  GM17 |  sha256 |  17s  |  2m36s | 2m40s  | 14s  | 2m28s  | 5m25s  | 6m8s|
 |  Groth16 |  pedersen |  5s | 25s  | 25s  | 5s  |  24s | 49s  | 1m45s  |
 
+It is necessary to illustration that  we get the results in the second row when the Nightfall which  is the orginal version  runs on a virtual machine configured with 4CPU, 12GMem and get the results in the third row when we has made some modifications, but  runs on a virtual machine configured with 2CPU, 4GMem. 
 ## Better Peformance
 
 Currently, a simple transaction can be completed in less than a minute, which is nearly six times better than the original transaction efficiency. If you want more efficiency, maybe you can try 1. Replace the more efficient hash; 2. Choose a machine with higher configuration. If the performance of a single core CPU is greatly improved, the overall efficiency will be higher
