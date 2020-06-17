@@ -91,7 +91,7 @@ Zokrates:
 With these changes, the current version of Nightfall has achieved significant performance improvements, as shown in the table below:
 
 | Alg  | NFT-Mint  |  NFT-Burn | NFT-Transfer  | FT-Mint  | FT-Burn  | FT-Transfer  |  FT-BatchTransfer |
-| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
+| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
 | sha256/all contrians  | 114723  | 1178584  | 1208093  | 86613  | 1150474  | 2357944  | 2611408  |
 | sha256/merkel contrians  |  0 |  887585 | 887585  |  0 |  887585 | 1775170  |  887585 |
 | sha256/proof size  |  28M | 327M  |  332M |  23M |  323M | 654M  |  694M |
@@ -145,7 +145,7 @@ It would be nice if this project could help you in your current work. If you hav
 
 1. Liwei Yuan, email: xzfkiller@gmail.com
 
-2. Henry, enail: Imforhenry@outlook.com
+2. Henry, email: Imforhenry@outlook.com
 
 3. A big mango, email: WY12351@163.com
 
