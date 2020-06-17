@@ -26,19 +26,40 @@ docker-compose -f docker-compose.yml down -v || {
   docker volume rm nightfall_mongo-merkle-tree-volume
 }
 
-printf "${GREEN}*** Pull zokrates docker image ***${NC}\n"
+#printf "${GREEN}*** Pull zokrates docker image ***${NC}\n"
 #docker pull zokrates/zokrates:0.5.1
 
-printf "${GREEN}*** Installing zkp-util dependencies"
-#pushd zkp-utils
-#npm ci
-#popd
+printf "${GREEN}*** Installing zkp-util dependencies* ***${NC}\n"
+pushd zkp-utils
+  if [ ! -n "$(ls | grep node_modules)" ]
+  then
+      npm ci
+  fi
+popd
 
-printf "${GREEN}*** Launching containerized ganache ***${NC}\n"
-#docker-compose up -d ganache
-docker-compose up -d custom-geth
+printf "${GREEN}*** genesis block init* ***${NC}\n"
+pushd custom-geth
+  #geth init
+  ./init.sh
+  #get geth images，if  not exits, then create
+  if [ ! -n "$(docker images | grep geth_yqb)" ]
+  then
+    docker build -t geth_yqb:v1.0 .
+  fi
+popd
 
-printf "${GREEN}*** Deploying all contracts ***${NC}\n"
+pushd timber
+  #get timber images，if  not exits, then create
+  if [ ! -n "$(docker images | grep timber_yqb)" ]
+  then
+    docker build -t timber_yqb:v1.0 .
+  fi
+popd
+
+printf "${GREEN}*** Launching containerized geth ***${NC}\n"
+docker-compose up  -d custom-geth
+
+printf "${GREEN}*** Deploying all contracts ***${NC}\n"                               
 
 docker-compose run --rm truffle-offchain migrate --reset --network=default
 docker-compose run --rm truffle-zkp migrate --reset --network=default

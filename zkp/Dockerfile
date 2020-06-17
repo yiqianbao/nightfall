@@ -13,7 +13,7 @@ COPY ./libstdc++.so.6.0.25 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.25
 COPY ./pedersenHash.so  ./
 COPY ./edwardsCompressX.zok  /app/stdlib/ecc/
 COPY ./432bit.zok  /app/stdlib/hashes/pedersen/
-#RUN npm ci
+RUN npm ci
 RUN cd /usr/lib/x86_64-linux-gnu && rm -rf libstdc++.so.6  && ln -s libstdc++.so.6.0.25 libstdc++.so.6
 EXPOSE 80
 CMD npm start

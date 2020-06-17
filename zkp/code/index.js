@@ -8,7 +8,7 @@ import { argv } from 'yargs';
 import fs from 'fs';
 import path from 'path';
 import inquirer from 'inquirer';
-import { generateZokratesFiles } from 'nightlite';
+import { generateZokratesFiles } from 'nightlite_yqb';
 
 const isDirectory = source => fs.lstatSync(source).isDirectory();
 const getDirectories = source =>

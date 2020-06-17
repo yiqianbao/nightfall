@@ -10,7 +10,7 @@ RUN apt-get update
 RUN apt-get install -y mongodb-org
 
 COPY ./package.json ./package-lock.json ./
-#RUN npm ci
+RUN npm ci
 
 EXPOSE 80
 CMD npm start

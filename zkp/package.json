@@ -22,7 +22,7 @@
   ],
   "license": "CC0-1.0",
   "dependencies": {
-    "nightlite": "2.0.1-rc.2",
+    "nightlite_yqb": "2.0.1-rc.2-yqb",
     "@eyblockchain/zokrates.js": "^1.2.0",
     "big-integer": "^1.6.47",
     "body-parser": "^1.19.0",

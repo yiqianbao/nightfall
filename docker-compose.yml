@@ -10,7 +10,6 @@ services:
       - ./accounts/src:/app/src
       - ./accounts/config:/app/config
       - ./accounts/.babelrc:/app/.babelrc
-      - ./accounts/node_modules:/app/node_modules
     environment:
       BLOCKCHAIN_HOST: ws://custom-geth
       BLOCKCHAIN_PORT: 8546
@@ -33,7 +32,6 @@ services:
       - ./api-gateway/src:/app/src
       - ./api-gateway/config:/app/config
       - ./api-gateway/.babelrc:/app/.babelrc
-      - ./api-gateway/node_modules:/app/node_modules
     ports:
       - '8001:80'
     environment:
@@ -55,7 +53,6 @@ services:
     restart: on-failure
     volumes:
       - ./offchain/src:/app/src
-      - ./offchain/node_modules:/app/node_modules
       - ./offchain/build:/app/build
       - ./offchain/.babelrc:/app/.babelrc
       - ./offchain/__tests__:/app/__tests__
@@ -78,7 +75,6 @@ services:
     restart: on-failure
     depends_on:
       - merkle-tree
-      - custom-geth
     volumes:
       - ./zkp/src:/app/src
       - ./zkp/build:/app/build
@@ -86,7 +82,6 @@ services:
       - ./zkp/.babelrc:/app/.babelrc
       - ./zkp/__tests__:/app/__tests__
       - ./zkp/config:/app/config
-      - ./zkp/node_modules:/app/node_modules
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       BLOCKCHAIN_HOST: ws://custom-geth
@@ -108,7 +103,6 @@ services:
       - ./ui/src:/app/src
       - ./ui/angular.json:/app/angular.json
       - ./ui/tsconfig.json:/app/tsconfig.json
-      - ./ui/node_modules:/app/node_modules
     ports:
       - '8000:80'
     networks:
@@ -127,12 +121,8 @@ services:
       - nightfall_network
 
   custom-geth:
-    build:
-      context: ./custom-geth
-      dockerfile: Dockerfile
+    image: geth_yqb:v1.0
     restart: on-failure
-    # volumes:
-    #   - ./custom-geth/datadir:/app/datadir
     ports:
       - '8545:8545'
       - '8546:8546'
@@ -147,7 +137,6 @@ services:
     depends_on:
       - mongo-nightfall
     volumes:
-      - ./database/node_modules:/app/node_modules
       - ./database/src:/app/src
       - ./database/.babelrc:/app/.babelrc
       - ./zkp-utils:/app/node_modules/zkp-utils
@@ -217,17 +206,11 @@ services:
     networks:
       - nightfall_network
 
-  timber:
-    build:
-      context: ./timber
-      dockerfile: Dockerfile
-
   merkle-tree:
-    image: nightfall_timber
+    image: timber_yqb:v1.0
     restart: on-failure
     depends_on:
       - mongo-merkle-tree
-      - custom-geth
     volumes:
       - ./config/merkle-tree:/app/config # mount point might be different if configuring from another application
       - ./zkp/contracts/:/app/contracts:consistent # required if deploying contracts from within this service (if CONTRACT_LOCATION = 'default')

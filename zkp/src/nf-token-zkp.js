@@ -8,7 +8,7 @@ enables multiple transfers of an asset to take place. The code also talks direct
 */
 
 import config from 'config';
-import { merkleTree } from 'nightlite';
+import { merkleTree } from 'nightlite_yqb';
 import utils from './zkpUtils';
 
 /**

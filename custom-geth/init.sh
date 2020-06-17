@@ -1,10 +1,27 @@
 #!/bin/bash
 
-# once init
-# geth makedag 0 ./datadir/dag
-# geth makedag 30000 ./datadir/dag
-# geth --datadir ./datadir account new
-
 # 执行前需要确认已更新 genesis.json 的 coinbase, alloc 账户
-rm -fr ./datadir/geth
-geth --datadir ./datadir init genesis.json
+rm -rf ./datadir/geth
+rm -f ./datadir/geth.ipc
+./geth --datadir ./datadir init genesis.json
+
+# once init
+exits=true
+
+pushd datadir
+for d in *
+do
+    if [ "$d" == "dag" ]
+    then
+        exits=false
+    fi
+done
+popd
+
+while $exits
+do   
+    ./geth makedag 0 ./datadir/dag
+    exit
+done
+
+

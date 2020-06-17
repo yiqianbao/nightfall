@@ -7,7 +7,7 @@ before it will work. This version works by transforming an existing commitment t
 new one, which enables sending of arbritrary amounts. The code also talks directly to Verifier.
 */
 
-import { merkleTree } from 'nightlite';
+import { merkleTree } from 'nightlite_yqb';
 import utils from './zkpUtils';
 
 /**

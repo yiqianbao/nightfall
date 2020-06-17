@@ -6,7 +6,7 @@ rest api calls, and the heavy-lifitng token-zkp.js and zokrates.js.  It exists s
 */
 
 import config from 'config';
-import { vks } from 'nightlite';
+import { vks } from 'nightlite_yqb';
 import Web3 from './web3';
 import { getTruffleContractInstance } from './contractUtils';
 

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { erc20 } from 'nightlite';
+import { erc20 } from 'nightlite_yqb';
 import utils from '../zkpUtils';
 import fTokenController from '../f-token-controller';
 import { getTruffleContractInstance } from '../contractUtils';

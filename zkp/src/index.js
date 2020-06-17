@@ -6,7 +6,7 @@
 
 import express from 'express';
 import bodyParser from 'body-parser';
-import { merkleTree, provider } from 'nightlite';
+import { merkleTree, provider } from 'nightlite_yqb';
 import { ftCommitmentRoutes, ftRoutes, nftCommitmentRoutes, nftRoutes } from './routes';
 import vkController from './vk-controller'; // this import TRIGGERS the runController() script within.
 import { formatResponse, formatError, errorHandler } from './middlewares';

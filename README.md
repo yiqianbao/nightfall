@@ -1,202 +1,158 @@
-# Nightfall
+## Nightfall
 
-Nightfall integrates a set of smart contracts and microservices, and the ZoKrates zk-snark toolkit, to enable standard ERC-20 and ERC-721 tokens to be transacted on the Ethereum blockchain with complete privacy. It is an experimental solution and still being actively developed. We decided to share our research work in the belief that this will speed adoption of public blockchains. This is not intended to be a production-ready application and we do not recommend that you use it as such. If it accelerates your own work, then we are pleased to have helped. We hope that people will feel motivated to contribute their own ideas and improvements.
+[Nightfall](https://github.com/EYBlockchain/nightfall "Nightfall") integrates a set of smart contracts and microservices, and the ZoKrates zk-snark toolkit, to enable standard ERC-20 and ERC-721 tokens to be transacted on the Ethereum blockchain with complete privacy. The privacy module is implemented based on the [Zokrates](https://github.com/Zokrates/ZoKrates "Zokrates") library which has implemented the PGHR13, Groth16 and GM17 three kinds of zero knowledge proof algorithm.And the GM17 algorithm is used in Nightfall.
+We once ran Nightfall on a virtual machine configured with 4CPU, 12GMem and 4GSWAP, and found that a simple private payment transaction took around 5m30s, which was indeed a long time, which also became a focus of our future work.Our work will be described in detail in the following chapters.
 
-**Note that this code has not yet completed a security review and therefore we strongly recommend that you do not use it in production or to transfer items of material value. We take no responsibility for any loss you may incur through the use of this code.**
+***Note: this project is an experimental research project, and it is not recommended to use it for commercial purposes. The company will not be responsible for any safety problems or economic losses caused by the use of this project!!!***
 
-As well as this file, please be sure to check out:
+## Some Troubles
 
--   [The Whitepaper](./doc/whitepaper/nightfall-v1.pdf) for technical details on the protocols and their application herein.
--   [contributions.md](./contributing.md) to find out how to contribute code.
--   [limitations.md](./limitations.md) to understand the limitations of the current code.
--   [license.md](./license.md) to understand how we have placed this code completely in the public domain, without restrictions (but note that Nightfall makes use of other open source code which _does_ apply licence conditions).
--   [UI.md](./UI.md) to learn how to drive the demonstration UI and make transactions.
--   [SECURITY.md](./SECURITY.md) to learn about how we handle security issues.
+At present, GM17 algorithm has been implemented for Nightfall. We run all various kinds of transactions supported in Nightfall on a virtual machine configured with 4CPU, 12GMem and 4GSWAP. The detail results are shown in the table below:
 
-## Security updates
+| NFT-Mint  |  NFT-Burn | NFT-Transfer  | FT-Mint  | FT-Burn  | FT-Transfer  |  FT-BatchTransfer |
+| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
+| 17s  |  2m36s | 2m40s  | 14s  | 2m28s  | 5m25s  | 6m8s  |
+| 106M  |  1.1G | 1.1G  | 80M  | 1.0G  | 2.1G  | 2.3G  |
 
-Critical security updates will be listed [here](https://github.com/EYBlockchain/nightfall/security/advisories/GHSA-36j7-5gjq-gq3w).
-If you had previously installed Nightfall prior to one of these security updates, please pull the latest code, and follow the extra re-installation steps.
+The first row represents the transaction type and the second line states the transaction execution time (Actually that is the generation time of the proof); The third action is the size of the proof for each transaction. It can be seen that:
 
-## Getting started
+1. Time consumption is positively correlated with the size of the proof; The bigger the proof, the longer it takes
 
-These instructions give the most direct path to a working Nightfall setup. The application is compute-intensive and so a high-end processor is preferred. Depending on your machine, setup can take one to several hours.
+2. The transfer operation and destruction operation take too long, which is much higher than the coinage
 
-### Truffle
-If you are familiar with [Truffle](https://github.com/trufflesuite/truffle#readme) and would like a Truffle-specific way to get started, check out the [Nightfall Truffle Box](https://github.com/truffle-box/nightfall-box#nightfall-truffle-box).
+Such efficiency is difficult to use for payment transactions, that is the troubles. So we should find a more efficient scheme. A better zero-knowledge proof algorithm or a smaller proof size? Maybe both.
 
-### Supported hardware & prerequisites
+### Zkp Alg
 
-Mac and Linux machines with at least 16GB of memory and 10GB of disk space are supported.
+Currently, the prevailing zero-knowledge proof algorithms belong to the ZK-Snark series, and although it requires a trust setting, it is the kind of privacy policy that suits you better than Zk-Stark and Bulletproof. After a lot of research, analysis and investigation, we have obtained the performance comparison of several commonly used zero-knowledge proof algorithms, which all belong to the ZK-SNARK series, as shown in the following table:
 
-The Nightfall demonstration requires the following software to run:
+| Alg  |  CRS Size | Proof Size  | O(Prove)  | O(Verify)  | Equations  |
+| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
+|  PGHR13 |  6m+n-l G1,m G2 | 7 G1, 1 G2  | 6m+n-l E1,m E2  | 1 E1, 12 P  | 5  |
+| Groth16  |  m+2n+3 G1, n+3 G2 | 2 G1, 1 G2  | m+3n-l+3 E1, n+1 E2  | 1 E1, 2 P  | 1  |
+| GM17  | m+4n+5 G1, 2n+3 G2  | 2 G1, 1 G2  | m+4n-l E1, 2n E2  | 1 E1, 5 P  | 2  |
 
--   Docker
-    -   Launch Docker Desktop (on Mac, it is on the menu bar) and set memory to 8GB with 4GB of swap space (minimum - 12GB memory is better) or 16GB of memory with 512MB of swap. **The default values for Docker Desktop will NOT work. No, they really won't**.
--   Python
-    -   Be sure npm is setup to use v2.7 of python, not python3. To check the python version, run `python --version`
-    -   You may need to run `npm config set python /usr/bin/python2.7` (or wherever your python 2
-    location is)
--   Node (tested with node 10.15.3) with npm and node-gyp.
-    -   Will not work with node v12. To check the node version, run `node --version`
-    -   If using mac/brew, then you may need to run `brew install node@10` and `brew link --overwrite node@10 --force`
--   Xcode Command line tools:
-    -   If running macOS, install Xcode then run `xcode-select --install` to install command line tools.
+Where, M represents the amount of wire in the circuit; N represents the number of multi-gates; L is the number of public inputs; E stands for power multiplication; P is for pairing. 
+We think the Groth16 algorithm has the absolute advantage to be used as an alternative scheme from the CRS size, the certificate of Proof size, the proof complexity, the validate complexity, validation equation number five aspects of comprehensive consideration(note: the Groth16 algorithm does not have the simulation-extractability, which may cause double_spend, but there is also a method to eliminate the hidden trouble,[like](https://zokrates.github.io/reference/proving_schemes.html "like"))
 
-### Starting servers
+### Hash Alg
 
-Start Docker:
+We has studied the circuit design under various types of transactions and got some useful information finally.The detail data are shown in the table below:
 
--   On Mac, open Docker.app.
+| NFT-Mint  |  NFT-Burn | NFT-Transfer  | FT-Mint  | FT-Burn  | FT-Transfer  |  FT-BatchTransfer |
+| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
+| 114723  | 1178584  | 1208093  | 86613  | 1150474  | 2357944  | 2611408  |
+|  0 |  887585 | 887585  |  0 |  887585 | 1775170  |  887585 |
+|  28M | 327M  |  332M |  23M |  323M | 654M  |  694M |
 
-### Installing Nightfall
+The first row represents the transaction type; The second row represents the total number of constraints; The third represents the number of partial constraints of merkel-tree hash path verification; The fourth row represents the size of the proof (note: the size here is different from the first table, because the zero knowledge proof algorithm has been replaced by Groth16 algorithm here, so the size of the proof is much smaller, which also verifies the effectiveness of the replacement of zero knowledge proof algorithm in the first step).
 
-Clone the Nightfall repository:
+From the table, we can see that in the verification process of various transactions (excluding mint operation), the validity verification of Merkeltree path based on SHA256 hashing algorithm takes up the majority of the whole circuit. Therefore, if effective changes can be made to the hash algorithm, the performance will be greatly improved.
 
-```sh
-git clone git@github.com:EYBlockchain/nightfall.git
-```
-or:
-```sh
-git clone https://github.com/EYBlockchain/nightfall.git
-```
+After a lot of analysis and research work, we summarized the performance comparison of several hash algorithms. The detail data are shown in the table below:
 
-Enter the directory:  
+|  Alg |  contrians num |
+| ------------ | ------------ |
+|  sha256 |  45567 |
+| pedersen  | 2753  |
+| mimc  |  731 |
+|  poseidon |  316 |
 
-```sh
-cd <path/to/nightfall>
-```
+The first column represents the hash algorithm; The second column represents the number of constraints corresponding to an operation. It can be seen that both Pedersen, MIMC, and Poseidon hash have a considerable performance improvement compared with sha256. 
+However we are finally select the pedersen hash algorithm, depend on mainly the security which is most important point.Because the pedersen algorithm has been proven safe and has been used in [zcash](https://github.com/zcash/zips/blob/master/protocol/protocol.pdf "zcash"), while the safety of the mimc and the podeidon algorithm is still in doubt, but we will still try to implement it in other branches; Another point is that, compared with sha256 hash algorithm, pedersen hash has been made great ascension performance, i.e., after replacement, merkel tree path validation part number of constraints is a small percentage of the overall number of constraints, and if replace mimc or podeidon hash, may not significantly reduce the number of constraints, the performance improvement is not obvious; But this is still an alternative direction of optimization that needs to be addressed. In fact, Nightfall has achieved [mimc](https://github.com/EYBlockchain/nightfall/tree/MirandaWood/mimc "mimc") version of the branch which can get larger ascension.
 
+## Our modifications
 
-For Linux users:
+So far, our work has made gradual progress. Our main changes are as follows:
 
--   Change permission for the directory
+Nightfall:
 
-    ```sh
-    sudo chmod 777 -R zkp/code/
-    ```
--   Add the Linux user to docker group to run Docker commands without sudo ([read more](https://docs.docker.com/install/linux/linux-postinstall/)). Then log out and enter again.
+1. Add a validation contract based on Groth16;
 
-    ```sh
-    sudo groupadd docker
-    sudo usermod --append --groups docker $USER
-    ```   
+2. Modify the Merkel tree generation hash algorithm to pedersen hash
 
-For Mac & Linux users:
+3. Modify the local root verification hash algorithm to be pedersen hash
 
-Next pull a compatible Docker image of ZoKrates
+4. Modify the contract invoke hash type
 
-```sh
-docker pull zokrates/zokrates:0.5.1
-```
+Geth:
 
-Next we have to generate the keys and constraint files for Zero Knowledge Proofs ([read more](./zkp/code/README-trusted-setup.md)), this is about 7GB and depends on randomness for security. This step can take a while, depending on your hardware. Before you start, check once more that you have provisioned enough memory for Docker, as described above:
+1. Added pedersen hash precompiled contract type
 
-```sh
-./nightfall-generate-trusted-setup
-```
+2. Optimize the block generation mechanism
 
-Note that this is a completely automated run: although questions will be asked by the script they will automatically receive a 'yes' answer. Further documentation on the setup process is in [the zkp module documentation](zkp/README.md).
+Zokrates:
 
-Please be patient - you can check progress in the terminal window and by using `docker stats` in another terminal.
+1. Add pedersen hash calculation circuit
 
-You just created all the files needed to generate zk-SNARKs. The proving keys, verifying keys and constraint files will allow you to create hidden tokens, move them under zero knowledge and then recover them — both for fungible (ERC-20) and non-fungible (ERC-721) tokens.
+2. Optimize pedersen hash calculation method
 
-### Starting Nightfall
 
-### Github Configuration
+With these changes, the current version of Nightfall has achieved significant performance improvements, as shown in the table below:
 
-In order to use Nightfall, you will need to be logged into the Github package registry. To do this, you will need to [generate a Github Personal Access Token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line). Make sure that the token you generate has at minimum `read: packages` and `repo` permissions.
+| Alg  | NFT-Mint  |  NFT-Burn | NFT-Transfer  | FT-Mint  | FT-Burn  | FT-Transfer  |  FT-BatchTransfer |
+| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
+| sha256/all contrians  | 114723  | 1178584  | 1208093  | 86613  | 1150474  | 2357944  | 2611408  |
+| sha256/merkel contrians  |  0 |  887585 | 887585  |  0 |  887585 | 1775170  |  887585 |
+| sha256/proof size  |  28M | 327M  |  332M |  23M |  323M | 654M  |  694M |
+| pedersen/all contrians  | 114723  | 377496  | 407005  | 86613  | 349386  | 755766  | 1810320  |
+| pedersen/merkel contrians  |  0 |  59503 | 59503  |  0 |  59503 | 119006  |  59503 |
+| pedersen/proof size  |  28M | 100M  |  105M |  23M |  95M | 199M  |  435M |
 
-After you've done that, log in to the Github package registry by running
 
-`docker login -u <your-username> -p <the-token-you-just-generated> docker.pkg.github.com`
+|  zkp |  hash | NFT-Mint  |  NFT-Burn | NFT-Transfer  | FT-Mint  | FT-Burn  | FT-Transfer  |  FT-BatchTransfer |
+| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
+|  GM17 |  sha256 |  17s  |  2m36s | 2m40s  | 14s  | 2m28s  | 5m25s  | 6m8s|
+|  Groth16 |  pedersen |  5s | 25s  | 25s  | 5s  |  24s | 49s  | 1m45s  |
 
-#### Re-installation
+## Better Peformance
 
-If this isn't your first time running Nightfall, but you have just pulled new changes from the repo, then you might need to 're-install' certain features due to code changes. First run:  
+Currently, a simple transaction can be completed in less than a minute, which is nearly six times better than the original transaction efficiency. If you want more efficiency, maybe you can try 1. Replace the more efficient hash; 2. Choose a machine with higher configuration. If the performance of a single core CPU is greatly improved, the overall efficiency will be higher
 
-```sh
-docker-compose -f docker-compose.yml build
-```
+## Start
 
-It's important to re-run the trusted setup if any of the `.code` files have been modified since your last pull of the repo. You can check with:  
+This project is already running successfully on ubuntu18.04 & MAC and may require a machine with at least 4 gb of memory.
 
-```sh
-git diff master@{1} master ./zkp/code/gm17
-```
-_(Press `q` to exit this log at any time)._  
+1. Obtain source code
 
-If this shows that some files have been changed, then before anything else, you will also need to re-run:
+`git clone https://github.com/yiqianbao/nightfall.git`
 
-```sh
-./nightfall-generate-trusted-setup
-```
-_(If only one or a few of the `.code` files have been changed, then it will be faster for you to consult [the zkp module documentation](zkp/README.md) for details on selecting individual files for trusted setup)._
+or
 
-#### Starting  
+`git clone git@github.com: yiqianbao/nightfall.git`
 
-:night_with_stars: We're ready to go! Be sure to be in the main directory and run the demo:
+2. Unzip and enter the main directory
 
-```sh
-./nightfall
-```
+`cd <path/to/nightfall>`
 
-and wait until you see the message `Compiled successfully` in the console.
+3. Start
 
-This brings up each microservice using docker-compose and finally builds a UI running on a local Angular server.
+Executed in sequence
 
-Navigate your web browser to <http://localhost:8000> to start using Nightfall (give everything enough time to start up). There are instructions on how to use the application in the [UI.md](./UI.md) file.
+`./nightfall-generate-trusted-setup`
 
-Note that ./nightfall has deployed an ERC-20 and ERC-721 contract for you (specifically FToken.sol and NFTokenMetada.sol). These are designed to allow anyone to mint tokens for demonstration purposes. You will probably want to curtail this behaviour in anything but a demonstration.
+`./nightfall`
 
-The UI pulls token names from the contracts you deploy. In the present case, the tokens are called EY OpsCoin for the ERC-20 and EY Token for ERC-721.
+Until the console prints `Compiled successfully!`
 
-Note that it can take up to 10 mins to compute a transfer proof (depending on your machine) and the demonstration UI is intentionally modal while this happens (even though the action returns a promise). You can see what's happening if you look at the terminal where you ran `./nightfall`.
+4. Enjoy
 
-If you want to close the application, make sure to stop containers and remove containers, networks, volumes, and images created by up, using:
+The browser goes to http://localhost:8000 and opens the Nightfall home page. See UI.Md for instructions
 
-```sh
-docker-compose down -v
-```
+## Contact Us
 
-### To run zkp service unit tests
+It would be nice if this project could help you in your current work. If you have any questions, just contact us:
 
-See [the zkp module documentation](zkp/README.md), "run zkp unit tests".
+1. Liwei Yuan, email: xzfkiller@gmail.com
 
-### To run Nightfall integration test
+2. Henry, enail: Imforhenry@outlook.com
 
-Be sure to be in the main directory and then open terminal and run
+3. A big mango, email: WY12351@163.com
 
-```sh
-./nightfall-test
-```
+4. Double, email: cafebabe_java@163.com
 
--   Mac
-    -   Test suites will open a terminal, where you can see test container's log. This terminal will close automatically.
-    -   configure `Terminal.app` to close window when shell exits `exit`.
-
-## Using other ERC-20 and ERC-721 contracts
-
-Nightfall will operate with any ERC-20 and ERC-721 compliant contract. The contracts' addresses are fed into FTokenShield.sol and NFTokenShield.sol respectively during the Truffle migration and cannot be changed subsequently.  
-
-If you wish to use pre-existing ERC-20 and ERC-721 contracts then edit `2_Shield_migration.js` so that the address of the pre-existing ERC-20 contract is passed to FTokenShield and the address of the pre-existing ERC-721 contract is passed to NFTokenShield i.e. replace `FToken.address` and `NFTokenMetadata.address`.  
-
-This can also be done from UI, by clicking on the user to go to settings, then clicking on contracts option in this page. A new shield contract address that has been deployed separately can be provided here. This new contract will be a replacement for NFTokenShield.sol or FTokenShield.sol. Each of these contracts currently shields the tokens of an ER721 or ERC20 contract instance respectively.
-
-## Using other networks
-
-The demo mode uses Ganache-cli as a blockchain emulator. This is easier than using a true blockchain client but has the disadvantage that Ganache-cli doesn't currently support the Whisper protocol, which Nightfall uses for exchanging secrets between sender and receiver. Accordingly we've written a Whisper stub, which will emulate whisper for participants who are all on the same node server. If you want to run across multiple blockchain nodes and server instances then replace all occurrences of the words `whisper-controller-stub` with `whisper-controller` in the code — but you will need to use Geth rather than Ganache-cli and construct an appropriate Docker container to replace the Ganache one we provide.
+5. Ocean Chen, email: oceanjune512@163.com
 
 ## Acknowledgements
 
-Team Nightfall thanks those who have indirectly contributed to it, with the ideas and tools that
-they have shared with the community:
-
--   [ZoKrates](https://hub.docker.com/r/michaelconnor/zok)
--   [Libsnark](https://github.com/scipr-lab/libsnark)
--   [Zcash](https://github.com/zcash/zcash)
--   [GM17](https://eprint.iacr.org/2017/540.pdf)
--   [0xcert](https://github.com/0xcert/ethereum-erc721/)
--   [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/token/ERC20/ERC20.sol)
-
+Nightfall is indeed a great project and provides a lot of references for other research projects in support of privacy on Ethereum. Here, I would like to express my sincere thanks to its development team!!!
