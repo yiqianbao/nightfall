@@ -1,6 +1,7 @@
 import contract from 'truffle-contract';
 import jsonfile from 'jsonfile';
 import Web3 from './web3';
+import config from 'config';
 
 const web3 = Web3.connect();
 
@@ -9,7 +10,7 @@ const contractMapping = {
   NFTokenMetadata: './build/contracts/NFTokenMetadata.json',
   FTokenShield: './build/contracts/FTokenShield.json',
   FToken: './build/contracts/FToken.json',
-  Verifier: `./build/contracts/Verifier_${ZKPScheme.toUpperCase()}.json`,
+  Verifier: `./build/contracts/Verifier_${config.ZKPScheme.toUpperCase()}.json`,
 };
 
 export async function getTruffleContractInstance(contractName) {

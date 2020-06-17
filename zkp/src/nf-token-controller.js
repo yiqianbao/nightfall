@@ -11,12 +11,13 @@ import contract from 'truffle-contract';
 import jsonfile from 'jsonfile';
 import zkp from './nf-token-zkp';
 import Web3 from './web3';
+import config from 'config';
 
 const NFTokenShield = contract(jsonfile.readFileSync('./build/contracts/NFTokenShield.json'));
 
 NFTokenShield.setProvider(Web3.connect());
 
-const Verifier = contract(jsonfile.readFileSync(`./build/contracts/Verifier_${ZKPScheme.toUpperCase()}.json`));
+const Verifier = contract(jsonfile.readFileSync(`./build/contracts/Verifier_${config.ZKPScheme.toUpperCase()}.json`));
 Verifier.setProvider(Web3.connect());
 
 const NFTokenMetadata = contract(jsonfile.readFileSync('./build/contracts/NFTokenMetadata.json'));

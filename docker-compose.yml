@@ -10,6 +10,7 @@ services:
       - ./accounts/src:/app/src
       - ./accounts/config:/app/config
       - ./accounts/.babelrc:/app/.babelrc
+      - ./accounts/node_modules:/app/node_modules    
     environment:
       BLOCKCHAIN_HOST: ws://custom-geth
       BLOCKCHAIN_PORT: 8546
@@ -161,7 +162,6 @@ services:
       - ./offchain/migrations/:/truffle/migrations:delegated
       - ./offchain/build/contracts/:/truffle/build/contracts:cached
       - ./offchain/test/:/truffle/test:delegated
-      # - ./offchain/truffle-config.js:/truffle/truffle.js:delegated
     logging:
       options:
         max-size: 10m
@@ -186,7 +186,6 @@ services:
       - ./zkp/build/contracts/:/truffle/build/contracts:cached
       - ./zkp/test/:/truffle/test:delegated
       - ./zkp/src/:/truffle/src:delegated
-      # - ./zkp/truffle.js:/truffle/truffle.js:delegated
     logging:
       options:
         max-size: 10m
